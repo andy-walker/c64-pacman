@@ -5,12 +5,10 @@
 *=$0801
 .byte $0b, $08, $00, $00, $9e, $32, $30, $36, $31, $00, $00, $00
 
-bgpic      = $2000
-bitmap     = bgpic
-video      = bgpic+$1f40
-color      = bgpic+$2328
-background = bgpic+$2710
-spritedata = $2000
+blue = 6
+
+sprite_data_addr = $2000
+char_data_addr = $3800
 
 ; ------------------
 ; Main program start
@@ -19,72 +17,38 @@ spritedata = $2000
 *=$080d
 
 start   sei
+
         jsr cls
-        ;jmp s_init
 
-        ;lda #5        ; ascii control code for white letters
-        ;jsr $e716     ; output to screen
-        
-        ; Transfer video / colour information 
-        ldx #$00
-loop
-        ; Transfer video data
-        lda video,x
-        sta $0400,x
-        lda video+$100,x
-        sta $0500,x
-        lda video+$200,x
-        sta $0600,x
-        lda video+$2e8,x
-        sta $06e8,x
-        
-        ; Transfer color data
-        lda color,x
-        sta $d800,x
-        lda color+$100,x
-        sta $d900,x
-        lda color+$200,x
-        sta $da00,x
-        lda color+$2e8,x
-        sta $dae8,x
-        inx
-        bne loop
+        ; character initialisation
 
-        lda #$3b            ; bitmap mode on
-        sta $d011
-
-        lda #$d8            ; multicolor on
-        sta $d016
-        
-        ; ----------------------------
-        ; When bitmap address is $2000
-        ; Screen at $0400 
-        ; Value of $d018 is $18
-        ;-----------------------------
-
-        lda #$18
-        sta $d018
+        lda $d018
+        ora #$0e       ; set chars location to $3800 for displaying the custom font
+        sta $d018      ; Bits 1-3 ($400+512bytes * low nibble value) of $d018 sets char location
+                       ; $400 + $200*$0E = $3800
 
         ; sprite initialisation
-s_init        
-         lda #$01 
-           sta $d015    ; Turn sprite 0 on 
-           ;sta $d01c    ;multi colored sprite 
-            
-            lda #7 
-            sta $d027    ; Make it yellow
-            
-            lda #$00        ;set black and white 
-            sta $d025      ;multi-colors global! 
-            lda #$01 
-            sta $d026 
+
+        lda #$01 
+        sta $d015     ; Turn sprite 0 on 
+        ;sta $d01c    ; multi coloured sprite 
+
+        lda #7 
+        sta $d027     ; set primary colour yellow
+
+        lda #$00      ; set black and white 
+        sta $d025     ; multi-colors global 
+        lda #$01 
+        sta $d026 
 
 
-            lda #$80 
-           sta $d000    ; set x coordinate to 40 
-           sta $d001    ; set y coordinate to 40 
-           lda #$60 
-           sta $07f8    ; set pointer: sprite data at $2000    
+        lda #$80 
+        sta $d000    ; set x coordinate to 40 
+        sta $d001    ; set y coordinate to 40 
+        lda #$80 
+        sta $07f8    ; set pointer: sprite data at $2000    
+
+        jsr init_level
 
         ; irq initialisation (this should happen last)
         
@@ -101,13 +65,47 @@ s_init
         lda #%00000001 ; enable raster interrupt signals from VIC
         sta $d01a
 
-
-        jmp *
-        ; rts
+        ;rts
+        jsr *
 
 
 irq     asl $d019      ; acknowledge raster irq
         jmp $ea31      ; scan keyboard (only do once per frame)
+
+
+; ----------------
+; Initialise level
+; ----------------
+
+init_level
+        ldx #0
+
+loader_loop 
+        
+        ; load characters for each line
+        lda lvlch1,x
+        sta $0404,x
+        lda lvlch2,x
+        sta $042c,x
+        lda lvlch3,x
+        sta $0454,x
+        lda lvlch4,x
+        sta $047c,x
+
+        ; load colour information for each line
+        lda lvlcl1,x
+        sta $d804,x
+        lda lvlcl2,x
+        sta $d82c,x
+        lda lvlcl3,x
+        sta $d854,x
+        lda lvlcl4,x
+        sta $d87c,x
+
+        inx
+        cpx #33
+        bne loader_loop
+        rts       
 
 
 ; --------------------
@@ -133,12 +131,20 @@ clsloop lda #$20       ; #$20 is the spacebar screencode
         rts
 
 
+lvlch1  .byte  0,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  2,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  3
+lvlch2  .byte  4, 65, 66, 67,  7, 64, 65, 66, 67,  7, 64, 65, 66, 67,  7, 64,  5, 66, 67,  7, 64, 65, 66, 67,  7, 64, 65, 66, 67,  7, 64, 65,  6 
+lvlch3  .byte  4, 69,  8,  9, 10, 11, 69,  8,  9, 10, 12, 13, 13, 13, 14, 68, 15, 70, 16, 13, 13, 13, 17,  9, 10, 11, 69,  8,  9, 10, 11, 69,  6     
+lvlch4  .byte  4, 80, 18, 19, 20, 21, 73, 18, 19, 20, 21, 73, 74, 75,  7, 72, 73, 74, 75,  7, 72, 73, 18, 19, 20, 21, 73, 18, 19, 20, 21, 80,  6
 
+lvlcl1  .byte  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6
+lvlcl2  .byte  6, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,  6, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,  6
+lvlcl3  .byte  6, 10,  6,  6,  6,  6, 10,  6,  6,  6,  6,  6,  6,  6,  6, 10,  6, 10,  6,  6,  6,  6,  6,  6,  6,  6, 10,  6,  6,  6,  6, 10,  6
+lvlcl4  .byte  6,  1,  6,  6,  6,  6, 10,  6,  6,  6,  6,  10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 6,  6,  6,  6,  6,  6,  6,  1,  6
 
 ; load sprite data
-;*=spritedata	      
-;    .binary "resources/sprites.raw"
+*=sprite_data_addr	      
+    .binary "resources/sprites.raw"
 
-; load bitmap data
-*=bgpic
-    .binary "resources/level.kla",2
+; load character data
+*=char_data_addr
+    .binary "resources/chars.raw"
