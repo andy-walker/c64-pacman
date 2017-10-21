@@ -8,7 +8,12 @@
 blue = 6
 
 sprite_data_addr = $2000
-char_data_addr = $3800
+char_data_addr   = $3800
+
+pra              = $dc00     ; CIA#1 (Port Register A)
+prb              = $dc01     ; CIA#1 (Port Register B)
+ddra             = $dc02     ; CIA#1 (Data Direction Register A)
+ddrb             = $dc03     ; CIA#1 (Data Direction Register B)
 
 ; ------------------
 ; Main program start
@@ -16,8 +21,7 @@ char_data_addr = $3800
 
 *=$080d
 
-start   sei
-
+start  
         jsr cls
 
         ; character initialisation
@@ -41,11 +45,6 @@ start   sei
         lda #$01 
         sta $d026 
 
-
-        lda #$c0 
-        sta $d000    ; set x coordinate to 40
-        lda #$90
-        sta $d001    ; set y coordinate to 40 
         lda #$80 
         sta $07f8    ; set pointer: sprite data at $2000    
 
@@ -70,8 +69,11 @@ start   sei
         jsr *
 
 
-irq     asl $d019      ; acknowledge raster irq
+irq     
+        jsr move_character
+        asl $d019      ; acknowledge raster irq
         jmp $ea31      ; scan keyboard (only do once per frame)
+
 
 
 ; ----------------
@@ -189,11 +191,84 @@ loader_loop
 
         inx
         cpx #33
-        bne load_next_line
+        bne next_char
+        jmp init_sprites
+
+next_char
+        jmp loader_loop
+
+init_sprites
+        
+        lda #$b4 
+        sta $d000    ; set x coordinate to 40
+        lda #$c0
+        sta $d001    ; set y coordinate to 40 
         rts
 
-load_next_line
-        jmp loader_loop
+
+; ----------------------
+; Move character routine
+; ----------------------
+
+move_character
+        
+        lda #%11111111  ; CIA#1 Port A set to output 
+        sta ddra             
+        lda #%00000000  ; CIA#1 Port B set to input
+        sta ddrb      
+
+check_l lda #%11111101  ; select row 2
+        sta pra 
+        lda prb         ; load column information
+        and #%00010000  ; test 'z' key  
+        beq go_left
+
+check_r lda #%11111011  ; select row 3
+        sta pra 
+        lda prb         ; load column information
+        and #%10000000  ; test 'x' key  
+        beq go_right
+
+check_d lda #%11011111  ; select row 6
+        sta pra 
+        lda prb         ; load column information
+        and #%00010000  ; test '.' key  
+        beq go_down
+
+check_u lda #%10111111  ; select row 7
+        sta pra 
+        lda prb         ; load column information
+        and #%00000100  ; test ';' key 
+        beq go_up
+        rts             ; return     
+
+go_left lda $d000
+        cmp #$1e        ; check X-coord
+        beq skip_move   ; if left boundary reached skip
+        dec $d000       ; decrease x-coord for sprite 1
+        rts
+
+go_right lda $d000      ; increase x-coord for sprite 1
+        cmp #$ff        ; check x-coord
+        beq skip_move   ; if right boundary reached, skip
+        inc $d000
+        rts
+
+go_up   lda $d001
+        cmp #$1e        ; check Y-coord whether we are too high
+        beq skip_move   ; if top of screen reached, skip
+        dec $d001       ; decrease y-coord for sprite 1
+        rts
+
+go_down lda $d001       ; increase y-coord for sprite 1
+        cmp #$ff        ; check Y-coord whether whether we are too low
+        beq skip_move   ; if bottom of border was reached, skip
+        inc $d001
+        rts
+
+skip_move
+        rts
+
 
 ; --------------------
 ; Clear screen routine
@@ -217,6 +292,9 @@ clsloop lda #7         ; 7 = blank space char in our custom character set
         bne clsloop  
         rts
 
+; ----
+; Data
+; ----
 
 lvlch1  .byte  0,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  2,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  3
 lvlch2  .byte  4, 65, 66, 67,  7, 64, 65, 66, 67,  7, 64, 65, 66, 67,  7, 64,  5, 66, 67,  7, 64, 65, 66, 67,  7, 64, 65, 66, 67,  7, 64, 65,  6 
