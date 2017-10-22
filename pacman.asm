@@ -20,10 +20,14 @@ ddrb             = $dc03     ; CIA#1 (Data Direction Register B)
 ; Zero page addresses for program variables
 ; -----------------------------------------
 
-pacman_x_tile    = $02
-pacman_x_sub     = $03
-pacman_y_tile    = $04
-pacman_y_sub     = $05
+num1             = $02
+num2             = $03
+pacman_x_tile    = $04
+pacman_x_sub     = $05
+pacman_y_tile    = $06
+pacman_y_sub     = $07
+
+
 
 ; ------------------
 ; Main program start
@@ -215,12 +219,13 @@ init_sprites
         ;sta $d001    ; set y coordinate to 40 
         
 
-        lda #13
+        lda #2 ;#13
         sta pacman_x_tile
-        lda #15
+        lda #1 ;#15
         sta pacman_y_tile
-        lda #5
+        lda #9
         sta pacman_x_sub
+        lda #5
         sta pacman_y_sub
 
         jsr update_pacman_sprite
@@ -242,28 +247,104 @@ check_l lda #%11111101  ; select row 2
         sta pra 
         lda prb         ; load column information
         and #%00010000  ; test 'z' key  
-        beq go_left
+        beq check_can_move_left
 
 check_r lda #%11111011  ; select row 3
         sta pra 
         lda prb         ; load column information
         and #%10000000  ; test 'x' key  
-        beq go_right
+        beq check_can_move_right
 
 check_d lda #%11011111  ; select row 6
         sta pra 
         lda prb         ; load column information
         and #%00010000  ; test '.' key  
-        beq go_down
+        ; beq go_down
 
 check_u lda #%10111111  ; select row 7
         sta pra 
         lda prb         ; load column information
         and #%00000100  ; test ';' key 
-        beq go_up
+        ; beq go_up
         rts             ; return     
 
-go_left lda $d000
+check_can_move_left
+
+        lda pacman_x_sub   ; load accumulator with x sub position
+        cmp #5             ; if sub position is 5-9 ..
+        bcs move_left_sub  ; we can go ahead and move the character
+                           ; if sub position is 0-4
+        lda #27
+        sta num1           ; set multiplicand to 27 (the length of a row)
+        ldy pacman_y_tile  
+        sty num2           ; set multiplier to row number
+        jsr multiply       ; call multiply routine (puts result in accumulator)
+        adc pacman_x_tile  ; add the x tile offset
+        tax                ; move result to x register
+        dex                ; decrement (as we want to look one tile to the left)
+        lda level0,x       ; load the tile type index, using x as an offset
+        cmp #2             ; if the index is 2 or greater ..
+        bcs move_left      ; move the character left
+        rts                ; otherwise return without doing anything
+
+move_left
+
+        lda pacman_x_sub   ; load x sub position
+        cmp #0             ; if greater than zero ..
+        bne move_left_sub  ; move left by sub position, otherwise (if zero) ..
+        dec pacman_x_tile  ; decrement x tile position
+        lda #9             ; set x sub position to 9 (upper boundary)
+        sta pacman_x_sub   
+        
+        jsr update_pacman_sprite
+        rts
+        
+move_left_sub
+
+        dec pacman_x_sub
+        jsr update_pacman_sprite
+        rts
+
+check_can_move_right
+
+        lda pacman_x_sub   ; load accumulator with x sub position
+        cmp #5             ; if sub position is 0-4 ..
+        bcc move_right_sub ; we can go ahead and move the character
+                           ; if sub position is 5-9
+        lda #27
+        sta num1           ; set multiplicand to 27 (the length of a row)
+        ldy pacman_y_tile  
+        sty num2           ; set multiplier to row number
+        jsr multiply       ; call multiply routine (puts result in accumulator)
+        adc pacman_x_tile  ; add the x tile offset
+        tax                ; move result to x register
+        inx                ; increment (as we want to look one tile to the right)
+        lda level0,x       ; load the tile type index, using x as an offset
+        cmp #2             ; if the index is 2 or greater ..
+        bcs move_right      ; move the character left
+        rts                ; otherwise return without doing anything
+
+move_right
+
+        lda pacman_x_sub   ; load x sub position
+        cmp #9             ; if less than 9 ..
+        bne move_right_sub ; move right by sub position, otherwise (if zero) ..
+        inc pacman_x_tile  ; increment x tile position
+        lda #0             ; set x sub position to 0 (lower boundary)
+        sta pacman_x_sub   
+        
+        jsr update_pacman_sprite
+        rts
+        
+move_right_sub
+
+        inc pacman_x_sub
+        jsr update_pacman_sprite
+        rts
+
+
+go_left
+        lda $d000
         cmp #$1e        ; check X-coord
         beq skip_move   ; if left boundary reached skip
         dec $d000       ; decrease x-coord for sprite 1
@@ -316,6 +397,35 @@ update_pacman_sprite
         adc #37
         sta $d001
         
+        rts
+
+; General 8bit * 8bit = 8bit multiply
+; Multiplies "num1" by "num2" and returns result in .A
+
+; by White Flame (aka David Holz) 20030207
+
+; Input variables:
+;   num1 (multiplicand)
+;   num2 (multiplier), should be small for speed
+;   Signedness should not matter
+
+; .X and .Y are preserved
+; num1 and num2 get clobbered
+
+; Instead of using a bit counter, this routine ends when num2 reaches zero, thus saving iterations.
+
+multiply
+        lda #$00
+        beq enterLoop
+
+doAdd   clc
+        adc num1
+
+loop    asl num1
+enterLoop          ; For an accumulating multiply (.A = .A + num1*num2), set up num1 and num2, then enter here
+        lsr num2
+        bcs doAdd
+        bne loop
         rts
 
 ; --------------------
