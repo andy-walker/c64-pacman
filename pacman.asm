@@ -15,6 +15,16 @@ prb              = $dc01     ; CIA#1 (Port Register B)
 ddra             = $dc02     ; CIA#1 (Data Direction Register A)
 ddrb             = $dc03     ; CIA#1 (Data Direction Register B)
 
+
+; -----------------------------------------
+; Zero page addresses for program variables
+; -----------------------------------------
+
+pacman_x_tile    = $02
+pacman_x_sub     = $03
+pacman_y_tile    = $04
+pacman_y_sub     = $05
+
 ; ------------------
 ; Main program start
 ; ------------------
@@ -199,10 +209,21 @@ next_char
 
 init_sprites
         
-        lda #$b4 
-        sta $d000    ; set x coordinate to 40
-        lda #$c0
-        sta $d001    ; set y coordinate to 40 
+        ;lda #$b4 
+        ;sta $d000    ; set x coordinate to 40
+        ;lda #$c0
+        ;sta $d001    ; set y coordinate to 40 
+        
+
+        lda #13
+        sta pacman_x_tile
+        lda #15
+        sta pacman_y_tile
+        lda #5
+        sta pacman_x_sub
+        sta pacman_y_sub
+
+        jsr update_pacman_sprite
         rts
 
 
@@ -269,6 +290,33 @@ go_down lda $d001       ; increase y-coord for sprite 1
 skip_move
         rts
 
+; ----------------------------------------------
+; Routine to position / orient the pacman sprite
+; ----------------------------------------------
+
+update_pacman_sprite
+        
+        lda pacman_x_tile
+        asl
+        asl
+        asl
+        adc pacman_x_tile
+        adc pacman_x_tile
+        adc pacman_x_sub
+        adc #45
+        sta $d000
+
+        lda pacman_y_tile
+        asl
+        asl
+        asl
+        adc pacman_y_tile
+        adc pacman_y_tile
+        adc pacman_y_sub
+        adc #37
+        sta $d001
+        
+        rts
 
 ; --------------------
 ; Clear screen routine
@@ -347,6 +395,28 @@ lvlcl22 .byte  6, 10, 10, 10, 10, 10, 10, 10, 10,  6,  6, 10, 10, 10, 10, 10,  6
 lvlcl23 .byte  6, 10,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6, 10,  6, 10,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6, 10,  6
 lvlcl24 .byte  6, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,  6
 lvlcl25 .byte  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6,  6
+
+level0  .byte  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+level1  .byte  0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0
+level2  .byte  0, 3, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 3, 0, 3, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 3, 0
+level3  .byte  0, 4, 0, 0, 0, 3, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0, 0, 0, 3, 0, 0, 0, 4, 0
+level4  .byte  0, 3, 0, 0, 0, 3, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 3, 0, 0, 0, 3, 0
+level5  .byte  0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0
+level6  .byte  0, 3, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 3, 0
+level7  .byte  0, 3, 3, 3, 3, 3, 3, 3, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 3, 3, 3, 3, 3, 3, 3, 0
+level8  .byte  0, 0, 0, 0, 0, 0, 0, 3, 0, 2, 0, 0, 0, 1, 0, 0, 0, 2, 0, 3, 0, 0, 0, 0, 0, 0, 0
+level9  .byte  0, 0, 0, 0, 0, 0, 0, 3, 0, 2, 0, 1, 1, 1, 1, 1, 0, 2, 0, 3, 0, 0, 0, 0, 0, 0, 0
+level10 .byte  5, 5, 5, 5, 5, 5, 5, 3, 2, 2, 0, 1, 1, 1, 1, 1, 0, 2, 2, 3, 5, 5, 5, 5, 5, 5, 5
+level11 .byte  0, 0, 0, 0, 0, 0, 0, 3, 0, 2, 0, 1, 1, 1, 1, 1, 0, 2, 0, 3, 0, 0, 0, 0, 0, 0, 0
+level12 .byte  0, 0, 0, 0, 0, 0, 0, 3, 0, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 3, 0, 0, 0, 0, 0, 0, 0
+level13 .byte  0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0
+level14 .byte  0, 3, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 3, 0, 3, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 3, 0
+level15 .byte  0, 4, 3, 3, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0, 3, 3, 4, 0
+level16 .byte  0, 0, 0, 3, 0, 0, 0, 3, 0, 3, 0, 0, 0, 0, 0, 0, 0, 3, 0, 3, 0, 0, 0, 3, 0, 0, 0
+level17 .byte  0, 3, 3, 3, 3, 3, 3, 3, 0, 3, 3, 3, 3, 0, 3, 3, 3, 3, 0, 3, 3, 3, 3, 3, 3, 3, 0
+level18 .byte  0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+level19 .byte  0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0
+level20 .byte  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 
 
 ; load sprite data
 *=sprite_data_addr	      
