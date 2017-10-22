@@ -22,10 +22,11 @@ ddrb             = $dc03     ; CIA#1 (Data Direction Register B)
 
 num1             = $02
 num2             = $03
-pacman_x_tile    = $04
-pacman_x_sub     = $05
-pacman_y_tile    = $06
-pacman_y_sub     = $07
+tmp_offset       = $04
+pacman_x_tile    = $05
+pacman_x_sub     = $06
+pacman_y_tile    = $07
+pacman_y_sub     = $08
 
 
 
@@ -296,12 +297,14 @@ move_left
         lda #9             ; set x sub position to 9 (upper boundary)
         sta pacman_x_sub   
         
+        jsr set_pacman_sprite_left
         jsr update_pacman_sprite
         rts
         
 move_left_sub
 
         dec pacman_x_sub
+        jsr set_pacman_sprite_left
         jsr update_pacman_sprite
         rts
 
@@ -333,14 +336,66 @@ move_right
         lda #0             ; set x sub position to 0 (lower boundary)
         sta pacman_x_sub   
         
+        jsr set_pacman_sprite_right
         jsr update_pacman_sprite
         rts
         
 move_right_sub
 
         inc pacman_x_sub
+        jsr set_pacman_sprite_right
         jsr update_pacman_sprite
         rts
+
+set_pacman_sprite_left
+
+        lda pacman_x_sub  ; get pacman x sub position
+        cmp #5            ; compare to 5
+        bcc spsl1         ; branch to spsr1 if less than
+        beq spsl2         ; branch to spsr2 if equal
+                          ; otherwise (if greater than)
+
+        lda #$7c
+        adc pacman_x_sub
+        sta $07f8
+        rts
+
+spsl1                     ; less than 5
+        lda #$85
+        sbc pacman_x_sub
+        sta $07f8
+        rts
+
+spsl2                     ; equal to 5    
+        lda #$80 
+        sta $07f8
+        rts
+
+set_pacman_sprite_right
+
+        lda pacman_x_sub  ; get pacman x sub position
+        cmp #5            ; compare to 5
+        bcc spsr1         ; branch to spsr1 if less than
+        beq spsr2         ; branch to spsr2 if equal
+                          ; otherwise (if greater than)
+
+        lda #$85
+        adc pacman_x_sub
+        sta $07f8
+        rts
+
+spsr1                     ; less than 5
+        lda #$8f
+        sbc pacman_x_sub
+        sta $07f8
+        rts
+
+spsr2                     ; equal to 5    
+        lda #$80 
+        sta $07f8
+        rts
+
+   
 
 
 go_left
