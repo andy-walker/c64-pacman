@@ -22,11 +22,10 @@ ddrb             = $dc03     ; CIA#1 (Data Direction Register B)
 
 num1             = $02
 num2             = $03
-tmp_offset       = $04
-pacman_x_tile    = $05
-pacman_x_sub     = $06
-pacman_y_tile    = $07
-pacman_y_sub     = $08
+pacman_x_tile    = $04
+pacman_x_sub     = $05
+pacman_y_tile    = $06
+pacman_y_sub     = $07
 
 
 
