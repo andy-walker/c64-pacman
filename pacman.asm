@@ -60,7 +60,7 @@ start
         sta $d026 
 
         lda #$80 
-        sta $07f8    ; set pointer: sprite data at $2000    
+        sta $07f8     ; set pointer: sprite data at $2000    
 
         jsr init_level
 
@@ -270,7 +270,12 @@ check_u lda #%10111111  ; select row 7
 
 check_can_move_left
 
-        lda pacman_x_sub   ; load accumulator with x sub position
+        lda pacman_y_sub   ; check y sub position is 5
+        cmp #5             ; (the y centre of the tile)
+        beq ccml1          ; and if so, continue
+        rts                ; otherwise return (cannot move sprite on x plane)
+
+ccml1   lda pacman_x_sub   ; load accumulator with x sub position
         cmp #5             ; if sub position is 5-9 ..
         bcs move_left_sub  ; we can go ahead and move the character
                            ; if sub position is 0-4
@@ -309,7 +314,12 @@ move_left_sub
 
 check_can_move_right
 
-        lda pacman_x_sub   ; load accumulator with x sub position
+        lda pacman_y_sub   ; check y sub position is 5
+        cmp #5             ; (the y centre of the tile)
+        beq ccmr1          ; and if so, continue
+        rts                ; otherwise return (cannot move sprite on x plane)
+
+ccmr1   lda pacman_x_sub   ; load accumulator with x sub position
         cmp #5             ; if sub position is 0-4 ..
         bcc move_right_sub ; we can go ahead and move the character
                            ; if sub position is 5-9
@@ -323,7 +333,7 @@ check_can_move_right
         inx                ; increment (as we want to look one tile to the right)
         lda level0,x       ; load the tile type index, using x as an offset
         cmp #2             ; if the index is 2 or greater ..
-        bcs move_right      ; move the character left
+        bcs move_right     ; move the character right
         rts                ; otherwise return without doing anything
 
 move_right
@@ -354,7 +364,7 @@ set_pacman_sprite_left
         beq spsl2         ; branch to spsr2 if equal
                           ; otherwise (if greater than)
 
-        lda #$7c
+        lda #$7b
         adc pacman_x_sub
         sta $07f8
         rts
@@ -384,7 +394,7 @@ set_pacman_sprite_right
         rts
 
 spsr1                     ; less than 5
-        lda #$8f
+        lda #$90
         sbc pacman_x_sub
         sta $07f8
         rts
