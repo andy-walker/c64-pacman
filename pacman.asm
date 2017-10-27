@@ -28,7 +28,6 @@ pacman_y_tile    = $06
 pacman_y_sub     = $07
 
 
-
 ; ------------------
 ; Main program start
 ; ------------------
@@ -58,9 +57,6 @@ start
         sta $d025     ; multi-colors global 
         lda #$01 
         sta $d026 
-
-        lda #$80 
-        sta $07f8     ; set pointer: sprite data at $2000    
 
         jsr init_level
 
@@ -219,15 +215,16 @@ init_sprites
         ;sta $d001    ; set y coordinate to 40 
         
 
-        lda #2 ;#13
+        lda #5 ;#13
         sta pacman_x_tile
         lda #1 ;#15
         sta pacman_y_tile
-        lda #9
+        lda #5
         sta pacman_x_sub
         lda #5
         sta pacman_y_sub
 
+        jsr set_pacman_sprite_left
         jsr update_pacman_sprite
         rts
 
@@ -247,13 +244,13 @@ check_l lda #%11111101  ; select row 2
         sta pra 
         lda prb         ; load column information
         and #%00010000  ; test 'z' key  
-        beq check_can_move_left
+        beq go_left
 
 check_r lda #%11111011  ; select row 3
         sta pra 
         lda prb         ; load column information
         and #%10000000  ; test 'x' key  
-        beq check_can_move_right
+        beq go_right
 
 check_d lda #%11011111  ; select row 6
         sta pra 
@@ -265,8 +262,58 @@ check_u lda #%10111111  ; select row 7
         sta pra 
         lda prb         ; load column information
         and #%00000100  ; test ';' key 
-        ; beq go_up
+        beq go_up
         rts             ; return     
+
+go_left  jmp check_can_move_left
+go_right jmp check_can_move_right
+go_up    jmp check_can_move_up
+;go_down  jmp check_can_move_down
+
+
+check_can_move_up
+
+        lda pacman_x_sub   ; check x sub position is 5
+        cmp #5             ; (the x centre of the tile)
+        beq ccmu1          ; and if so, continue
+        rts                ; otherwise return (cannot move sprite on x plane)
+
+ccmu1   lda pacman_y_sub   ; load accumulator with y sub position
+        cmp #5             ; if sub position is 5-9 ..
+        bcs move_up_sub    ; we can go ahead and move the character
+                           ; if sub position is 0-4
+        lda #27
+        sta num1           ; set multiplicand to 27 (the length of a row)
+        ldy pacman_y_tile  
+        dey
+        sty num2           ; set multiplier to row number
+        jsr multiply       ; call multiply routine (puts result in accumulator)
+        adc pacman_x_tile  ; add the x tile offset
+        tax                ; move result to x register
+        lda level0,x       ; load the tile type index, using x as an offset
+        cmp #2             ; if the index is 2 or greater ..
+        bcs move_up        ; move the character up
+        rts                ; otherwise return without doing anything
+
+move_up
+
+        lda pacman_y_sub   ; load y sub position
+        cmp #0             ; if greater than zero ..
+        bne move_up_sub    ; move up by sub position, otherwise (if zero) ..
+        dec pacman_y_tile  ; decrement y tile position
+        lda #9             ; set y sub position to 9 (upper boundary)
+        sta pacman_y_sub   
+        
+        jsr set_pacman_sprite_up
+        jsr update_pacman_sprite
+        rts
+        
+move_up_sub
+
+        dec pacman_y_sub
+        jsr set_pacman_sprite_up
+        jsr update_pacman_sprite
+        rts   
 
 check_can_move_left
 
@@ -404,36 +451,31 @@ spsr2                     ; equal to 5
         sta $07f8
         rts
 
-   
 
+set_pacman_sprite_up
 
-go_left
-        lda $d000
-        cmp #$1e        ; check X-coord
-        beq skip_move   ; if left boundary reached skip
-        dec $d000       ; decrease x-coord for sprite 1
+        lda pacman_y_sub  ; get pacman y sub position
+        cmp #5            ; compare to 5
+        bcc spsu1         ; branch to spsu1 if less than
+        beq spsu2         ; branch to spsu2 if equal
+                          ; otherwise (if greater than)
+
+        lda #$9b
+        sbc pacman_y_sub
+        sta $07f8
         rts
 
-go_right lda $d000      ; increase x-coord for sprite 1
-        cmp #$ff        ; check x-coord
-        beq skip_move   ; if right boundary reached, skip
-        inc $d000
+spsu1                     ; less than 5
+        lda #$90
+        adc pacman_y_sub
+        sta $07f8
         rts
 
-go_up   lda $d001
-        cmp #$1e        ; check Y-coord whether we are too high
-        beq skip_move   ; if top of screen reached, skip
-        dec $d001       ; decrease y-coord for sprite 1
+spsu2                     ; equal to 5    
+        lda #$80 
+        sta $07f8
         rts
 
-go_down lda $d001       ; increase y-coord for sprite 1
-        cmp #$ff        ; check Y-coord whether whether we are too low
-        beq skip_move   ; if bottom of border was reached, skip
-        inc $d001
-        rts
-
-skip_move
-        rts
 
 ; ----------------------------------------------
 ; Routine to position / orient the pacman sprite
