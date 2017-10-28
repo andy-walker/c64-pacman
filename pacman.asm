@@ -26,7 +26,8 @@ pacman_x_tile    = $04
 pacman_x_sub     = $05
 pacman_y_tile    = $06
 pacman_y_sub     = $07
-
+dbg_can_move     = $08
+dbg_offset       = $09
 
 ; ------------------
 ; Main program start
@@ -275,6 +276,8 @@ check_can_move_left
         lda pacman_y_sub   ; check y sub position is 5
         cmp #5             ; (the y centre of the tile)
         beq ccml1          ; and if so, continue
+        lda #0             ; record that we can't move, for debugging purposes
+        sta dbg_can_move
         rts                ; otherwise return (cannot move sprite on x plane)
 
 ccml1   lda pacman_x_sub   ; load accumulator with x sub position
@@ -289,13 +292,18 @@ ccml1   lda pacman_x_sub   ; load accumulator with x sub position
         adc pacman_x_tile  ; add the x tile offset
         tax                ; move result to x register
         dex                ; decrement (as we want to look one tile to the left)
+        stx dbg_offset
         lda level0,x       ; load the tile type index, using x as an offset
         cmp #2             ; if the index is 2 or greater ..
         bcs move_left      ; move the character left
+        lda #1             ; record that we can't move, for debugging purposes
+        sta dbg_can_move
         rts                ; otherwise return without doing anything
 
 move_left
 
+        lda #2             ; record that we can move, for debugging purposes
+        sta dbg_can_move
         lda pacman_x_sub   ; load x sub position
         cmp #0             ; if greater than zero ..
         bne move_left_sub  ; move left by sub position, otherwise (if zero) ..
@@ -318,7 +326,9 @@ check_can_move_right
 
         lda pacman_y_sub   ; check y sub position is 5
         cmp #5             ; (the y centre of the tile)
-        beq ccmr1          ; and if so, continue
+        beq ccmr1          ; and if so, continue        
+        lda #0             ; record that we can't move, for debugging purposes
+        sta dbg_can_move
         rts                ; otherwise return (cannot move sprite on x plane)
 
 ccmr1   lda pacman_x_sub   ; load accumulator with x sub position
@@ -333,13 +343,18 @@ ccmr1   lda pacman_x_sub   ; load accumulator with x sub position
         adc pacman_x_tile  ; add the x tile offset
         tax                ; move result to x register
         inx                ; increment (as we want to look one tile to the right)
+        stx dbg_offset
         lda level0,x       ; load the tile type index, using x as an offset
         cmp #2             ; if the index is 2 or greater ..
         bcs move_right     ; move the character right
+        lda #1             ; record that we can't move, for debugging purposes
+        sta dbg_can_move
         rts                ; otherwise return without doing anything
 
 move_right
 
+        lda #2             ; record that we can move, for debugging purposes
+        sta dbg_can_move
         lda pacman_x_sub   ; load x sub position
         cmp #9             ; if less than 9 ..
         bne move_right_sub ; move right by sub position, otherwise (if zero) ..
@@ -363,6 +378,8 @@ check_can_move_up
         lda pacman_x_sub   ; check x sub position is 5
         cmp #5             ; (the x centre of the tile)
         beq ccmu1          ; and if so, continue
+        lda #0             ; record that we can't move, for debugging purposes
+        sta dbg_can_move
         rts                ; otherwise return (cannot move sprite on y plane)
 
 ccmu1   lda pacman_y_sub   ; load accumulator with y sub position
@@ -377,13 +394,18 @@ ccmu1   lda pacman_y_sub   ; load accumulator with y sub position
         jsr multiply       ; call multiply routine (puts result in accumulator)
         adc pacman_x_tile  ; add the x tile offset
         tax                ; move result to x register
+        stx dbg_offset
         lda level0,x       ; load the tile type index, using x as an offset
         cmp #2             ; if the index is 2 or greater ..
         bcs move_up        ; move the character up
+        lda #1             ; record that we can't move, for debugging purposes
+        sta dbg_can_move
         rts                ; otherwise return without doing anything
 
 move_up
 
+        lda #2             ; record that we can move, for debugging purposes
+        sta dbg_can_move
         lda pacman_y_sub   ; load y sub position
         cmp #0             ; if greater than zero ..
         bne move_up_sub    ; move up by sub position, otherwise (if zero) ..
@@ -408,6 +430,8 @@ check_can_move_down
         lda pacman_x_sub   ; check x sub position is 5
         cmp #5             ; (the x centre of the tile)
         beq ccmd1          ; and if so, continue
+        lda #0             ; record that we can't move, for debugging purposes
+        sta dbg_can_move
         rts                ; otherwise return (cannot move sprite on y plane)
 
 ccmd1   lda pacman_y_sub   ; load accumulator with y sub position
@@ -417,18 +441,23 @@ ccmd1   lda pacman_y_sub   ; load accumulator with y sub position
         lda #27
         sta num1           ; set multiplicand to 27 (the length of a row)
         ldy pacman_y_tile  
-        dey
+        iny
         sty num2           ; set multiplier to row number
         jsr multiply       ; call multiply routine (puts result in accumulator)
         adc pacman_x_tile  ; add the x tile offset
         tax                ; move result to x register
+        stx dbg_offset
         lda level0,x       ; load the tile type index, using x as an offset
         cmp #2             ; if the index is 2 or greater ..
         bcs move_down      ; move the character down
+        lda #1             ; record that we can't move, for debugging purposes
+        sta dbg_can_move
         rts                ; otherwise return without doing anything
 
 move_down
 
+        lda #2             ; record that we can move, for debugging purposes
+        sta dbg_can_move
         lda pacman_y_sub   ; load y sub position
         cmp #9             ; if less than 9 ..
         bne move_down_sub  ; move down by sub position, otherwise (if zero) ..
@@ -505,16 +534,19 @@ set_pacman_sprite_up
         beq spsu2         ; branch to spsu2 if equal
                           ; otherwise (if greater than)
 
-        lda #$9b
-        sbc pacman_y_sub
+
+        lda #$89
+        adc pacman_y_sub
         sta $07f8
         rts
 
 spsu1                     ; less than 5
-        lda #$90
-        adc pacman_y_sub
+
+        lda #$95
+        sbc pacman_y_sub
         sta $07f8
         rts
+
 
 spsu2                     ; equal to 5    
         lda #$80 
@@ -535,7 +567,7 @@ set_pacman_sprite_down
         rts
 
 spsd1                     ; less than 5
-        lda #$8a
+        lda #$8b
         sbc pacman_y_sub
         sta $07f8
         rts
