@@ -578,49 +578,72 @@ spsd2                     ; equal to 5
         rts
 
 
-
 ; ----------------------------------------------
 ; Routine to position / orient the pacman sprite
 ; ----------------------------------------------
 
 update_pacman_sprite
-        
-        lda pacman_x_tile
-        asl
-        asl
-        asl
-        adc pacman_x_tile
-        adc pacman_x_tile
-        adc pacman_x_sub
-        adc #45
-        sta $d000
 
-        lda pacman_y_tile
+        ; set x position
+        
+        ldx $d000         ; note previous x position (for overflow checking)
+        lda pacman_x_tile ; get x tile position
+        asl               ; multiply by 10
         asl
+        asl
+        adc pacman_x_tile
+        adc pacman_x_tile
+        adc pacman_x_sub  ; add x sub tile position
+        adc #45           ; add 45 (the x offset of the background graphic)
+        sta $d000         ; store in $d000
+        
+        ; primitively handle the sprite's x carry bit
+
+        cpx #255          ; if previous x was 255
+        bne ups1
+        cmp #0            ; and now it's zero
+        bne ups1
+        lda #1            ; then set the carry bit
+        sta $d010         ; nb: this setting code will break when additional sprites added
+
+ups1    cpx #0            ; if previous x was zero
+        bne ups2
+        cmp #255          ; and now it's 255
+        bne ups2
+        lda #0            ; then unset the carry bit
+        sta $d010         ; nb: this setting code will break when additional sprites added
+
+        ; set y position
+
+ups2    lda pacman_y_tile ; get y tile position
+        asl               ; multiply by 10
         asl
         asl
         adc pacman_y_tile
         adc pacman_y_tile
-        adc pacman_y_sub
-        adc #37
-        sta $d001
+        adc pacman_y_sub  ; add y sub position
+        adc #37           ; add 37 (the y offset of the level)
+        sta $d001         ; store in $d001
         
         rts
 
+
+; ----------------------------------------------------
 ; General 8bit * 8bit = 8bit multiply
 ; Multiplies "num1" by "num2" and returns result in .A
-
 ; by White Flame (aka David Holz) 20030207
-
+;
 ; Input variables:
 ;   num1 (multiplicand)
 ;   num2 (multiplier), should be small for speed
 ;   Signedness should not matter
-
+;
 ; .X and .Y are preserved
 ; num1 and num2 get clobbered
-
-; Instead of using a bit counter, this routine ends when num2 reaches zero, thus saving iterations.
+;
+; Instead of using a bit counter, this routine ends 
+; when num2 reaches zero, thus saving iterations.
+; ----------------------------------------------------
 
 multiply
         lda #$00
