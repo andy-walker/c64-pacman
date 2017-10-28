@@ -217,7 +217,7 @@ init_sprites
 
         lda #5 ;#13
         sta pacman_x_tile
-        lda #1 ;#15
+        lda #3 ;#15
         sta pacman_y_tile
         lda #5
         sta pacman_x_sub
@@ -256,7 +256,7 @@ check_d lda #%11011111  ; select row 6
         sta pra 
         lda prb         ; load column information
         and #%00010000  ; test '.' key  
-        ; beq go_down
+        beq go_down
 
 check_u lda #%10111111  ; select row 7
         sta pra 
@@ -268,52 +268,7 @@ check_u lda #%10111111  ; select row 7
 go_left  jmp check_can_move_left
 go_right jmp check_can_move_right
 go_up    jmp check_can_move_up
-;go_down  jmp check_can_move_down
-
-
-check_can_move_up
-
-        lda pacman_x_sub   ; check x sub position is 5
-        cmp #5             ; (the x centre of the tile)
-        beq ccmu1          ; and if so, continue
-        rts                ; otherwise return (cannot move sprite on x plane)
-
-ccmu1   lda pacman_y_sub   ; load accumulator with y sub position
-        cmp #5             ; if sub position is 5-9 ..
-        bcs move_up_sub    ; we can go ahead and move the character
-                           ; if sub position is 0-4
-        lda #27
-        sta num1           ; set multiplicand to 27 (the length of a row)
-        ldy pacman_y_tile  
-        dey
-        sty num2           ; set multiplier to row number
-        jsr multiply       ; call multiply routine (puts result in accumulator)
-        adc pacman_x_tile  ; add the x tile offset
-        tax                ; move result to x register
-        lda level0,x       ; load the tile type index, using x as an offset
-        cmp #2             ; if the index is 2 or greater ..
-        bcs move_up        ; move the character up
-        rts                ; otherwise return without doing anything
-
-move_up
-
-        lda pacman_y_sub   ; load y sub position
-        cmp #0             ; if greater than zero ..
-        bne move_up_sub    ; move up by sub position, otherwise (if zero) ..
-        dec pacman_y_tile  ; decrement y tile position
-        lda #9             ; set y sub position to 9 (upper boundary)
-        sta pacman_y_sub   
-        
-        jsr set_pacman_sprite_up
-        jsr update_pacman_sprite
-        rts
-        
-move_up_sub
-
-        dec pacman_y_sub
-        jsr set_pacman_sprite_up
-        jsr update_pacman_sprite
-        rts   
+go_down  jmp check_can_move_down
 
 check_can_move_left
 
@@ -323,9 +278,9 @@ check_can_move_left
         rts                ; otherwise return (cannot move sprite on x plane)
 
 ccml1   lda pacman_x_sub   ; load accumulator with x sub position
-        cmp #5             ; if sub position is 5-9 ..
+        cmp #6             ; if sub position is 6-9 ..
         bcs move_left_sub  ; we can go ahead and move the character
-                           ; if sub position is 0-4
+                           ; if sub position is 0-5
         lda #27
         sta num1           ; set multiplicand to 27 (the length of a row)
         ldy pacman_y_tile  
@@ -403,6 +358,96 @@ move_right_sub
         jsr update_pacman_sprite
         rts
 
+check_can_move_up
+
+        lda pacman_x_sub   ; check x sub position is 5
+        cmp #5             ; (the x centre of the tile)
+        beq ccmu1          ; and if so, continue
+        rts                ; otherwise return (cannot move sprite on y plane)
+
+ccmu1   lda pacman_y_sub   ; load accumulator with y sub position
+        cmp #6             ; if sub position is 6-9 ..
+        bcs move_up_sub    ; we can go ahead and move the character
+                           ; if sub position is 0-5
+        lda #27
+        sta num1           ; set multiplicand to 27 (the length of a row)
+        ldy pacman_y_tile  
+        dey
+        sty num2           ; set multiplier to row number
+        jsr multiply       ; call multiply routine (puts result in accumulator)
+        adc pacman_x_tile  ; add the x tile offset
+        tax                ; move result to x register
+        lda level0,x       ; load the tile type index, using x as an offset
+        cmp #2             ; if the index is 2 or greater ..
+        bcs move_up        ; move the character up
+        rts                ; otherwise return without doing anything
+
+move_up
+
+        lda pacman_y_sub   ; load y sub position
+        cmp #0             ; if greater than zero ..
+        bne move_up_sub    ; move up by sub position, otherwise (if zero) ..
+        dec pacman_y_tile  ; decrement y tile position
+        lda #9             ; set y sub position to 9 (upper boundary)
+        sta pacman_y_sub   
+        
+        jsr set_pacman_sprite_up
+        jsr update_pacman_sprite
+        rts
+        
+move_up_sub
+
+        dec pacman_y_sub
+        jsr set_pacman_sprite_up
+        jsr update_pacman_sprite
+        rts   
+
+
+check_can_move_down
+
+        lda pacman_x_sub   ; check x sub position is 5
+        cmp #5             ; (the x centre of the tile)
+        beq ccmd1          ; and if so, continue
+        rts                ; otherwise return (cannot move sprite on y plane)
+
+ccmd1   lda pacman_y_sub   ; load accumulator with y sub position
+        cmp #5             ; if sub position is 0-4 ..
+        bcc move_down_sub  ; we can go ahead and move the character
+                           ; if sub position is 5-9
+        lda #27
+        sta num1           ; set multiplicand to 27 (the length of a row)
+        ldy pacman_y_tile  
+        dey
+        sty num2           ; set multiplier to row number
+        jsr multiply       ; call multiply routine (puts result in accumulator)
+        adc pacman_x_tile  ; add the x tile offset
+        tax                ; move result to x register
+        lda level0,x       ; load the tile type index, using x as an offset
+        cmp #2             ; if the index is 2 or greater ..
+        bcs move_down      ; move the character down
+        rts                ; otherwise return without doing anything
+
+move_down
+
+        lda pacman_y_sub   ; load y sub position
+        cmp #9             ; if less than 9 ..
+        bne move_down_sub  ; move down by sub position, otherwise (if zero) ..
+        inc pacman_y_tile  ; increment y tile position
+        lda #0             ; set y sub position to 0 (lower boundary)
+        sta pacman_y_sub   
+        
+        jsr set_pacman_sprite_down
+        jsr update_pacman_sprite
+        rts
+        
+move_down_sub
+
+        inc pacman_y_sub
+        jsr set_pacman_sprite_down
+        jsr update_pacman_sprite
+        rts   
+
+
 set_pacman_sprite_left
 
         lda pacman_x_sub  ; get pacman x sub position
@@ -475,6 +520,31 @@ spsu2                     ; equal to 5
         lda #$80 
         sta $07f8
         rts
+
+set_pacman_sprite_down
+
+        lda pacman_y_sub  ; get pacman y sub position
+        cmp #5            ; compare to 5
+        bcc spsd1         ; branch to spsd1 if less than
+        beq spsd2         ; branch to spsd2 if equal
+                          ; otherwise (if greater than)
+
+        lda #$80
+        adc pacman_y_sub
+        sta $07f8
+        rts
+
+spsd1                     ; less than 5
+        lda #$8a
+        sbc pacman_y_sub
+        sta $07f8
+        rts
+
+spsd2                     ; equal to 5    
+        lda #$80 
+        sta $07f8
+        rts
+
 
 
 ; ----------------------------------------------
