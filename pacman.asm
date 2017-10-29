@@ -26,6 +26,8 @@ pacman_x_tile    = $04
 pacman_x_sub     = $05
 pacman_y_tile    = $06
 pacman_y_sub     = $07
+pacman_direction = $08
+
 
 ; ------------------
 ; Main program start
@@ -234,55 +236,110 @@ init_sprites
 
 move_character
         
-        lda #%11111111  ; CIA#1 Port A set to output 
+        lda #%11111111                  ; CIA#1 Port A set to output 
         sta ddra             
-        lda #%00000000  ; CIA#1 Port B set to input
+        lda #%00000000                  ; CIA#1 Port B set to input
         sta ddrb      
 
-check_l lda #%11111101  ; select row 2
+        lda pacman_direction            ; load previous direction (0 = left/right, 1 = up/down)
+        cmp #0                          ; if previous direction was left/right, check up/down first
+        beq check_up_down_first         ; (this helps when turning corners)
+
+check_left_right_first
+
+        jsr check_left_right
+        cmp #1
+        beq exit_move_character
+        jsr check_up_down
+        rts
+
+check_up_down_first
+
+        jsr check_up_down
+        cmp #1
+        beq exit_move_character
+        jsr check_left_right
+
+exit_move_character       
+        rts
+
+; -------------------------------------------
+; Routine to check for left/right keypresses
+; Returns if character was moved as 0/1 in .a
+; -------------------------------------------
+
+check_left_right
+
+check_l lda #%11111101                  ; select row 2
         sta pra 
-        lda prb         ; load column information
-        and #%00010000  ; test 'z' key  
+        lda prb                         ; load column information
+        and #%00010000                  ; test 'z' key  
         beq go_left
         jmp check_r
 
 go_left jsr check_can_move_left
-        cmp #1
-        beq exit_move_character
+        cmp #0
+        beq check_r
+        ldx #0                          ; set pacman direction as 0 (l/r)
+        stx pacman_direction            ; (use .x to preserve the return code in .a)
+        rts
 
-check_r lda #%11111011  ; select row 3
+check_r lda #%11111011                  ; select row 3
         sta pra 
-        lda prb         ; load column information
-        and #%10000000  ; test 'x' key  
+        lda prb                         ; load column information
+        and #%10000000                  ; test 'x' key  
         beq go_right
-        jmp check_d
+        lda #0                          ; set return code 0 (did not move) in .a
+        rts
 
 go_right
         jsr check_can_move_right
-        cmp #1
-        beq exit_move_character
+        cmp #0
+        beq exit_check_lr
+        ldx #0                          ; set pacman direction as 0 (l/r)
+        stx pacman_direction            ; (use .x to preserve the return code in .a)
+        rts
 
-check_d lda #%11011111  ; select row 6
+exit_check_lr
+        rts
+
+
+; -------------------------------------------
+; Routine to check for up/down keypresses
+; Returns if character was moved as 0/1 in .a
+; -------------------------------------------
+
+check_up_down
+
+check_d lda #%11011111                  ; select row 6
         sta pra 
-        lda prb         ; load column information
-        and #%00010000  ; test '.' key  
+        lda prb                         ; load column information
+        and #%00010000                  ; test '.' key  
         beq go_down
         jmp check_u
 
 go_down jsr check_can_move_down
-        cmp #1
-        beq exit_move_character
+        cmp #0
+        beq check_u
+        ldx #1                          ; set pacman direction as 1 (u/d)
+        stx pacman_direction            ; (use .x to preserve the return code in .a)
+        rts
 
-check_u lda #%10111111  ; select row 7
+check_u lda #%10111111                  ; select row 7
         sta pra 
-        lda prb         ; load column information
-        and #%00000100  ; test ';' key 
+        lda prb                         ; load column information
+        and #%00000100                  ; test ';' key 
         beq go_up  
-        jmp exit_move_character
+        lda #0                          ; set return code 0 (did not move) in .a
+        rts
 
 go_up   jsr check_can_move_up
+        cmp #0
+        beq exit_check_ud
+        lda #1
+        sta pacman_direction
 
-exit_move_character
+exit_check_ud
         rts
 
 
