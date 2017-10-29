@@ -10,10 +10,10 @@ blue = 6
 sprite_data_addr = $2000
 char_data_addr   = $3800
 
-pra              = $dc00     ; CIA#1 (Port Register A)
-prb              = $dc01     ; CIA#1 (Port Register B)
-ddra             = $dc02     ; CIA#1 (Data Direction Register A)
-ddrb             = $dc03     ; CIA#1 (Data Direction Register B)
+pra              = $dc00                ; CIA#1 (Port Register A)
+prb              = $dc01                ; CIA#1 (Port Register B)
+ddra             = $dc02                ; CIA#1 (Data Direction Register A)
+ddrb             = $dc03                ; CIA#1 (Data Direction Register B)
 
 
 ; -----------------------------------------
@@ -41,21 +41,21 @@ start
         ; character initialisation
 
         lda $d018
-        ora #$0e       ; set chars location to $3800 for displaying the custom font
-        sta $d018      ; Bits 1-3 ($400+512bytes * low nibble value) of $d018 sets char location
-                       ; $400 + $200*$0E = $3800
+        ora #$0e                        ; set chars location to $3800 for displaying the custom font
+        sta $d018                       ; Bits 1-3 ($400+512bytes * low nibble value) of $d018 sets char location
+                                        ; $400 + $200*$0E = $3800
 
         ; sprite initialisation
 
         lda #$01 
-        sta $d015     ; Turn sprite 0 on 
-        ;sta $d01c    ; multi coloured sprite 
+        sta $d015                       ; Turn sprite 0 on 
+        ;sta $d01c                      ; multi coloured sprite 
 
         lda #7 
-        sta $d027     ; set primary colour yellow
+        sta $d027                       ; set primary colour yellow
 
-        lda #$00      ; set black and white 
-        sta $d025     ; multi-colors global 
+        lda #$00                        ; set black and white 
+        sta $d025                       ; multi-colors global 
         lda #$01 
         sta $d026 
 
@@ -63,17 +63,17 @@ start
 
         ; irq initialisation (this should happen last)
         
-        lda #%01111111 ; switch off interrupt signals from CIA-1
+        lda #%01111111                  ; switch off interrupt signals from CIA-1
         sta $dc0d
-        and $d011      ; clear most significant bit in VIC's raster register
+        and $d011                       ; clear most significant bit in VIC's raster register
         sta $d011
-        lda #210       ; set the raster line number where interrupt should occur
+        lda #210                        ; set the raster line number where interrupt should occur
         sta $d012
-        lda #<irq      ; set the interrupt vector to point to the interrupt service routine below
+        lda #<irq                       ; set the interrupt vector to point to the interrupt service routine below
         sta $0314
         lda #>irq
         sta $0315
-        lda #%00000001 ; enable raster interrupt signals from VIC
+        lda #%00000001                  ; enable raster interrupt signals from VIC
         sta $d01a
 
         ;rts
@@ -82,8 +82,8 @@ start
 
 irq     
         jsr move_character
-        asl $d019      ; acknowledge raster irq
-        jmp $ea31      ; scan keyboard (only do once per frame)
+        asl $d019                       ; acknowledge raster irq
+        jmp $ea31                       ; scan keyboard (only do once per frame)
 
 
 
@@ -210,12 +210,6 @@ next_char
 
 init_sprites
         
-        ;lda #$b4 
-        ;sta $d000    ; set x coordinate to 40
-        ;lda #$c0
-        ;sta $d001    ; set y coordinate to 40 
-        
-
         lda #5 ;#13
         sta pacman_x_tile
         lda #3 ;#15
@@ -346,44 +340,49 @@ exit_check_ud
 
 check_can_move_left
 
-        lda pacman_y_sub   ; check y sub position is 5
-        cmp #5             ; (the y centre of the tile)
-        beq ccml1          ; and if so, continue ..
-                           ; otherwise, cannot move in this direction
-        lda #0             ; return 0 in .a (could not move)
-        rts                ; exit the subroutine
+        lda pacman_y_sub                ; check if y sub position is less than 4
+        cmp #4                          
+        bcc ccmlx                       ; if so, return early ..
+        cmp #7                          ; check if x sub position is greater than 6
+        bcs ccmlx                       ; if so, return early
+        jmp ccml1                       ; otherwise, continue
+                                       
+ccmlx                                   ; cannot move in this direction
+        lda #0                          ; return 0 in .a (could not move)
+        rts                             ; exit the subroutine
 
-ccml1   lda pacman_x_sub   ; load .a with x sub position
-        cmp #6             ; if sub position is 6-9 ..
-        bcs move_left_sub  ; we can go ahead and move the character
-                           ; if sub position is 0-5
+ccml1   lda pacman_x_sub                ; load .a with x sub position
+        cmp #6                          ; if sub position is 6-9 ..
+        bcs move_left_sub               ; we can go ahead and move the character
+                                        ; if sub position is 0-5
         lda #27
-        sta num1           ; set multiplicand to 27 (the length of a row)
+        sta num1                        ; set multiplicand to 27 (the length of a row)
         ldy pacman_y_tile  
-        sty num2           ; set multiplier to row number
-        jsr multiply       ; call multiply routine (puts result in .a)
-        adc pacman_x_tile  ; add the x tile offset
-        tax                ; move result to x register
-        dex                ; decrement (as we want to look one tile to the left)
-        lda level0,x       ; load the tile type index, using x as an offset
-        cmp #2             ; if the index is 2 or greater ..
-        bcs move_left      ; move the character left
-                           ; otherwise, cannot move in this direction
-        lda #0             ; return 0 in .a (could not move)
-        rts                ; exit the subroutine
+        sty num2                        ; set multiplier to row number
+        jsr multiply                    ; call multiply routine (puts result in .a)
+        adc pacman_x_tile               ; add the x tile offset
+        tax                             ; move result to x register
+        dex                             ; decrement (as we want to look one tile to the left)
+        lda level0,x                    ; load the tile type index, using x as an offset
+        cmp #2                          ; if the index is 2 or greater ..
+        bcs move_left                   ; move the character left
+                                        ; otherwise, cannot move in this direction
+        lda #0                          ; return 0 in .a (could not move)
+        rts                             ; exit the subroutine
 
 move_left
-
-        lda pacman_x_sub   ; load x sub position
-        cmp #0             ; if greater than zero ..
-        bne move_left_sub  ; move left by sub position, otherwise (if zero) ..
-        dec pacman_x_tile  ; decrement x tile position
-        lda #9             ; set x sub position to 9 (upper boundary)
+        lda #5                          ; set y sub position to 5 
+        sta pacman_y_sub                ; (should already be, but can be 4 or 6 when turning corners)
+        lda pacman_x_sub                ; load x sub position
+        cmp #0                          ; if greater than zero ..
+        bne move_left_sub               ; move left by sub position, otherwise (if zero) ..
+        dec pacman_x_tile               ; decrement x tile position
+        lda #9                          ; set x sub position to 9 (upper boundary)
         sta pacman_x_sub   
         
         jsr set_pacman_sprite_left
         jsr update_pacman_sprite
-        lda #1             ; return 1 in .a (moved)
+        lda #1                          ; return 1 in .a (moved)
         rts
         
 move_left_sub
@@ -391,49 +390,54 @@ move_left_sub
         dec pacman_x_sub
         jsr set_pacman_sprite_left
         jsr update_pacman_sprite
-        lda #1             ; return 1 in .a (moved)
+        lda #1                          ; return 1 in .a (moved)
         rts
 
 check_can_move_right
 
-        lda pacman_y_sub   ; check y sub position is 5
-        cmp #5             ; (the y centre of the tile)
-        beq ccmr1          ; and if so, continue ..       
-                           ; otherwise, cannot move in this direction
-        lda #0             ; return 0 in .a (could not move)
-        rts                ; exit the subroutine
+        lda pacman_y_sub                ; check if y sub position is less than 4
+        cmp #4                          
+        bcc ccmrx                       ; if so, return early ..
+        cmp #7                          ; check if x sub position is greater than 6
+        bcs ccmrx                       ; if so, return early
+        jmp ccmr1                       ; otherwise, continue
+                                       
+ccmrx                                   ; cannot move in this direction
+        lda #0                          ; return 0 in .a (could not move)
+        rts                             ; exit the subroutine
 
-ccmr1   lda pacman_x_sub   ; load .a with x sub position
-        cmp #5             ; if sub position is 0-4 ..
-        bcc move_right_sub ; we can go ahead and move the character
-                           ; if sub position is 5-9
+ccmr1   lda pacman_x_sub                ; load .a with x sub position
+        cmp #5                          ; if sub position is 0-4 ..
+        bcc move_right_sub              ; we can go ahead and move the character
+                                        ; if sub position is 5-9
         lda #27
-        sta num1           ; set multiplicand to 27 (the length of a row)
+        sta num1                        ; set multiplicand to 27 (the length of a row)
         ldy pacman_y_tile  
-        sty num2           ; set multiplier to row number
-        jsr multiply       ; call multiply routine (puts result in .a)
-        adc pacman_x_tile  ; add the x tile offset
-        tax                ; move result to x register
-        inx                ; increment (as we want to look one tile to the right)
-        lda level0,x       ; load the tile type index, using x as an offset
-        cmp #2             ; if the index is 2 or greater ..
-        bcs move_right     ; move the character right
-                           ; otherwise, cannot move in this direction
-        lda #0             ; return 0 in .a (could not move)
-        rts                ; exit the subroutine
+        sty num2                        ; set multiplier to row number
+        jsr multiply                    ; call multiply routine (puts result in .a)
+        adc pacman_x_tile               ; add the x tile offset
+        tax                             ; move result to x register
+        inx                             ; increment (as we want to look one tile to the right)
+        lda level0,x                    ; load the tile type index, using x as an offset
+        cmp #2                          ; if the index is 2 or greater ..
+        bcs move_right                  ; move the character right
+                                        ; otherwise, cannot move in this direction
+        lda #0                          ; return 0 in .a (could not move)
+        rts                             ; exit the subroutine
 
 move_right
-
-        lda pacman_x_sub   ; load x sub position
-        cmp #9             ; if less than 9 ..
-        bne move_right_sub ; move right by sub position, otherwise (if zero) ..
-        inc pacman_x_tile  ; increment x tile position
-        lda #0             ; set x sub position to 0 (lower boundary)
+        lda #5                          ; set y sub position to 5 
+        sta pacman_y_sub                ; (should already be, but can be 4 or 6 when turning corners)
+        lda pacman_x_sub                ; load x sub position
+        cmp #9                          ; if less than 9 ..
+        bne move_right_sub              ; move right by sub position, otherwise (if zero) ..
+        inc pacman_x_tile               ; increment x tile position
+        lda #0                          ; set x sub position to 0 (lower boundary)
         sta pacman_x_sub   
         
         jsr set_pacman_sprite_right
         jsr update_pacman_sprite
-        lda #1             ; return 1 in .a (moved)
+        lda #1                          ; return 1 in .a (moved)
         rts
         
 move_right_sub
@@ -441,49 +445,54 @@ move_right_sub
         inc pacman_x_sub
         jsr set_pacman_sprite_right
         jsr update_pacman_sprite
-        lda #1             ; return 1 in .a (moved)
+        lda #1                          ; return 1 in .a (moved)
         rts
 
 check_can_move_up
 
-        lda pacman_x_sub   ; check x sub position is 5
-        cmp #5             ; (the x centre of the tile)
-        beq ccmu1          ; and if so, continue ..
-                           ; otherwise, cannot move in this direction
-        lda #0             ; return 0 in .a (could not move)
-        rts                ; exit the subroutine
+        lda pacman_x_sub                ; check if x sub position is less than 4
+        cmp #4                          
+        bcc ccmux                       ; if so, return early ..
+        cmp #7                          ; check if x sub position is greater than 6
+        bcs ccmux                       ; if so, return early
+        jmp ccmu1                       ; otherwise, continue
+                                       
+ccmux                                   ; cannot move in this direction
+        lda #0                          ; return 0 in .a (could not move)
+        rts                             ; exit the subroutine
 
-ccmu1   lda pacman_y_sub   ; load .a with y sub position
-        cmp #6             ; if sub position is 6-9 ..
-        bcs move_up_sub    ; we can go ahead and move the character
-                           ; if sub position is 0-5
+ccmu1   lda pacman_y_sub                ; load .a with y sub position
+        cmp #6                          ; if sub position is 6-9 ..
+        bcs move_up_sub                 ; we can go ahead and move the character
+                                        ; if sub position is 0-5
         lda #27
-        sta num1           ; set multiplicand to 27 (the length of a row)
+        sta num1                        ; set multiplicand to 27 (the length of a row)
         ldy pacman_y_tile  
         dey
-        sty num2           ; set multiplier to row number
-        jsr multiply       ; call multiply routine (puts result in .a)
-        adc pacman_x_tile  ; add the x tile offset
-        tax                ; move result to x register
-        lda level0,x       ; load the tile type index, using x as an offset
-        cmp #2             ; if the index is 2 or greater ..
-        bcs move_up        ; move the character up ..
-                           ; otherwise, cannot move in this direction
-        lda #0             ; return 0 in .a (could not move)
-        rts                ; exit the subroutine
+        sty num2                        ; set multiplier to row number
+        jsr multiply                    ; call multiply routine (puts result in .a)
+        adc pacman_x_tile               ; add the x tile offset
+        tax                             ; move result to x register
+        lda level0,x                    ; load the tile type index, using x as an offset
+        cmp #2                          ; if the index is 2 or greater ..
+        bcs move_up                     ; move the character up ..
+                                        ; otherwise, cannot move in this direction
+        lda #0                          ; return 0 in .a (could not move)
+        rts                             ; exit the subroutine
 
 move_up
-
-        lda pacman_y_sub   ; load y sub position
-        cmp #0             ; if greater than zero ..
-        bne move_up_sub    ; move up by sub position, otherwise (if zero) ..
-        dec pacman_y_tile  ; decrement y tile position
-        lda #9             ; set y sub position to 9 (upper boundary)
+        lda #5                          ; set x sub position to 5 
+        sta pacman_x_sub                ; (should already be, but can be 4 or 6 when turning corners)
+        lda pacman_y_sub                ; load y sub position
+        cmp #0                          ; if greater than zero ..
+        bne move_up_sub                 ; move up by sub position, otherwise (if zero) ..
+        dec pacman_y_tile               ; decrement y tile position
+        lda #9                          ; set y sub position to 9 (upper boundary)
         sta pacman_y_sub   
         
         jsr set_pacman_sprite_up
         jsr update_pacman_sprite
-        lda #1             ; return 1 in .a (moved)
+        lda #1                          ; return 1 in .a (moved)
         rts
         
 move_up_sub
@@ -491,50 +500,55 @@ move_up_sub
         dec pacman_y_sub
         jsr set_pacman_sprite_up
         jsr update_pacman_sprite
-        lda #1             ; return 1 in .a (moved)
+        lda #1                          ; return 1 in .a (moved)
         rts   
 
 
 check_can_move_down
 
-        lda pacman_x_sub   ; check x sub position is 5
-        cmp #5             ; (the x centre of the tile)
-        beq ccmd1          ; and if so, continue ..
-                           ; otherwise, cannot move in this direction
-        lda #0             ; return 0 in .a (could not move)
-        rts                ; exit the subroutine
+        lda pacman_x_sub                ; check if x sub position is less than 4
+        cmp #4                          
+        bcc ccmdx                       ; if so, return early ..
+        cmp #7                          ; check if x sub position is greater than 6
+        bcs ccmdx                       ; if so, return early
+        jmp ccmd1                       ; otherwise, continue
+                                       
+ccmdx                                   ; cannot move in this direction
+        lda #0                          ; return 0 in .a (could not move)
+        rts                             ; exit the subroutine
 
-ccmd1   lda pacman_y_sub   ; load .a with y sub position
-        cmp #5             ; if sub position is 0-4 ..
-        bcc move_down_sub  ; we can go ahead and move the character
-                           ; if sub position is 5-9
+ccmd1   lda pacman_y_sub                ; load .a with y sub position
+        cmp #5                          ; if sub position is 0-4 ..
+        bcc move_down_sub               ; we can go ahead and move the character
+                                        ; if sub position is 5-9
         lda #27
-        sta num1           ; set multiplicand to 27 (the length of a row)
+        sta num1                        ; set multiplicand to 27 (the length of a row)
         ldy pacman_y_tile  
         iny
-        sty num2           ; set multiplier to row number
-        jsr multiply       ; call multiply routine (puts result in .a)
-        adc pacman_x_tile  ; add the x tile offset
-        tax                ; move result to x register
-        lda level0,x       ; load the tile type index, using x as an offset
-        cmp #2             ; if the index is 2 or greater ..
-        bcs move_down      ; move the character down ..
-                           ; otherwise, cannot move in this direction
-        lda #0             ; return 0 in .a (could not move)
-        rts                ; exit the subroutine
+        sty num2                        ; set multiplier to row number
+        jsr multiply                    ; call multiply routine (puts result in .a)
+        adc pacman_x_tile               ; add the x tile offset
+        tax                             ; move result to x register
+        lda level0,x                    ; load the tile type index, using x as an offset
+        cmp #2                          ; if the index is 2 or greater ..
+        bcs move_down                   ; move the character down ..
+                                        ; otherwise, cannot move in this direction
+        lda #0                          ; return 0 in .a (could not move)
+        rts                             ; exit the subroutine
 
 move_down
-
-        lda pacman_y_sub   ; load y sub position
-        cmp #9             ; if less than 9 ..
-        bne move_down_sub  ; move down by sub position, otherwise (if zero) ..
-        inc pacman_y_tile  ; increment y tile position
-        lda #0             ; set y sub position to 0 (lower boundary)
+        lda #5                          ; set x sub position to 5 
+        sta pacman_x_sub                ; (should already be, but can be 4 or 6 when turning corners)
+        lda pacman_y_sub                ; load y sub position
+        cmp #9                          ; if less than 9 ..
+        bne move_down_sub               ; move down by sub position, otherwise (if zero) ..
+        inc pacman_y_tile               ; increment y tile position
+        lda #0                          ; set y sub position to 0 (lower boundary)
         sta pacman_y_sub   
         
         jsr set_pacman_sprite_down
         jsr update_pacman_sprite
-        lda #1             ; return 1 in .a (moved)
+        lda #1                          ; return 1 in .a (moved)
         rts
         
 move_down_sub
@@ -542,53 +556,53 @@ move_down_sub
         inc pacman_y_sub
         jsr set_pacman_sprite_down
         jsr update_pacman_sprite
-        lda #1             ; return 1 in .a (moved)
+        lda #1                          ; return 1 in .a (moved)
         rts   
 
 
 set_pacman_sprite_left
 
-        lda pacman_x_sub  ; get pacman x sub position
-        cmp #5            ; compare to 5
-        bcc spsl1         ; branch to spsr1 if less than
-        beq spsl2         ; branch to spsr2 if equal
-                          ; otherwise (if greater than)
+        lda pacman_x_sub                ; get pacman x sub position
+        cmp #5                          ; compare to 5
+        bcc spsl1                       ; branch to spsr1 if less than
+        beq spsl2                       ; branch to spsr2 if equal
+                                        ; otherwise (if greater than)
         lda #$7b
         adc pacman_x_sub
         sta $07f8
         rts
 
-spsl1                     ; less than 5
+spsl1                                   ; less than 5
         lda #$85
         sbc pacman_x_sub
         sta $07f8
         rts
 
-spsl2                     ; equal to 5    
+spsl2                                   ; equal to 5    
         lda #$80 
         sta $07f8
         rts
 
 set_pacman_sprite_right
 
-        lda pacman_x_sub  ; get pacman x sub position
-        cmp #5            ; compare to 5
-        bcc spsr1         ; branch to spsr1 if less than
-        beq spsr2         ; branch to spsr2 if equal
-                          ; otherwise (if greater than)
+        lda pacman_x_sub                ; get pacman x sub position
+        cmp #5                          ; compare to 5
+        bcc spsr1                       ; branch to spsr1 if less than
+        beq spsr2                       ; branch to spsr2 if equal
+                                        ; otherwise (if greater than)
 
         lda #$85
         adc pacman_x_sub
         sta $07f8
         rts
 
-spsr1                     ; less than 5
+spsr1                                   ; less than 5
         lda #$90
         sbc pacman_x_sub
         sta $07f8
         rts
 
-spsr2                     ; equal to 5    
+spsr2                                   ; equal to 5    
         lda #$80 
         sta $07f8
         rts
@@ -596,17 +610,17 @@ spsr2                     ; equal to 5
 
 set_pacman_sprite_up
 
-        lda pacman_y_sub  ; get pacman y sub position
-        cmp #5            ; compare to 5
-        bcc spsu1         ; branch to spsu1 if less than
-        beq spsu2         ; branch to spsu2 if equal
-                          ; otherwise (if greater than)
+        lda pacman_y_sub                ; get pacman y sub position
+        cmp #5                          ; compare to 5
+        bcc spsu1                       ; branch to spsu1 if less than
+        beq spsu2                       ; branch to spsu2 if equal
+                                        ; otherwise (if greater than)
         lda #$89
         adc pacman_y_sub
         sta $07f8
         rts
 
-spsu1                     ; less than 5
+spsu1                                   ; less than 5
 
         lda #$95
         sbc pacman_y_sub
@@ -614,30 +628,30 @@ spsu1                     ; less than 5
         rts
 
 
-spsu2                     ; equal to 5    
+spsu2                                   ; equal to 5    
         lda #$80 
         sta $07f8
         rts
 
 set_pacman_sprite_down
 
-        lda pacman_y_sub  ; get pacman y sub position
-        cmp #5            ; compare to 5
-        bcc spsd1         ; branch to spsd1 if less than
-        beq spsd2         ; branch to spsd2 if equal
-                          ; otherwise (if greater than)
+        lda pacman_y_sub                ; get pacman y sub position
+        cmp #5                          ; compare to 5
+        bcc spsd1                       ; branch to spsd1 if less than
+        beq spsd2                       ; branch to spsd2 if equal
+                                        ; otherwise (if greater than)
         lda #$80
         adc pacman_y_sub
         sta $07f8
         rts
 
-spsd1                     ; less than 5
+spsd1                                   ; less than 5
         lda #$8b
         sbc pacman_y_sub
         sta $07f8
         rts
 
-spsd2                     ; equal to 5    
+spsd2                                   ; equal to 5    
         lda #$80 
         sta $07f8
         rts
@@ -651,44 +665,44 @@ update_pacman_sprite
 
         ; set x position
         
-        ldx $d000         ; note previous x position (for overflow checking)
-        lda pacman_x_tile ; get x tile position
-        asl               ; multiply by 10
+        ldx $d000                       ; note previous x position (for overflow checking)
+        lda pacman_x_tile               ; get x tile position
+        asl                             ; multiply by 10
         asl
         asl
         adc pacman_x_tile
         adc pacman_x_tile
-        adc pacman_x_sub  ; add x sub tile position
-        adc #45           ; add 45 (the x offset of the background graphic)
-        sta $d000         ; store in $d000
+        adc pacman_x_sub                ; add x sub tile position
+        adc #45                         ; add 45 (the x offset of the background graphic)
+        sta $d000                       ; store in $d000
         
         ; primitively handle the sprite's x carry bit
 
-        cpx #255          ; if previous x was 255
+        cpx #255                        ; if previous x was 255
         bne ups1
-        cmp #0            ; and now it's zero
+        cmp #0                          ; and now it's zero
         bne ups1
-        lda #1            ; then set the carry bit
-        sta $d010         ; nb: this setting code will break when additional sprites added
+        lda #1                          ; then set the carry bit
+        sta $d010                       ; nb: this setting code will break when additional sprites added
 
-ups1    cpx #0            ; if previous x was zero
+ups1    cpx #0                          ; if previous x was zero
         bne ups2
-        cmp #255          ; and now it's 255
+        cmp #255                        ; and now it's 255
         bne ups2
-        lda #%0            ; then unset the carry bit
-        sta $d010         ; nb: this setting code will break when additional sprites added
+        lda #%0                         ; then unset the carry bit
+        sta $d010                       ; nb: this setting code will break when additional sprites added
 
         ; set y position
 
-ups2    lda pacman_y_tile ; get y tile position
-        asl               ; multiply by 10
+ups2    lda pacman_y_tile               ; get y tile position
+        asl                             ; multiply by 10
         asl
         asl
         adc pacman_y_tile
         adc pacman_y_tile
-        adc pacman_y_sub  ; add y sub position
-        adc #37           ; add 37 (the y offset of the level)
-        sta $d001         ; store in $d001
+        adc pacman_y_sub                ; add y sub position
+        adc #37                         ; add 37 (the y offset of the level)
+        sta $d001                       ; store in $d001
         
         rts
 
@@ -718,7 +732,7 @@ doAdd   clc
         adc num1
 
 loop    asl num1
-enterLoop          ; For an accumulating multiply (.A = .A + num1*num2), set up num1 and num2, then enter here
+enterLoop                               ; For an accumulating multiply (.A = .A + num1*num2), set up num1 and num2, then enter here
         lsr num2
         bcs doAdd
         bne loop
@@ -729,16 +743,16 @@ enterLoop          ; For an accumulating multiply (.A = .A + num1*num2), set up 
 ; --------------------
 
 cls     lda #0
-        sta $d020      ; write to border colour register
-        sta $d021      ; write to screen colour register
+        sta $d020                       ; write to border colour register
+        sta $d021                       ; write to screen colour register
 
-clsloop lda #7         ; 7 = blank space char in our custom character set
-        sta $0400,x    ; fill four areas with 256 spacebar characters
+clsloop lda #7                          ; 7 = blank space char in our custom character set
+        sta $0400,x                     ; fill four areas with 256 spacebar characters
         sta $0500,x 
         sta $0600,x 
         sta $06e8,x 
-        lda #$0c       ; puts into the associated colour ram dark grey ($0c)...
-        sta $d800,x    ; and this will become colour of the scroll text
+        lda #$0c                        ; puts into the associated colour ram dark grey ($0c)...
+        sta $d800,x                     ; and this will become colour of the scroll text
         sta $d900,x
         sta $da00,x
         sta $dae8,x
