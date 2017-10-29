@@ -5,7 +5,10 @@
 *=$0801
 .byte $0b, $08, $00, $00, $9e, $32, $30, $36, $31, $00, $00, $00
 
-blue = 6
+left  = 0
+right = 1
+up    = 2
+down  = 3
 
 sprite_data_addr = $2000
 char_data_addr   = $3800
@@ -235,9 +238,9 @@ move_character
         lda #%00000000                  ; CIA#1 Port B set to input
         sta ddrb      
 
-        lda pacman_direction            ; load previous direction (0 = left/right, 1 = up/down)
-        cmp #0                          ; if previous direction was left/right, check up/down first
-        beq check_up_down_first         ; (this helps when turning corners)
+        lda pacman_direction            ; load current direction (0 = left, 1 = right, 2 = up, 3 = down)
+        cmp #2                          ; if previous direction was left/right, check up/down first
+        bcc check_up_down_first         ; (this helps when turning corners)
 
 check_left_right_first
 
@@ -274,7 +277,7 @@ check_l lda #%11111101                  ; select row 2
 go_left jsr check_can_move_left
         cmp #0
         beq check_r
-        ldx #0                          ; set pacman direction as 0 (l/r)
+        ldx #0                          ; set pacman direction to 0 (left)
         stx pacman_direction            ; (use .x to preserve the return code in .a)
         rts
 
@@ -290,7 +293,7 @@ go_right
         jsr check_can_move_right
         cmp #0
         beq exit_check_lr
-        ldx #0                          ; set pacman direction as 0 (l/r)
+        ldx #1                          ; set pacman direction to 1 (right)
         stx pacman_direction            ; (use .x to preserve the return code in .a)
         rts
 
@@ -315,7 +318,7 @@ check_d lda #%11011111                  ; select row 6
 go_down jsr check_can_move_down
         cmp #0
         beq check_u
-        ldx #1                          ; set pacman direction as 1 (u/d)
+        ldx #3                          ; set pacman direction to 3 (down)
         stx pacman_direction            ; (use .x to preserve the return code in .a)
         rts
 
@@ -330,22 +333,27 @@ check_u lda #%10111111                  ; select row 7
 go_up   jsr check_can_move_up
         cmp #0
         beq exit_check_ud
-        lda #1
-        sta pacman_direction
+        ldx #2                          ; set pacman direction to 2 (up)
+        stx pacman_direction            ; (use .x to preserve the return code in .a)
 
 exit_check_ud
         rts
 
 
-
 check_can_move_left
 
-        lda pacman_y_sub                ; check if y sub position is less than 4
-        cmp #4                          
-        bcc ccmlx                       ; if so, return early ..
-        cmp #7                          ; check if x sub position is greater than 6
-        bcs ccmlx                       ; if so, return early
-        jmp ccml1                       ; otherwise, continue
+        lda pacman_y_sub                ; check y sub position
+        cmp #5                          ; if it's 5 (y centre of tile), continue ..
+        beq ccml1
+        ldx pacman_direction            ; load current direction into .x
+        cmp #4                          ; if y sub position is 4 ..
+        bne chkl2
+        cpx #down                       ; .. and current direction is down
+        beq ccml1                       ; continue ..
+chkl2   cmp #6                          ; if y sub position is 6 ..
+        bne ccmlx       
+        cpx #up                         ; .. and current direction is up
+        beq ccml1                       ; continue ..
                                        
 ccmlx                                   ; cannot move in this direction
         lda #0                          ; return 0 in .a (could not move)
@@ -395,12 +403,18 @@ move_left_sub
 
 check_can_move_right
 
-        lda pacman_y_sub                ; check if y sub position is less than 4
-        cmp #4                          
-        bcc ccmrx                       ; if so, return early ..
-        cmp #7                          ; check if x sub position is greater than 6
-        bcs ccmrx                       ; if so, return early
-        jmp ccmr1                       ; otherwise, continue
+        lda pacman_y_sub                ; check y sub position
+        cmp #5                          ; if it's 5 (y centre of tile), continue ..
+        beq ccmr1
+        ldx pacman_direction            ; load current direction into .x
+        cmp #4                          ; if y sub position is 4 ..
+        bne chkr2
+        cpx #down                       ; .. and current direction is down
+        beq ccmr1                       ; continue ..
+chkr2   cmp #6                          ; if y sub position is 6 ..
+        bne ccmrx       
+        cpx #up                         ; .. and current direction is up
+        beq ccmr1                       ; continue ..
                                        
 ccmrx                                   ; cannot move in this direction
         lda #0                          ; return 0 in .a (could not move)
@@ -450,12 +464,18 @@ move_right_sub
 
 check_can_move_up
 
-        lda pacman_x_sub                ; check if x sub position is less than 4
-        cmp #4                          
-        bcc ccmux                       ; if so, return early ..
-        cmp #7                          ; check if x sub position is greater than 6
-        bcs ccmux                       ; if so, return early
-        jmp ccmu1                       ; otherwise, continue
+        lda pacman_x_sub                ; check x sub position
+        cmp #5                          ; if it's 5 (x centre of tile), continue ..
+        beq ccmu1
+        ldx pacman_direction            ; load current direction into .x
+        cmp #4                          ; if x sub position is 4 ..
+        bne chku2
+        cpx #right                      ; .. and current direction is right
+        beq ccmu1                       ; continue ..
+chku2   cmp #6                          ; if x sub position is 6 ..
+        bne ccmux
+        cpx #left                       ; .. and current direction is left
+        beq ccmu1                       ; continue ..
                                        
 ccmux                                   ; cannot move in this direction
         lda #0                          ; return 0 in .a (could not move)
@@ -506,13 +526,19 @@ move_up_sub
 
 check_can_move_down
 
-        lda pacman_x_sub                ; check if x sub position is less than 4
-        cmp #4                          
-        bcc ccmdx                       ; if so, return early ..
-        cmp #7                          ; check if x sub position is greater than 6
-        bcs ccmdx                       ; if so, return early
-        jmp ccmd1                       ; otherwise, continue
-                                       
+        lda pacman_x_sub                ; check x sub position
+        cmp #5                          ; if it's 5 (x centre of tile), continue ..
+        beq ccmd1
+        ldx pacman_direction            ; load current direction into .x
+        cmp #4                          ; if x sub position is 4 ..
+        bne chkd2
+        cpx #right                      ; .. and current direction is right
+        beq ccmd1                       ; continue ..
+chkd2   cmp #6                          ; if x sub position is 6 ..
+        bne ccmdx
+        cpx #left                       ; .. and current direction is left
+        beq ccmd1                       ; continue ..
+                                      
 ccmdx                                   ; cannot move in this direction
         lda #0                          ; return 0 in .a (could not move)
         rts                             ; exit the subroutine
@@ -537,6 +563,7 @@ ccmd1   lda pacman_y_sub                ; load .a with y sub position
         rts                             ; exit the subroutine
 
 move_down
+
         lda #5                          ; set x sub position to 5 
         sta pacman_x_sub                ; (should already be, but can be 4 or 6 when turning corners)
         lda pacman_y_sub                ; load y sub position
