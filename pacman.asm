@@ -31,7 +31,6 @@ pacman_y_tile    = $06
 pacman_y_sub     = $07
 pacman_direction = $08
 
-
 ; ------------------
 ; Main program start
 ; ------------------
@@ -70,7 +69,7 @@ start
         sta $dc0d
         and $d011                       ; clear most significant bit in VIC's raster register
         sta $d011
-        lda #210                        ; set the raster line number where interrupt should occur
+        lda #255                        ; set the raster line number where interrupt should occur
         sta $d012
         lda #<irq                       ; set the interrupt vector to point to the interrupt service routine below
         sta $0314
@@ -215,7 +214,7 @@ init_sprites
         
         lda #5 ;#13
         sta pacman_x_tile
-        lda #3 ;#15
+        lda #1 ;#15
         sta pacman_y_tile
         lda #5
         sta pacman_x_sub
@@ -259,6 +258,7 @@ check_up_down_first
 
 exit_move_character       
         rts
+
 
 ; -------------------------------------------
 ; Routine to check for left/right keypresses
@@ -371,7 +371,8 @@ ccml1   lda pacman_x_sub                ; load .a with x sub position
         adc pacman_x_tile               ; add the x tile offset
         tax                             ; move result to x register
         dex                             ; decrement (as we want to look one tile to the left)
-        lda level0,x                    ; load the tile type index, using x as an offset
+        ;lda level0,x                    ; load the tile type index, using x as an offset
+        jsr get_tile_type
         cmp #2                          ; if the index is 2 or greater ..
         bcs move_left                   ; move the character left
                                         ; otherwise, cannot move in this direction
@@ -395,9 +396,14 @@ move_left
         
 move_left_sub
 
-        dec pacman_x_sub
-        jsr set_pacman_sprite_left
-        jsr update_pacman_sprite
+        lda pacman_x_sub                ; load pacman x sub position
+        sbc #1                          ; decrement
+        sta pacman_x_sub                ; store that back to memory
+        cmp #5                          ; does it equal 5?
+        bne mls1                        ; if not, skip next instruction
+        jsr eat_power_pill              ; if so, clear power pill and increment score              
+mls1    jsr set_pacman_sprite_left      ; set sprite pointer to the correct animation frame
+        jsr update_pacman_sprite        ; update the sprite on screen
         lda #1                          ; return 1 in .a (moved)
         rts
 
@@ -429,10 +435,11 @@ ccmr1   lda pacman_x_sub                ; load .a with x sub position
         ldy pacman_y_tile  
         sty num2                        ; set multiplier to row number
         jsr multiply                    ; call multiply routine (puts result in .a)
-        adc pacman_x_tile               ; add the x tile offset
+        adc pacman_x_tile               ; add the x  tile offset
         tax                             ; move result to x register
         inx                             ; increment (as we want to look one tile to the right)
-        lda level0,x                    ; load the tile type index, using x as an offset
+        ;lda level0,x                    ; load the tile type index, using x as an offset
+        jsr get_tile_type
         cmp #2                          ; if the index is 2 or greater ..
         bcs move_right                  ; move the character right
                                         ; otherwise, cannot move in this direction
@@ -493,7 +500,8 @@ ccmu1   lda pacman_y_sub                ; load .a with y sub position
         jsr multiply                    ; call multiply routine (puts result in .a)
         adc pacman_x_tile               ; add the x tile offset
         tax                             ; move result to x register
-        lda level0,x                    ; load the tile type index, using x as an offset
+        ;lda level0,x                    ; load the tile type index, using x as an offset
+        jsr get_tile_type
         cmp #2                          ; if the index is 2 or greater ..
         bcs move_up                     ; move the character up ..
                                         ; otherwise, cannot move in this direction
@@ -555,7 +563,8 @@ ccmd1   lda pacman_y_sub                ; load .a with y sub position
         jsr multiply                    ; call multiply routine (puts result in .a)
         adc pacman_x_tile               ; add the x tile offset
         tax                             ; move result to x register
-        lda level0,x                    ; load the tile type index, using x as an offset
+        ;lda level0,x                    ; load the tile type index, using x as an offset]
+        jsr get_tile_type
         cmp #2                          ; if the index is 2 or greater ..
         bcs move_down                   ; move the character down ..
                                         ; otherwise, cannot move in this direction
@@ -733,6 +742,57 @@ ups2    lda pacman_y_tile               ; get y tile position
         
         rts
 
+; ------------------------------------------------------------
+; Routine to locate the correct power pill character,
+; remove it, and increment player score.
+; .x should be loaded with the level matrix offset from level0
+; ------------------------------------------------------------
+
+eat_power_pill
+
+        ldy translate0,x
+        lda #7
+        sta $0400,y 
+        rts
+
+; --------------------------------------------
+; Routine to get the type of a tile
+; .x should be loaded with the offset from 0,0
+; .y should be loaded with the y offset
+; returns tile type index in .a 
+; --------------------------------------------
+
+get_tile_type
+        lda pacman_x_tile               ; load x tile position into .a  
+        cpy #9                          ; compare y tile position with 8
+        bcc gtt_top_section             ; if less than 9, branch to top section handler
+        beq gtt2                        ; if it's equal to 9, go to second check
+        bcs gtt3                        ; if it's greater than 9, go to third check
+gtt2    cmp #13                         ; compare x tile position with 13
+        bcs gtt_mid_section             ; if >= 13, branch to mid section handler
+        jmp gtt_top_section             ; otherwise, branch to top section handler
+gtt3    cpy #18
+        beq gtt4
+        bcs gtt_bottom_section
+        jmp gtt_mid_section             ; tmp - todo: more conditions for bottom section
+gtt4    cmp #25
+        beq gtt_bottom_section
+        jmp gtt_mid_section
+
+gtt_top_section
+        lda level0,x                    ; load the tile type index, using x as an offset
+        rts
+gtt_mid_section
+        lda level0+256,x
+        rts
+
+gtt_bottom_section
+        cpx #255                        ; .x gets erroneously set to $ff when it should be $00
+        bne gtt5                        ; when targeting first tile - I have no idea why :(
+        lda #3                          ; so just return a 3 in that case, which is the value we're after
+        rts
+gtt5    lda level0+512,x
+        rts
 
 ; ----------------------------------------------------
 ; General 8bit * 8bit = 8bit multiply
@@ -752,6 +812,8 @@ ups2    lda pacman_y_tile               ; get y tile position
 ; ----------------------------------------------------
 
 multiply
+        lda num1
+        lda num2
         lda #$00
         beq enterLoop
 
@@ -861,9 +923,12 @@ level14 .byte  0, 3, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 3, 0, 3, 0, 0, 0, 0, 0, 0, 3,
 level15 .byte  0, 4, 3, 3, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0, 3, 3, 4, 0
 level16 .byte  0, 0, 0, 3, 0, 0, 0, 3, 0, 3, 0, 0, 0, 0, 0, 0, 0, 3, 0, 3, 0, 0, 0, 3, 0, 0, 0
 level17 .byte  0, 3, 3, 3, 3, 3, 3, 3, 0, 3, 3, 3, 3, 0, 3, 3, 3, 3, 0, 3, 3, 3, 3, 3, 3, 3, 0
-level18 .byte  0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+level18 .byte  0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0
 level19 .byte  0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0
 level20 .byte  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 
+
+translate0  .byte  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+translate1  .byte  0, 42, 43, 44, 46, 47, 48, 49, 51, 52, 53, 54, 56, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0
 
 ; load sprite data
 *=sprite_data_addr	      
