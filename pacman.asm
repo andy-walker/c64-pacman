@@ -30,6 +30,9 @@ pacman_x_sub     = $05
 pacman_y_tile    = $06
 pacman_y_sub     = $07
 pacman_direction = $08
+matrix_offset    = $09
+dbg_x            = $0a
+dbg_y            = $0b
 
 ; ------------------
 ; Main program start
@@ -371,8 +374,8 @@ ccml1   lda pacman_x_sub                ; load .a with x sub position
         adc pacman_x_tile               ; add the x tile offset
         tax                             ; move result to x register
         dex                             ; decrement (as we want to look one tile to the left)
-        ;lda level0,x                    ; load the tile type index, using x as an offset
-        jsr get_tile_type
+        stx matrix_offset               ; save the offset value (returned in .x)   
+        jsr get_tile_type               ; load the tile type index, using x as an offset
         cmp #2                          ; if the index is 2 or greater ..
         bcs move_left                   ; move the character left
                                         ; otherwise, cannot move in this direction
@@ -380,10 +383,12 @@ ccml1   lda pacman_x_sub                ; load .a with x sub position
         rts                             ; exit the subroutine
 
 move_left
+
         lda #5                          ; set y sub position to 5 
         sta pacman_y_sub                ; (should already be, but can be 4 or 6 when turning corners)
         lda pacman_x_sub                ; load x sub position
         cmp #0                          ; if greater than zero ..
+        
         bne move_left_sub               ; move left by sub position, otherwise (if zero) ..
         dec pacman_x_tile               ; decrement x tile position
         lda #9                          ; set x sub position to 9 (upper boundary)
@@ -438,8 +443,8 @@ ccmr1   lda pacman_x_sub                ; load .a with x sub position
         adc pacman_x_tile               ; add the x  tile offset
         tax                             ; move result to x register
         inx                             ; increment (as we want to look one tile to the right)
-        ;lda level0,x                    ; load the tile type index, using x as an offset
-        jsr get_tile_type
+        stx matrix_offset               ; save the offset value             
+        jsr get_tile_type               ; load the tile type index, using x as an offset
         cmp #2                          ; if the index is 2 or greater ..
         bcs move_right                  ; move the character right
                                         ; otherwise, cannot move in this direction
@@ -463,8 +468,13 @@ move_right
         
 move_right_sub
 
-        inc pacman_x_sub
-        jsr set_pacman_sprite_right
+        lda pacman_x_sub                ; load pacman x sub position
+        adc #1                          ; decrement
+        sta pacman_x_sub                ; store that back to memory
+        cmp #5                          ; does it equal 5?
+        bne mrs1                        ; if not, skip next instruction
+        jsr eat_power_pill              ; if so, clear power pill and increment score  
+mrs1    jsr set_pacman_sprite_right
         jsr update_pacman_sprite
         lda #1                          ; return 1 in .a (moved)
         rts
@@ -500,8 +510,8 @@ ccmu1   lda pacman_y_sub                ; load .a with y sub position
         jsr multiply                    ; call multiply routine (puts result in .a)
         adc pacman_x_tile               ; add the x tile offset
         tax                             ; move result to x register
-        ;lda level0,x                    ; load the tile type index, using x as an offset
-        jsr get_tile_type
+        stx matrix_offset               ; save the offset value                
+        jsr get_tile_type               ; load the tile type index, using x as an offset
         cmp #2                          ; if the index is 2 or greater ..
         bcs move_up                     ; move the character up ..
                                         ; otherwise, cannot move in this direction
@@ -525,8 +535,13 @@ move_up
         
 move_up_sub
 
-        dec pacman_y_sub
-        jsr set_pacman_sprite_up
+        lda pacman_y_sub                ; load pacman x sub position
+        sbc #1                          ; decrement
+        sta pacman_y_sub                ; store that back to memory
+        cmp #5                          ; does it equal 5?
+        bne mus1                        ; if not, skip next instruction
+        jsr eat_power_pill              ; if so, clear power pill and increment score  
+mus1    jsr set_pacman_sprite_up
         jsr update_pacman_sprite
         lda #1                          ; return 1 in .a (moved)
         rts   
@@ -563,8 +578,8 @@ ccmd1   lda pacman_y_sub                ; load .a with y sub position
         jsr multiply                    ; call multiply routine (puts result in .a)
         adc pacman_x_tile               ; add the x tile offset
         tax                             ; move result to x register
-        ;lda level0,x                    ; load the tile type index, using x as an offset]
-        jsr get_tile_type
+        stx matrix_offset               ; save the offset value
+        jsr get_tile_type               ; load the tile type index, using x as an offset
         cmp #2                          ; if the index is 2 or greater ..
         bcs move_down                   ; move the character down ..
                                         ; otherwise, cannot move in this direction
@@ -589,8 +604,13 @@ move_down
         
 move_down_sub
 
-        inc pacman_y_sub
-        jsr set_pacman_sprite_down
+        lda pacman_y_sub                ; load pacman x sub position
+        adc #1                          ; decrement
+        sta pacman_y_sub                ; store that back to memory
+        cmp #5                          ; does it equal 5?
+        bne mds1                        ; if not, skip next instruction
+        jsr eat_power_pill              ; if so, clear power pill and increment score  
+mds1    jsr set_pacman_sprite_down
         jsr update_pacman_sprite
         lda #1                          ; return 1 in .a (moved)
         rts   
@@ -744,15 +764,38 @@ ups2    lda pacman_y_tile               ; get y tile position
 
 ; ------------------------------------------------------------
 ; Routine to locate the correct power pill character,
-; remove it, and increment player score.
-; .x should be loaded with the level matrix offset from level0
+; remove it and increment player score.
 ; ------------------------------------------------------------
 
 eat_power_pill
 
-        ldy translate0,x
-        lda #7
-        sta $0400,y 
+        ldx matrix_offset               ; load the level offset we previously stored
+        ldy translate0,x                ; query the translation matrix for this offset to get screen memory location
+        lda #7                          ; write a 7 to this location (blank space character)
+        ldx pacman_x_tile
+        lda pacman_y_tile
+        cmp #5
+        beq epp1
+        bcs epp2
+        jmp eat1
+epp1    cpx #10
+        bcc eat1
+        jmp eat2
+epp2    cmp #11
+        bcs eat3
+        jmp eat2
+
+eat1    lda #7
+        sta $0400,y                        
+        rts
+eat2    lda #7
+        sta $0500,y
+        rts
+eat3    lda #7
+        sta $0600,y                        
+        rts
+eat4    lda #7
+        sta $0700,y
         rts
 
 ; --------------------------------------------
@@ -840,11 +883,6 @@ clsloop lda #7                          ; 7 = blank space char in our custom cha
         sta $0500,x 
         sta $0600,x 
         sta $06e8,x 
-        lda #$0c                        ; puts into the associated colour ram dark grey ($0c)...
-        sta $d800,x                     ; and this will become colour of the scroll text
-        sta $d900,x
-        sta $da00,x
-        sta $dae8,x
         inx         
         bne clsloop  
         rts
@@ -853,15 +891,31 @@ clsloop lda #7                          ; 7 = blank space char in our custom cha
 ; Data
 ; ----
 
+translate0  .byte  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+translate1  .byte  0, 45, 46, 47, 49, 50, 51, 52, 54, 55, 56, 57, 59, 0, 61, 62, 64, 65, 66, 67, 69, 70, 71, 72, 74, 75, 0
+translate2  .byte  0, 85, 0, 0, 0, 90, 0, 0, 0, 0, 0, 0, 99, 0, 101, 0, 0, 0, 0, 0, 0, 110, 0, 0, 0, 115, 0
+translate3  .byte  0, 125, 0, 0, 0, 130, 0, 0, 0, 135, 136, 137, 139, 140, 141, 142, 144, 145, 0, 0, 0, 150, 0, 0, 0, 155, 0
+translate4  .byte  0, 165, 0, 0, 0, 170, 0, 0, 0, 175, 0, 0, 0, 0, 0, 0, 0, 185, 0, 0, 0, 190, 0, 0, 0, 195, 0
+translate5  .byte  0, 245, 246, 247, 249, 250, 251, 252, 254, 255, 0, 1, 3, 0, 5, 6, 8, 9, 10, 11, 13, 14, 15, 16, 18, 19, 0
+translate6  .byte  0, 29, 0, 0, 0, 34, 0, 0, 0, 0, 0, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0, 54, 0, 0, 0, 59, 0
+translate7  .byte  0, 69, 70, 71, 73, 74, 75, 76, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 91, 93, 94, 95, 96, 98, 99, 0
+translate8  .byte  0, 0, 0, 0, 0, 0, 0, 116, 0, 2, 0, 0, 0, 1, 0, 0, 0, 2, 0, 131, 0, 0, 0, 0, 0, 0, 0
+translate9  .byte  0, 0, 0, 0, 0, 0, 0, 196, 0, 2, 0, 0, 0, 1, 0, 0, 0, 2, 0, 211, 0, 0, 0, 0, 0, 0, 0
+translate10 .byte  0, 0, 0, 0, 0, 0, 0, 236, 0, 2, 0, 0, 0, 1, 0, 0, 0, 2, 0, 251, 0, 0, 0, 0, 0, 0, 0
+translate11 .byte  0, 0, 0, 0, 0, 0, 0, 13, 0, 2, 0, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0
+
+
 lvlch1  .byte  0,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  2,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  3
 lvlch2  .byte  4, 65, 66, 67,  7, 64, 65, 66, 67,  7, 64, 65, 66, 67,  7, 64,  5, 66, 67,  7, 64, 65, 66, 67,  7, 64, 65, 66, 67,  7, 64, 65,  6 
 lvlch3  .byte  4, 69,  8,  9, 10, 11, 69,  8,  9, 10, 12, 13, 13, 13, 14, 68, 15, 70, 16, 13, 13, 13, 17,  9, 10, 11, 69,  8,  9, 10, 11, 69,  6     
 lvlch4  .byte  4, 78, 18, 19, 20, 21, 73, 18, 19, 20, 21, 73, 74, 75,  7, 72, 73, 74, 75,  7, 72, 73, 18, 19, 20, 21, 73, 18, 19, 20, 21, 78,  6
 lvlch5  .byte  4, 76, 18, 22, 23, 21, 76, 18, 22, 23, 21, 76, 24, 25, 25, 25, 25, 25, 25, 25, 26, 76, 18, 22, 23, 21, 76, 18, 22, 23, 21, 76,  6
 lvlch6  .byte  4,  7, 27, 28, 28, 29,  7, 27, 28, 28, 29,  7, 27, 28, 28, 28, 30, 28, 28, 28, 29,  7, 27, 28, 28, 29,  7, 27, 28, 28, 29,  7,  6
-lvlch7  .byte  4, 65, 66, 67,  7, 64, 65, 66, 67,  7, 64, 65, 66, 67,  7, 64,  5, 66, 67,  7, 64, 65, 66, 67,  7, 64, 65, 66, 67,  7, 64, 65,  6 
+lvlch7  .byte  4, 65, 66, 67,  7, 64, 65, 66, 67,  7, 64, 65, 66, 67,  7, 64,  5, 66, 67,  7, 64, 65, 66, 67,  7, 64, 65, 66, 67,  7, 64, 65,  6
 lvlch8  .byte  4, 69, 31, 32, 32, 33, 69, 31, 32, 34, 35, 32, 32, 32, 36,  7, 37,  7, 38, 32, 32, 32, 39, 32, 32, 40, 69, 31, 32, 32, 33, 69,  6
+
 lvlch9  .byte  4, 73, 74, 75,  7, 72, 73, 74, 75, 41,  4,  7,  7,  7,  7,  7,  7,  7,  7,  7,  7,  7, 42, 75,  7, 72, 73, 74, 75,  7, 72, 73,  6
+
 lvlch10 .byte 43, 25, 25, 25, 25, 25, 25, 44, 77, 41,  4,  7, 24, 25, 25, 26,  7, 24, 25, 25, 26,  7, 42, 77, 45, 25, 25, 25, 25, 25, 25, 25, 46
 lvlch11 .byte 47, 48, 48, 48, 48, 48, 48, 49,  7, 41,  4,  7, 50, 28, 28, 29,  7, 27, 28, 51, 21,  7, 42,  7, 41, 52, 48, 48, 48, 48, 48, 48, 53
 lvlch12 .byte 54, 55, 55, 55, 55, 55, 55, 56, 67, 57, 58,  7, 59,  7,  7,  7,  7,  7,  7, 60, 61,  7, 62, 67, 63, 55, 55, 55, 55, 55, 55, 55, 79
@@ -927,8 +981,7 @@ level18 .byte  0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 3, 0, 0, 0, 0, 0, 0, 0,
 level19 .byte  0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0
 level20 .byte  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 
 
-translate0  .byte  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-translate1  .byte  0, 42, 43, 44, 46, 47, 48, 49, 51, 52, 53, 54, 56, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0
+
 
 ; load sprite data
 *=sprite_data_addr	      
