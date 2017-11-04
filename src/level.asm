@@ -122,18 +122,34 @@ next_char
 
 level_init_sprites
         
-        lda #5 ;#13
+        
+        lda #5 ;#13                     ; initialise pacman tile position
         sta pacman_x_tile
         lda #1 ;#15
         sta pacman_y_tile
-        lda #5
+        
+        lda #13                         ; initialise ghost0 (blinky) tile position
+        sta ghost0_x_tile
+        lda #7
+        sta ghost0_y_tile
+        
+        lda #5                          ; initialise all x sub positions to 5 (tile centre)
         sta pacman_x_sub
-        lda #5
+        sta ghost0_x_sub
+        lda #5                          ; initialise all y sub positions to 5 (tile centre)
+        sta ghost0_y_sub
         sta pacman_y_sub
 
         jsr set_pacman_sprite_left
         jsr update_pacman_sprite
+
+        ldx #left                       ; set .x to ghost index (0)
+        ldy #0                          ; set .y to ghost direction
+        jsr set_ghost_sprite            ; set and update ghost0 sprites
+        jsr update_ghost_sprite
+
         rts
+
 
 ; ------------------------------------------------------------
 ; Routine to locate the correct power pill character,

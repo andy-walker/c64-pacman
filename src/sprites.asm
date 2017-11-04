@@ -1,19 +1,27 @@
 
-        ; sprite initialisation
+; --------------------
+; Sprite setup routine
+; --------------------
 
 game_init_sprites
 
-        lda #$01 
-        sta $d015                       ; Turn sprite 0 on 
-        ;sta $d01c                      ; multi coloured sprite 
+        lda #%00100011 
+        sta $d015                       ; Turn on sprite 0-2 
 
         lda #7 
-        sta $d027                       ; set primary colour yellow
-
-        lda #$00                        ; set black and white 
-        sta $d025                       ; multi-colors global 
-        lda #$01 
-        sta $d026 
+        sta $d027                       ; sprite 0: colour yellow
+        lda #2 
+        sta $d028                       ; sprite 1: colour red
+        lda #4
+        sta $d029                       ; sprite 2: colour purple
+        lda #3
+        sta $d02a                       ; sprite 3: colour cyan
+        lda #10
+        sta $d02b                       ; sprite 4: colour orange
+        lda #1
+        sta $d02c
+        sta $d02d
+        sta $d02e
         rts
 
 
@@ -161,4 +169,53 @@ ups2    lda pacman_y_tile               ; get y tile position
         adc #37                         ; add 37 (the y offset of the level)
         sta $d001                       ; store in $d001
         
+        rts
+
+
+; --------------------------------------------
+; Routine to set the correct ghost sprites
+; .x should be preloaded with ghost index
+; .y should be preloaded with ghost direction
+; --------------------------------------------
+
+set_ghost_sprite
+
+        lda #$97                        ; load accumulator with index of ghost 'A' sprite
+        sta $07f9,x                     ; set sprite pointer, using .x (ghost index) as an offset
+        lda #$99                        ; load accumulator with index of first sprite for ghost's eyes
+        sty num1                        ; temporarily store .y register (ghost direction)
+        adc num1                        ; and add to sprite index
+        sta $07fd,x                     ; store the resulting sprite index using .x as an offset
+        rts
+
+; --------------------------------------------
+; Routine to update a specific ghost sprite
+; .x should be preloaded with ghost index
+; .y should be preloaded with ghost direction
+; --------------------------------------------
+
+update_ghost_sprite
+
+        lda ghost0_x_tile,x             ; get x tile position
+        asl                             ; multiply by 10
+        asl
+        asl
+        adc ghost0_x_tile,x
+        adc ghost0_x_tile,x
+        adc ghost0_x_sub,x              ; add x sub tile position
+        adc #45                         ; add 45 (the x offset of the background graphic)
+        sta $d002                       ; store in $d002 (todo: need to offset with y * 2)  
+        sta $d00a                       ; same for eyes sprite
+
+        lda ghost0_y_tile,x             ; get y tile position
+        asl                             ; multiply by 10
+        asl
+        asl
+        adc ghost0_y_tile,x
+        adc ghost0_y_tile,x
+        adc ghost0_y_sub,x              ; add y sub position
+        adc #37                         ; add 37 (the y offset of the level)
+        sta $d003                       ; store in $d003 (todo: need to offset with y * 2) 
+        sta $d00b                       ; same for eyes sprite
+
         rts

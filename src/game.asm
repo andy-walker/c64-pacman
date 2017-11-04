@@ -34,6 +34,33 @@ matrix_offset    = $09
 dbg_x            = $0a
 dbg_y            = $0b
 
+
+ghost0_x_tile    = $10
+ghost1_x_tile    = $11
+ghost2_x_tile    = $12
+ghost3_x_tile    = $13
+
+ghost0_x_sub     = $14
+ghost1_x_sub     = $15
+ghost2_x_sub     = $16
+ghost3_x_sub     = $17
+
+ghost0_y_tile    = $18
+ghost1_y_tile    = $19
+ghost2_y_tile    = $1a
+ghost3_y_tile    = $1b
+
+ghost0_y_sub     = $1c
+ghost1_y_sub     = $1d
+ghost2_y_sub     = $1e
+ghost3_y_sub     = $1f
+
+ghost0_direction = $20
+ghost1_direction = $21
+ghost2_direction = $22
+ghost3_direction = $23
+
+
 ; ------------------
 ; Main program start
 ; ------------------
@@ -74,6 +101,7 @@ start
 
 irq     
         jsr move_character
+        jsr move_ghosts
         asl $d019                       ; acknowledge raster irq
         jmp $ea31                       ; scan keyboard (only do once per frame)
 
