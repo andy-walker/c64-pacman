@@ -132,7 +132,7 @@ level_init_sprites
         sta ghost0_x_tile
         lda #7
         sta ghost0_y_tile
-        
+
         lda #5                          ; initialise all x sub positions to 5 (tile centre)
         sta pacman_x_sub
         sta ghost0_x_sub
@@ -145,6 +145,7 @@ level_init_sprites
 
         ldx #left                       ; set .x to ghost index (0)
         ldy #0                          ; set .y to ghost direction
+        sty ghost0_direction            ; store direction
         jsr set_ghost_sprite            ; set and update ghost0 sprites
         jsr update_ghost_sprite
 

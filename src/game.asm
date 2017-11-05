@@ -31,8 +31,7 @@ pacman_y_tile    = $06
 pacman_y_sub     = $07
 pacman_direction = $08
 matrix_offset    = $09
-dbg_x            = $0a
-dbg_y            = $0b
+directions       = $0a
 
 
 ghost0_x_tile    = $10
@@ -70,6 +69,15 @@ ghost3_direction = $23
 start  
         jsr cls
 
+        ; init random number generator using SID's noise waveform generator
+        ; read from $d41b to get random number 
+
+        lda #$ff                        ; maximum frequency value 
+        sta $d40e                       ; voice 3 frequency low byte 
+        sta $d40f                       ; voice 3 frequency high byte 
+        lda #$80                        ; noise waveform, gate bit off 
+        sta $d412                       ; voice 3 control register 
+
         ; character initialisation
 
         lda $d018
@@ -104,7 +112,6 @@ irq
         jsr move_ghosts
         asl $d019                       ; acknowledge raster irq
         jmp $ea31                       ; scan keyboard (only do once per frame)
-
 
 
 .include "level.asm"
