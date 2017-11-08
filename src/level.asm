@@ -159,9 +159,15 @@ level_init_sprites
 
 eat_power_pill
 
-        ldx matrix_offset               ; load the level offset we previously stored
-        ldy translate0,x                ; query the translation matrix for this offset to get screen memory location
-        lda #7                          ; write a 7 to this location (blank space character)
+        ldx matrix_offset
+        ldy pacman_y_tile
+        lda pacman_x_tile
+        jsr get_translated
+
+
+        ;ldx matrix_offset               ; load the level offset we previously stored
+        ;ldy translate0,x                ; query the translation matrix for this offset to get screen memory location
+
         ldx pacman_x_tile
         lda pacman_y_tile
         cmp #5
@@ -172,8 +178,14 @@ epp1    cpx #10
         bcc eat1
         jmp eat2
 epp2    cmp #11
-        bcs eat3
+        bcs epp3
         jmp eat2
+epp3    cmp #16
+        bcs epp4
+        jmp eat3
+epp4    cpy #255
+        beq eat3
+        jmp eat4
 
 eat1    lda #7
         sta $0400,y                        
@@ -188,10 +200,53 @@ eat4    lda #7
         sta $0700,y
         rts
 
+; -----------------------------------------------
+; Get translated row offset (helper for the above 
+; routine - may be useful elsewhere)
+; .x should be loaded with the matrix offset
+; .y should be loaded with y tile position
+; .a should be loaded with x tile position
+; returns translated offset in .y
+; -----------------------------------------------
+
+get_translated
+        cpy #9
+        bcc gtr_top_section
+        beq gtr2
+        bcs gtr3
+gtr2    cmp #13
+        bcs gtr_mid_section
+        jmp gtr_top_section
+gtr3    cpy #18
+        beq gtr4
+        bcs gtr_bottom_section
+        jmp gtr_mid_section
+gtr4    cmp #25
+        beq gtr_bottom_section
+        jmp gtr_mid_section
+
+gtr_top_section
+        ldy translate0,x                ; load the translation offset, using x as an offset
+        rts
+
+gtr_mid_section
+        ldy translate0+256,x
+        rts
+
+gtr_bottom_section
+        cpx #255                        ; .x gets erroneously set to $ff when it should be $00
+        bne gtr5                        ; when targeting first tile - I have no idea why :(
+        ldy #147                        ; so just return a 147 in that case, which is the value we're after
+        rts
+gtr5    ldy translate0+512,x
+        rts
+
+
+
 ; --------------------------------------------
 ; Routine to get the type of a tile
 ; .x should be loaded with the offset from 0,0
-; .y should be loaded with the y offset
+; .y should be loaded with the y tile index
 ; returns tile type index in .a 
 ; --------------------------------------------
 

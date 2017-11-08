@@ -3,30 +3,123 @@
 ; ----------------------------------
 
 move_ghosts
-
+        ; rts ; disable for now
         ldx #0
 mg1     lda ghost0_direction,x
         cmp #2
         bcs mg1_ud
-mg1_lr  ldy ghost0_x_sub
+mg1_lr  ldy ghost0_x_sub,x
         cpy #5
         bne ghost_move_lr
         jsr get_available_directions
-
-
-mg1_ud  ldy ghost0_y_sub
+        jsr setup_direction_choices
+        lda dir5
+        sbc #1
+        jsr roll_dice
+        tay
+        sta dir1,y
+        jmp ghost_change_direction
+mg1_ud  ldy ghost0_y_sub,x
         cpy #5
         bne ghost_move_ud
         jsr get_available_directions
+        jsr setup_direction_choices
+        lda dir5
+        sbc #1
+        jsr roll_dice
+        tay
+        sta dir1,y
+        jmp ghost_change_direction
 
 ghost_move_lr
-
-        ;inx
-        rts
+        ; .a should still be loaded with the ghost's direction at this point
+        cmp #left
+        beq ghost_move_left
+        jmp ghost_move_right
 
 ghost_move_ud
-        rts
+        ; .a should still be loaded with the ghost's direction at this point
+        cmp #up
+        beq ghost_move_up
+        jmp ghost_move_down
 
+ghost_change_direction
+        cmp #left
+        beq ghost_move_left
+        cmp #right
+        beq ghost_move_right
+        cmp #up
+        beq ghost_move_right
+        cmp #down
+        beq ghost_move_down
+
+        ; should not get to here, but for the moment (just in case)
+        jmp ghost_move_end
+
+ghost_move_left
+
+        lda ghost0_x_sub,x              ; load ghost x sub position
+        cmp #0                          ; if greater than zero ..        
+        bne ghost_move_left_sub         ; move left by sub position, otherwise (if zero) ..
+        dec ghost0_x_tile,x             ; decrement x tile position
+        lda #9                          ; set x sub position to 9 (upper boundary)
+        sta ghost0_x_sub,x  
+        
+        ldy #left                       ; load .y with current direction
+        sty ghost0_direction,x          ; store the direction
+        jsr set_ghost_sprite            ; set sprite pointers for the current ghost
+        jsr update_ghost_sprite         ; update the sprite on screen
+        jmp ghost_move_end              ; jump to end of routine
+        
+ghost_move_left_sub
+
+        dec ghost0_x_sub,x              ; decrement ghost x sub position
+
+        ldy #left                       ; load .y with current direction
+        sty ghost0_direction,x          ; store the direction
+        jsr set_ghost_sprite            ; set sprite pointers for the current ghost
+        jsr update_ghost_sprite         ; update the sprite on screen
+        jmp ghost_move_end              ; jump to end of routine 
+
+ghost_move_right
+
+        lda ghost0_x_sub,x              ; load x sub position
+        cmp #9                          ; if less than 9 ..
+        bne ghost_move_right_sub        ; move right by sub position, otherwise (if zero) ..
+        inc ghost0_x_tile,x             ; increment x tile position
+        lda #0                          ; set x sub position to 0 (lower boundary)
+        sta ghost0_x_sub,x   
+        
+        ldy #right                      ; load .y with current direction
+        sty ghost0_direction,x          ; store the direction
+        jsr set_ghost_sprite            ; set sprite pointers for the current ghost
+        jsr update_ghost_sprite         ; update the sprite on screen
+        jmp ghost_move_end              ; jump to end of routine 
+        
+ghost_move_right_sub
+
+        inc ghost0_x_sub,x              ; increment ghost x sub position
+
+        ldy #right                      ; load .y with current direction
+        sty ghost0_direction,x          ; store the direction
+        jsr set_ghost_sprite            ; set sprite pointers for the current ghost
+        jsr update_ghost_sprite         ; update the sprite on screen
+        jmp ghost_move_end              ; jump to end of routine 
+
+ghost_move_up
+        jmp ghost_move_end
+
+ghost_move_down
+        jmp ghost_move_end
+
+ghost_move_end
+        ; cpx #3
+        ; beq ghost_move_all_complete
+        ; inx
+        ; jmp mg1
+
+ghost_move_all_complete
+        rts
 
 ; ----------------------------------------
 ; Get directions in which ghost can move
@@ -92,8 +185,6 @@ gad4    lda directions
         rts
    
 
-
-
 ; --------------------------------------------
 ; Routine to get the type of a tile
 ; .y should be loaded with the offset from 0,0
@@ -131,7 +222,49 @@ ggtt_mid_section
 ggtt_bottom_section
         cpy #255                        ; .x gets erroneously set to $ff when it should be $00
         bne ggtt5                       ; when targeting first tile - I have no idea why :(
-        lda #3                          ; so just return a 3 in that case, which is the value we're after
+        lda #147                        ; so just return a 3 in that case, which is the value we're after
         rts
 ggtt5   lda level0+512,y
         rts
+
+
+; -------------------------------------------------------------
+; Routine to setup possible direction choices for a given ghost
+; one of which will then be selected at random
+; .x should contain the ghost index
+; sets zeropage addresses dir1-dir5
+; -------------------------------------------------------------
+
+setup_direction_choices
+        
+        lda #0
+        sta dir5                        ; initialise dir5 to zero (length of available directions)
+
+sdc0    and #%00000001                  ; test left direction
+        bne sdc1                        ; if cannot move in this direction, branch to next test
+        lda #left                       
+        ldy dir5                        ; load direction into next available dir location, 
+        sta dir1,y                      ; using dir5 as an offset
+        inc dir5                        ; increment dir5
+
+sdc1    and #%00000010                  ; test right direction
+        bne sdc2                        ; if cannot move in this direction, branch to next test
+        lda #right                       
+        ldy dir5                        ; load direction into next available dir location, 
+        sta dir1,y                      ; using dir5 as an offset
+        inc dir5                        ; increment dir5
+
+sdc2    and #%00000100                  ; test up direction
+        bne sdc3                        ; if cannot move in this direction, branch to next test
+        lda #up                       
+        ldy dir5                        ; load direction into next available dir location, 
+        sta dir1,y                      ; using dir5 as an offset
+        inc dir5                        ; increment dir5
+
+sdc3    and #%00001000                  ; test down direction
+        bne sdc4                        ; if cannot move in this direction, branch to next test
+        lda #down                       
+        ldy dir5                        ; load direction into next available dir location, 
+        sta dir1,y                      ; using dir5 as an offset
+        inc dir5                        ; increment dir5
+sdc4    rts

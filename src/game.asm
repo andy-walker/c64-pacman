@@ -25,13 +25,18 @@ ddrb             = $dc03                ; CIA#1 (Data Direction Register B)
 
 num1             = $02
 num2             = $03
-pacman_x_tile    = $04
-pacman_x_sub     = $05
-pacman_y_tile    = $06
-pacman_y_sub     = $07
-pacman_direction = $08
-matrix_offset    = $09
-directions       = $0a
+dir1             = $04
+dir2             = $05
+dir3             = $06
+dir4             = $07
+dir5             = $08
+pacman_x_tile    = $09
+pacman_x_sub     = $0a
+pacman_y_tile    = $0b
+pacman_y_sub     = $0c
+pacman_direction = $0d
+matrix_offset    = $0e
+directions       = $0f
 
 
 ghost0_x_tile    = $10
@@ -59,6 +64,8 @@ ghost1_direction = $21
 ghost2_direction = $22
 ghost3_direction = $23
 
+tmp1 = $24
+
 
 ; ------------------
 ; Main program start
@@ -78,7 +85,7 @@ start
         lda #$80                        ; noise waveform, gate bit off 
         sta $d412                       ; voice 3 control register 
 
-        ; character initialisation
+        ; character set initialisation
 
         lda $d018
         ora #$0e                        ; set chars location to $3800 for displaying the custom font

@@ -31,6 +31,30 @@ enterLoop                               ; For an accumulating multiply (.A = .A 
         bne loop
         rts
 
+; ------------------------------------------------------
+; Routine to get a random number between 0 and n (max 3)
+; for choosing a random direction from available directions
+; .a should be loaded with n (the upper range)
+; returns resulting number in .a
+; ------------------------------------------------------
+
+roll_dice
+        sta num1
+rd_loop lda $d41b                       ; get random number 0-255
+        lsr                             ; divide this down to the 0-4 range
+        lsr
+        lsr
+        lsr
+        lsr
+        lsr   ; 0-4
+        cmp num1
+        bcc rd_done                     ; if less than or equal to upper range
+        beq rd_done                     ; then we're done
+        bcs rd_loop                     ; otherwise repeat
+rd_done
+        rts
+
+
 ; --------------------
 ; Clear screen routine
 ; --------------------
