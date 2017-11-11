@@ -200,6 +200,7 @@ eat4    lda #7
         sta $0700,y
         rts
 
+
 ; -----------------------------------------------
 ; Get translated row offset (helper for the above 
 ; routine - may be useful elsewhere)

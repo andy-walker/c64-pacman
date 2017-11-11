@@ -64,7 +64,12 @@ ghost1_direction = $21
 ghost2_direction = $22
 ghost3_direction = $23
 
+; temp storage space for general use
+
 tmp1 = $24
+tmp2 = $25
+tmp3 = $26
+tmp4 = $27
 
 
 ; ------------------

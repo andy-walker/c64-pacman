@@ -179,38 +179,25 @@ ups2    lda pacman_y_tile               ; get y tile position
 ; --------------------------------------------
 
 set_ghost_sprite
-        cpy #2
-        bcc sgs_lr
-sgs_ud  lda ghost0_y_sub,x
+        cpy #2                          ; determine ghost direction
+        bcc sgs_lr                      
+sgs_ud  lda ghost0_y_sub,x              ; when up/down, get y sub position
         jmp sgs1
-sgs_lr  lda ghost0_x_sub,x
-sgs1    cmp #0
-        beq sgs_even
-        cmp #1
-        beq sgs_odd
-        cmp #2
-        beq sgs_even
-        cmp #3
-        beq sgs_odd
-        cmp #4
-        beq sgs_even
-        cmp #5
-        beq sgs_odd
-        cmp #6
-        beq sgs_even
-        cmp #7
-        beq sgs_odd
-        cmp #8
-        beq sgs_even
-        cmp #9
-        beq sgs_odd
+sgs_lr  lda ghost0_x_sub,x              ; when left/right, get x sub position
+sgs1    sta num1                        ; store sub position temporarily
+        lsr                             ; shift right (divide by 2)
+        asl                             ; shift left (multiply by 2)
+        cmp num1                        
+        beq sgs_even                    ; if it's still the same number, number is an even number
+                                        ; otherwise, it's an odd number
 sgs_odd lda #$97                        ; load accumulator with index of ghost 'A' sprite
         jmp sgs2
 sgs_even 
         lda #$98                        ; load accumulator with index of ghost 'B' sprite
 sgs2        
+        clc
         sta $07f9,x                     ; set sprite pointer, using .x (ghost index) as an offset
-        lda #$98                        ; load accumulator with index of first sprite for ghost's eyes
+        lda #$99                        ; load accumulator with index of first sprite for ghost's eyes
         sty num1                        ; temporarily store .y register (ghost direction)
         adc num1                        ; and add to sprite index
         sta $07fd,x                     ; store the resulting sprite index using .x as an offset
@@ -228,6 +215,7 @@ update_ghost_sprite
         asl                             ; multiply by 10
         asl
         asl
+        clc
         adc ghost0_x_tile,x
         adc ghost0_x_tile,x
         adc ghost0_x_sub,x              ; add x sub tile position
@@ -239,6 +227,7 @@ update_ghost_sprite
         asl                             ; multiply by 10
         asl
         asl
+        clc
         adc ghost0_y_tile,x
         adc ghost0_y_tile,x
         adc ghost0_y_sub,x              ; add y sub position
