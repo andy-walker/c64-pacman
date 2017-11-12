@@ -147,15 +147,29 @@ update_pacman_sprite
         bne ups1
         cmp #0                          ; and now it's zero
         bne ups1
-        lda #1                          ; then set the carry bit
-        sta $d010                       ; nb: this setting code will break when additional sprites added
+        ;lda #1                          ; then set the carry bit
+        ;sta $d010                       ; nb: this setting code will break when additional sprites added
+
+        ;lda $d010
+        ;ora %00000001
+        ;sta $d010
+
+        inc $d010
+
+
 
 ups1    cpx #0                          ; if previous x was zero
         bne ups2
         cmp #255                        ; and now it's 255
         bne ups2
-        lda #%0                         ; then unset the carry bit
-        sta $d010                       ; nb: this setting code will break when additional sprites added
+        ;lda #%0                         ; then unset the carry bit
+        ;sta $d010                       ; nb: this setting code will break when additional sprites added
+
+        ;lda $d010
+        ;and %11111110
+        ;sta $d010
+
+        dec $d010
 
         ; set y position
 
@@ -211,6 +225,7 @@ sgs2
 
 update_ghost_sprite
 
+        ldy $d002                       ; note previous x position (for overflow checking)
         lda ghost0_x_tile,x             ; get x tile position
         asl                             ; multiply by 10
         asl
@@ -223,7 +238,44 @@ update_ghost_sprite
         sta $d002                       ; store in $d002 (todo: need to offset with y * 2)  
         sta $d00a                       ; same for eyes sprite
 
-        lda ghost0_y_tile,x             ; get y tile position
+        ; primitively handle the sprite's x carry bit
+
+        cpy #255                        ; if previous x was 255
+        bne ugs1
+        cmp #0                          ; and now it's zero
+        bne ugs1
+        ;lda #1                          ; then set the carry bit
+        ;sta $d010                       ; nb: this setting code will break when additional sprites added
+
+        ;lda $d010
+        ;ora %00010010
+        ;sta $d010
+
+        lda $d010
+        clc
+        adc #2
+        adc #32
+        sta $d010
+
+
+ugs1    cpy #0                          ; if previous x was zero
+        bne ugs2
+        cmp #255                        ; and now it's 255
+        bne ugs2
+        ; lda #%0                         ; then unset the carry bit
+        ; sta $d010                       ; nb: this setting code will break when additional sprites added
+
+        ; lda $d010
+        ; and %11101101
+        ; sta $d010
+
+        lda $d010
+        sec
+        sbc #2
+        sbc #32
+
+
+ugs2    lda ghost0_y_tile,x             ; get y tile position
         asl                             ; multiply by 10
         asl
         asl

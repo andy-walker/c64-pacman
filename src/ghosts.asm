@@ -132,7 +132,7 @@ ghost_move_up_sub
         jmp ghost_move_end              ; jump to end of routine 
 
 ghost_move_down
-        jmp ghost_move_end
+
         lda ghost0_y_sub,x              ; load y sub position
         cmp #9                          ; if less than 9 ..
         bne ghost_move_down_sub         ; move down by sub position, otherwise (if zero) ..
@@ -186,10 +186,11 @@ get_available_directions
         jsr multiply
         clc
         adc ghost0_x_tile,x             ; add the x tile offset
-        sta tmp1                        ; store the offset (where the ghost is now)
+        sta tmp2                        ; store the offset (where the ghost is now)
         sec
         sbc #1                          ; subtract 1 to look to the left
         tay                             ; transfer to y register (used as an offset in ghost_get_tile_type)
+        sty dbg1
         lda ghost0_y_tile,x             ; load accumulator with ghost y tile position
         jsr ghost_get_tile_type
         cmp #0
@@ -198,10 +199,11 @@ get_available_directions
         sta dir1
         inc dir5
 
-gd1     lda num1                        ; restore the original offset (where the ghost is now)
+gd1     lda tmp2                        ; restore the original offset (where the ghost is now)
         clc
         adc #1                          ; add 1 to look to the right
         tay                             ; transfer to y register (used as an offset in ghost_get_tile_type)
+        sty dbg2
         lda ghost0_y_tile,x             ; load accumulator with ghost y tile position
         jsr ghost_get_tile_type
         cmp #0
@@ -211,10 +213,11 @@ gd1     lda num1                        ; restore the original offset (where the
         sta dir1,y
         inc dir5
 
-gd2     lda num1                        ; restore the original offset (where the ghost is now)
+gd2     lda tmp2                        ; restore the original offset (where the ghost is now)
         sec
         sbc #27                         ; subtract 27 to look at the tile above
         tay                             ; transfer to y register (used as an offset in ghost_get_tile_type)
+        sty dbg3
         lda ghost0_y_tile,x             ; load accumulator with ghost y tile position
         jsr ghost_get_tile_type
         cmp #0
@@ -224,10 +227,11 @@ gd2     lda num1                        ; restore the original offset (where the
         sta dir1,y
         inc dir5
 
-gd3     lda num1                        ; restore the original offset (where the ghost is now)
+gd3     lda tmp2                        ; restore the original offset (where the ghost is now)
         clc
         adc #27                         ; add 27 to look at the tile below
         tay                             ; transfer to y register (used as an offset in ghost_get_tile_type)
+        sty dbg4
         lda ghost0_y_tile,x             ; load accumulator with ghost y tile position
         jsr ghost_get_tile_type
         cmp #0
@@ -247,18 +251,17 @@ gd4     rts
 ; returns tile type index in .a 
 ; --------------------------------------------
 
-ghost_get_tile_type
-        ;lda ghost_x_tile,x             
-        cmp #9                          ; compare y tile position with 8
+ghost_get_tile_type            
+        cmp #9                          ; compare y tile position with 9
         bcc ggtt_top_section            ; if less than 9, branch to top section handler
         beq ggtt2                       ; if it's equal to 9, go to second check
         bcs ggtt3                       ; if it's greater than 9, go to third check
-ggtt2   pha                             ; push accumulator to stack
+ggtt2   sta tmp1                        ; temporarily store y position
         lda ghost0_x_tile,x             ; load ghost x tile position into .a  
         cmp #13                         ; compare x tile position with 13
         bcs ggtt_mid_section            ; if >= 13, branch to mid section handler
         jmp ggtt_top_section            ; otherwise, branch to top section handler
-ggtt3   pla                             ; restore accumulator
+ggtt3   lda tmp1                        ; restore y position to .a
         cmp #18
         beq ggtt4
         bcs ggtt_bottom_section
@@ -277,7 +280,7 @@ ggtt_mid_section
 ggtt_bottom_section
         cpy #255                        ; .x gets erroneously set to $ff when it should be $00
         bne ggtt5                       ; when targeting first tile - I have no idea why :(
-        lda #147                        ; so just return a 3 in that case, which is the value we're after
+        lda #3                          ; so just return a 3 in that case, which is the value we're after
         rts
 ggtt5   lda level0+512,y
         rts

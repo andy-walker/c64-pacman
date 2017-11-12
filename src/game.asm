@@ -71,6 +71,10 @@ tmp2 = $25
 tmp3 = $26
 tmp4 = $27
 
+dbg1 = $28
+dbg2 = $29
+dbg3 = $2a
+dbg4 = $2b
 
 ; ------------------
 ; Main program start
@@ -80,6 +84,12 @@ tmp4 = $27
 
 start  
         jsr cls
+
+        lda #0
+        sta dir1
+        sta dir2
+        sta dir3
+        sta dir4
 
         ; init random number generator using SID's noise waveform generator
         ; read from $d41b to get random number 

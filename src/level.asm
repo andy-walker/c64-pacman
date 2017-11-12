@@ -253,7 +253,7 @@ gtr5    ldy translate0+512,x
 
 get_tile_type
         lda pacman_x_tile               ; load x tile position into .a  
-        cpy #9                          ; compare y tile position with 8
+        cpy #9                          ; compare y tile position with 9
         bcc gtt_top_section             ; if less than 9, branch to top section handler
         beq gtt2                        ; if it's equal to 9, go to second check
         bcs gtt3                        ; if it's greater than 9, go to third check
