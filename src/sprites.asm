@@ -141,35 +141,27 @@ update_pacman_sprite
         adc #45                         ; add 45 (the x offset of the background graphic)
         sta $d000                       ; store in $d000
         
-        ; primitively handle the sprite's x carry bit
+        ; handle sprite's x carry bit
 
         cpx #255                        ; if previous x was 255
         bne ups1
         cmp #0                          ; and now it's zero
         bne ups1
-        ;lda #1                          ; then set the carry bit
-        ;sta $d010                       ; nb: this setting code will break when additional sprites added
 
-        ;lda $d010
-        ;ora %00000001
-        ;sta $d010
-
-        inc $d010
-
+        lda $d010
+        eor #%00000001                  ; flip sprite carry bit
+        sta $d010
 
 
 ups1    cpx #0                          ; if previous x was zero
         bne ups2
         cmp #255                        ; and now it's 255
         bne ups2
-        ;lda #%0                         ; then unset the carry bit
-        ;sta $d010                       ; nb: this setting code will break when additional sprites added
 
-        ;lda $d010
-        ;and %11111110
-        ;sta $d010
+        lda $d010
+        eor #%00000001                  ; flip sprite carry bit
+        sta $d010
 
-        dec $d010
 
         ; set y position
 
@@ -244,17 +236,9 @@ update_ghost_sprite
         bne ugs1
         cmp #0                          ; and now it's zero
         bne ugs1
-        ;lda #1                          ; then set the carry bit
-        ;sta $d010                       ; nb: this setting code will break when additional sprites added
 
-        ;lda $d010
-        ;ora %00010010
-        ;sta $d010
-
-        lda $d010
-        clc
-        adc #2
-        adc #32
+        lda $d010                       ; flip sprites' carry bits
+        eor #%00100010
         sta $d010
 
 
@@ -262,17 +246,10 @@ ugs1    cpy #0                          ; if previous x was zero
         bne ugs2
         cmp #255                        ; and now it's 255
         bne ugs2
-        ; lda #%0                         ; then unset the carry bit
-        ; sta $d010                       ; nb: this setting code will break when additional sprites added
-
-        ; lda $d010
-        ; and %11101101
-        ; sta $d010
 
         lda $d010
-        sec
-        sbc #2
-        sbc #32
+        eor #%00100010                  ; flip sprites' carry bits
+        sta $d010
 
 
 ugs2    lda ghost0_y_tile,x             ; get y tile position
