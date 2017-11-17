@@ -130,7 +130,7 @@ level_init_sprites
         
         lda #13                         ; initialise ghost0 (blinky) tile position
         sta ghost0_x_tile
-        lda #7
+        lda #19
         sta ghost0_y_tile
 
         lda #5                          ; initialise all x sub positions to 5 (tile centre)
@@ -252,6 +252,8 @@ gtr5    ldy translate0+512,x
 ; --------------------------------------------
 
 get_tile_type
+        stx dbg36
+        sty dbg37
         lda pacman_x_tile               ; load x tile position into .a  
         cpy #9                          ; compare y tile position with 9
         bcc gtt_top_section             ; if less than 9, branch to top section handler
@@ -273,6 +275,7 @@ gtt_top_section
         rts
 gtt_mid_section
         lda level0+256,x
+        sta dbg38
         rts
 
 gtt_bottom_section

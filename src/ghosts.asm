@@ -369,11 +369,12 @@ gd4     rts
 ; --------------------------------------------
 
 ghost_get_tile_type            
+        sta tmp1                        ; temporarily store y position
         cmp #9                          ; compare y tile position with 9
         bcc ggtt_top_section            ; if less than 9, branch to top section handler
         beq ggtt2                       ; if it's equal to 9, go to second check
         bcs ggtt3                       ; if it's greater than 9, go to third check
-ggtt2   sta tmp1                        ; temporarily store y position
+ggtt2   
         lda num1                        ; load target x tile position into .a  
         cmp #13                         ; compare x tile position with 13
         bcs ggtt_mid_section            ; if >= 13, branch to mid section handler
@@ -383,21 +384,29 @@ ggtt3   lda tmp1                        ; restore y position to .a
         beq ggtt4
         bcs ggtt_bottom_section
         jmp ggtt_mid_section
-ggtt4   cmp #25
+ggtt4   lda num1
+        cmp #25
         beq ggtt_bottom_section
         jmp ggtt_mid_section
 
 ggtt_top_section
+        lda #1
+        sta dbg39
         lda level0,y                    ; load the tile type index, using x as an offset
         rts
 ggtt_mid_section
+        lda #2
+        sta dbg39
         lda level0+256,y
         rts
 
 ggtt_bottom_section
-        ;cpy #255                        ; .x gets erroneously set to $ff when it should be $00
-        ;bne ggtt5                       ; when targeting first tile - I have no idea why :(
-        ;lda #3                          ; so just return a 3 in that case, which is the value we're after
-        ;rts
-ggtt5   lda level0+512,y
+        lda num1
+        cmp #255                        ; .x gets erroneously set to $ff when it should be $00
+        bne ggtt5                       ; when targeting first tile - I have no idea why :(
+        lda #3                          ; so just return a 3 in that case, which is the value we're after
+        rts
+ggtt5   lda #3
+        sta dbg39
+        lda level0+512,y
         rts

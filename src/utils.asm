@@ -8,7 +8,7 @@
 ;   num2 (multiplier), should be small for speed
 ;   Signedness should not matter
 ;
-; .X and .Y are preserved
+; .x and .y are preserved
 ; num1 and num2 get clobbered
 ;
 ; Instead of using a bit counter, this routine ends 
@@ -30,6 +30,7 @@ enterLoop                               ; For an accumulating multiply (.A = .A 
         bcs doAdd
         bne loop
         rts
+
 
 ; ------------------------------------------------------
 ; Routine to get a random number between 0 and n (max 3)
