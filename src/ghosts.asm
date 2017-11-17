@@ -16,7 +16,7 @@ mg1_lr  ldy ghost0_x_sub,x
         sec
         sbc #1
         ; lda #2
-        jsr roll_dice
+        jsr choose_random
         sta dbg13 
         tay
         lda dir1,y
@@ -29,7 +29,8 @@ mg1_ud  ldy ghost0_y_sub,x
         sec
         sbc #1
         ; lda #2
-        jsr roll_dice
+
+        jsr choose_random
         sta dbg13
         tay
         lda dir1,y

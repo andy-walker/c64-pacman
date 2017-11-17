@@ -38,21 +38,15 @@ enterLoop                               ; For an accumulating multiply (.A = .A 
 ; returns resulting number in .a
 ; ------------------------------------------------------
 
-roll_dice
+choose_random
         sta num1
-rd_loop lda $d41b                       ; get random number 0-255
-        lsr                             ; divide this down to the 0-4 range
-        lsr
-        lsr
-        lsr
-        lsr
-        lsr   ; 0-4
+cr_loop lda $d41b
+        and #%00000011
         cmp num1
-        bcc rd_done                     ; if less than or equal to upper range
-        beq rd_done                     ; then we're done
-        bcs rd_loop                     ; otherwise repeat
-rd_done
-        rts
+        bcc cr_done
+        beq cr_done
+        bcs cr_loop
+cr_done rts
 
 
 ; --------------------
