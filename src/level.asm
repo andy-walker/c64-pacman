@@ -122,30 +122,45 @@ next_char
 
 level_init_sprites
         
-        
-        lda #5 ;#13                     ; initialise pacman tile position
+        lda #13                         ; initialise pacman tile position
         sta pacman_x_tile
-        lda #1 ;#15
+        lda #15
         sta pacman_y_tile
         
         lda #13                         ; initialise ghost0 (blinky) tile position
         sta ghost0_x_tile
-        lda #19
+        lda #7
         sta ghost0_y_tile
+
+        lda #11
+        sta ghost1_x_tile
+        lda #9
+        sta ghost1_y_tile
 
         lda #5                          ; initialise all x sub positions to 5 (tile centre)
         sta pacman_x_sub
         sta ghost0_x_sub
+        sta ghost1_x_sub
+
         lda #5                          ; initialise all y sub positions to 5 (tile centre)
         sta ghost0_y_sub
+        sta ghost1_y_sub
         sta pacman_y_sub
 
         jsr set_pacman_sprite_left
         jsr update_pacman_sprite
 
         ldx #0                          ; set .x to ghost index (0)
-        ldy #right                      ; set .y to ghost direction
+        ldy #left                       ; set .y to ghost direction
         sty ghost0_direction            ; store direction
+
+        jsr set_ghost_sprite            ; set and update ghost0 sprites
+        jsr update_ghost_sprite
+
+        ldx #1                          ; set .x to ghost index (1)
+        ldy #down                       ; set .y to ghost direction
+        sty ghost1_direction            ; store direction
+
         jsr set_ghost_sprite            ; set and update ghost0 sprites
         jsr update_ghost_sprite
 
@@ -164,26 +179,22 @@ eat_dot
         lda pacman_x_tile
         jsr get_translated
 
-
-        ;ldx matrix_offset               ; load the level offset we previously stored
-        ;ldy translate0,x                ; query the translation matrix for this offset to get screen memory location
-
         ldx pacman_x_tile
         lda pacman_y_tile
         cmp #5
-        beq epp1
-        bcs epp2
+        beq ed1
+        bcs ed2
         jmp eat1
-epp1    cpx #10
+ed1     cpx #10
         bcc eat1
         jmp eat2
-epp2    cmp #11
-        bcs epp3
+ed2     cmp #11
+        bcs ed3
         jmp eat2
-epp3    cmp #16
-        bcs epp4
+ed3     cmp #16
+        bcs ed4
         jmp eat3
-epp4    cpy #255
+ed4     cpy #255
         beq eat3
         jmp eat4
 
@@ -241,7 +252,6 @@ gtr_bottom_section
         rts
 gtr5    ldy translate0+512,x
         rts
-
 
 
 ; --------------------------------------------

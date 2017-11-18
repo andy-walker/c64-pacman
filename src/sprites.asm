@@ -5,8 +5,8 @@
 
 game_init_sprites
 
-        lda #%00100011 
-        sta $d015                       ; Turn on sprite 0-2 
+        lda #%01100111 
+        sta $d015                       ; enable sprites
 
         lda #7 
         sta $d027                       ; sprite 0: colour yellow
@@ -217,7 +217,14 @@ sgs2
 
 update_ghost_sprite
 
-        ldy $d002                       ; note previous x position (for overflow checking)
+        txa                             ; setup .y as an offset register
+        asl                             ; should be 2 * .x
+        sta tmp1                        ; temporarily store
+        tay                             ; and transfer to .y
+        
+        lda $d002,y                     ; note previous x position (for overflow checking)
+        sta tmp2
+
         lda ghost0_x_tile,x             ; get x tile position
         asl                             ; multiply by 10
         asl
@@ -227,32 +234,28 @@ update_ghost_sprite
         adc ghost0_x_tile,x
         adc ghost0_x_sub,x              ; add x sub tile position
         adc #45                         ; add 45 (the x offset of the background graphic)
-        sta $d002                       ; store in $d002 (todo: need to offset with y * 2)  
-        sta $d00a                       ; same for eyes sprite
+        sta $d002,y                     ; store in $d002 (todo: need to offset with y * 2)  
+        sta $d00a,y                     ; same for eyes sprite
 
         ; primitively handle the sprite's x carry bit
 
+        ldy tmp2
         cpy #255                        ; if previous x was 255
         bne ugs1
         cmp #0                          ; and now it's zero
         bne ugs1
 
-        lda $d010                       ; flip sprites' carry bits
-        eor #%00100010
-        sta $d010
-
+        jsr ghost_flip_carry_bits
 
 ugs1    cpy #0                          ; if previous x was zero
         bne ugs2
         cmp #255                        ; and now it's 255
         bne ugs2
 
-        lda $d010
-        eor #%00100010                  ; flip sprites' carry bits
-        sta $d010
+        jsr ghost_flip_carry_bits
 
-
-ugs2    lda ghost0_y_tile,x             ; get y tile position
+ugs2    ldy tmp1
+        lda ghost0_y_tile,x             ; get y tile position
         asl                             ; multiply by 10
         asl
         asl
@@ -261,7 +264,7 @@ ugs2    lda ghost0_y_tile,x             ; get y tile position
         adc ghost0_y_tile,x
         adc ghost0_y_sub,x              ; add y sub position
         adc #37                         ; add 37 (the y offset of the level)
-        sta $d003                       ; store in $d003 (todo: need to offset with y * 2) 
-        sta $d00b                       ; same for eyes sprite
+        sta $d003,y                     ; store in $d003 (todo: need to offset with y * 2) 
+        sta $d00b,y                     ; same for eyes sprite
 
         rts

@@ -95,7 +95,6 @@ start
         ora #$0e                        ; set chars location to $3800 for displaying the custom font
         sta $d018                       ; Bits 1-3 ($400+512bytes * low nibble value) of $d018 sets char location
                                         ; $400 + $200*$0E = $3800
-
         jsr game_init_sprites
         jsr init_level
 
@@ -114,7 +113,6 @@ start
         lda #%00000001                  ; enable raster interrupt signals from VIC
         sta $d01a
 
-        ;rts
         jsr *
 
 

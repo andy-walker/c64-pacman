@@ -3,7 +3,6 @@
 ; ----------------------------------
 
 move_ghosts
-        ; rts ; disable for now
         ldx #0
 mg1     lda ghost0_direction,x
         cmp #2
@@ -15,7 +14,6 @@ mg1_lr  ldy ghost0_x_sub,x
         lda dir5
         sec
         sbc #1
-        ; lda #2
         jsr choose_random
         tay
         lda dir1,y
@@ -76,9 +74,8 @@ ghost_move_left
         bne gml1
         lda #26                         ; set x tile to 26 (will decrement in next step)
         sta ghost0_x_tile,x
-        lda $d010
-        eor #%00100010                  ; also flip sprites' carry bits
-        sta $d010
+        jsr ghost_flip_carry_bits       ; also flip sprites' carry bits
+
 gml1
         dec ghost0_x_tile,x             ; decrement x tile position
         lda #9                          ; set x sub position to 9 (upper boundary)
@@ -116,10 +113,7 @@ ghost_move_right
         bne gmr1
         lda #0                          ; set x tile to zero (will increment to 1 in next step)
         sta ghost0_x_tile,x
-
-        lda $d010
-        eor #%00100010                  ; also flip sprites' carry bits at this point
-        sta $d010
+        jsr ghost_flip_carry_bits       ; also flip sprites' carry bits
 
 gmr1    
         inc ghost0_x_tile,x             ; increment x tile position
@@ -195,10 +189,10 @@ ghost_move_down_sub
 
 
 ghost_move_end
-        ; cpx #3
-        ; beq ghost_move_all_complete
-        ; inx
-        ; jmp mg1
+        cpx #1
+        beq ghost_move_all_complete
+        inx
+        jmp mg1
 
 ghost_move_all_complete
         rts
@@ -319,6 +313,42 @@ gd3     lda tmp2                        ; restore the original offset (where the
 gd4     rts
 
 
+; -------------------------------------------------
+; Routine to flip sprite carry bits
+; (possibly not worth the clock cycle penalty
+; of a jsr + rts just to do this, but for now ..)
+; .x should be preloaded with the ghost index (0-3)
+; -------------------------------------------------
+
+ghost_flip_carry_bits
+
+        lda $d010
+        cpx #0
+        bne ug3
+        eor #%00100010                  ; flip sprites' carry bits
+        jmp ug4
+ug3     eor #%01000100
+ug4     sta $d010
+        rts
+
+        stx tmp3                        ; store .x (for comparison)
+        sty tmp4                        ; store .y (to be restored at the end)
+        ldy #0                          ; set .y to 0
+        lda %00100010                   ; set eor bitmask to initial value
+
+gf_loop cpy tmp3                        ; compare .y to ghost offset
+        beq gf_flip                     ; branch if equal
+        asl                             ; otherwise shift bits left
+        iny                             ; increment counter
+        jmp gf_loop                     ; and loop
+
+gf_flip sta tmp2
+        lda $d010
+        eor tmp2
+        sta $d010
+        ldy tmp4
+        rts
+
 ; --------------------------------------------
 ; Routine to get the type of a tile
 ; .x should be loaded with the ghost index
@@ -357,13 +387,15 @@ ggtt_mid_section
         lda #2
         lda level0+256,y
         rts
-
 ggtt_bottom_section
+        cmp #19
+        beq ggtt7
+        lda num1
+        cmp #26
+        beq ggtt6
         cpy #255                        ; .y gets erroneously set to $ff when it should be $00
         beq ggtt5                       ; when targeting first tile - I have no idea why :(
-        cpy #0                  
-        beq ggtt6
-        jmp ggtt7
+        jmp ggtt6
 ggtt5   lda #3                          
         rts
 ggtt6   lda #0
