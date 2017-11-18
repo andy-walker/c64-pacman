@@ -331,23 +331,6 @@ ug3     eor #%01000100
 ug4     sta $d010
         rts
 
-        stx tmp3                        ; store .x (for comparison)
-        sty tmp4                        ; store .y (to be restored at the end)
-        ldy #0                          ; set .y to 0
-        lda %00100010                   ; set eor bitmask to initial value
-
-gf_loop cpy tmp3                        ; compare .y to ghost offset
-        beq gf_flip                     ; branch if equal
-        asl                             ; otherwise shift bits left
-        iny                             ; increment counter
-        jmp gf_loop                     ; and loop
-
-gf_flip sta tmp2
-        lda $d010
-        eor tmp2
-        sta $d010
-        ldy tmp4
-        rts
 
 ; --------------------------------------------
 ; Routine to get the type of a tile
