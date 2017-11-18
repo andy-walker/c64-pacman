@@ -143,8 +143,8 @@ level_init_sprites
         jsr set_pacman_sprite_left
         jsr update_pacman_sprite
 
-        ldx #left                       ; set .x to ghost index (0)
-        ldy #0                          ; set .y to ghost direction
+        ldx #0                          ; set .x to ghost index (0)
+        ldy #right                      ; set .y to ghost direction
         sty ghost0_direction            ; store direction
         jsr set_ghost_sprite            ; set and update ghost0 sprites
         jsr update_ghost_sprite
@@ -153,11 +153,11 @@ level_init_sprites
 
 
 ; ------------------------------------------------------------
-; Routine to locate the correct power pill character,
+; Routine to locate the correct dot or power pill character,
 ; remove it and increment player score.
 ; ------------------------------------------------------------
 
-eat_power_pill
+eat_dot
 
         ldx matrix_offset
         ldy pacman_y_tile
@@ -252,8 +252,6 @@ gtr5    ldy translate0+512,x
 ; --------------------------------------------
 
 get_tile_type
-        stx dbg36
-        sty dbg37
         lda pacman_x_tile               ; load x tile position into .a  
         cpy #9                          ; compare y tile position with 9
         bcc gtt_top_section             ; if less than 9, branch to top section handler
@@ -275,7 +273,6 @@ gtt_top_section
         rts
 gtt_mid_section
         lda level0+256,x
-        sta dbg38
         rts
 
 gtt_bottom_section

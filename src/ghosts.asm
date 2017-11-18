@@ -17,7 +17,6 @@ mg1_lr  ldy ghost0_x_sub,x
         sbc #1
         ; lda #2
         jsr choose_random
-        sta dbg13 
         tay
         lda dir1,y
         jmp ghost_change_direction
@@ -28,10 +27,7 @@ mg1_ud  ldy ghost0_y_sub,x
         lda dir5
         sec
         sbc #1
-        ; lda #2
-
         jsr choose_random
-        sta dbg13
         tay
         lda dir1,y
         jmp ghost_change_direction
@@ -219,17 +215,6 @@ get_available_directions
         lda #0
         sta dir5                        ; initialise dir5 to zero (length of available directions)
 
-        ; temp
-        sta dbg5
-        sta dbg6
-        sta dbg7
-        sta dbg8
-        lda #4
-        sta dbg9
-        sta dbg10
-        sta dbg11
-        sta dbg12
-
         lda #27
         sta num1                        ; set multiplicand to 27 (the length of a row)
         lda ghost0_y_tile,x
@@ -240,121 +225,96 @@ get_available_directions
         sta tmp2                        ; store the offset (where the ghost is now)
         sec
         sbc #1                          ; subtract 1 to look to the left
-        sta dbg16
         tay                             ; transfer to y register (used as an offset in ghost_get_tile_type)
         
         lda ghost0_x_tile,x
         sec
         sbc #1
         sta num1
-        sta dbg20
 
         lda ghost0_y_tile,x             ; load accumulator with ghost y tile position
-        sta dbg24
         jsr ghost_get_tile_type
-        ; lda #0
-        sta dbg1
         cmp #$00
         beq gd1
         lda ghost0_direction,x          ; check current direction
         cmp #right                      ; if it's right, skip to next
         beq gd1                         ; (cannot reverse direction)
         lda #1
-        sta dbg5
         lda #left
         sta dir1
-        sta dbg9
         inc dir5
 
 gd1     lda tmp2                        ; restore the original offset (where the ghost is now)
         clc
         adc #1                          ; add 1 to look to the right
-        sta dbg17
         tay                             ; transfer to y register (used as an offset in ghost_get_tile_type)
 
         lda ghost0_x_tile,x
         clc
         adc #1
         sta num1
-        sta dbg21
 
         lda ghost0_y_tile,x             ; load accumulator with ghost y tile position
-        sta dbg25
 
         jsr ghost_get_tile_type
         clc
-        sta dbg2
         cmp #$00
         beq gd2
         lda ghost0_direction,x          ; check current direction
         cmp #left                       ; if it's left, skip to next
         beq gd2                         ; (cannot reverse direction)
         lda #1
-        sta dbg6
         ldy dir5
         lda #right
         sta dir1,y
-        sta dbg10
         inc dir5
 
 gd2     lda tmp2                        ; restore the original offset (where the ghost is now)
         sec
         sbc #27                         ; subtract 27 to look at the tile above
-        sta dbg18
         tay                             ; transfer to y register (used as an offset in ghost_get_tile_type)
         
         lda ghost0_x_tile,x
         sta num1
-        sta dbg22
 
         lda ghost0_y_tile,x             ; load accumulator with ghost y tile position
         sec
         sbc #1
-        sta dbg26
 
         jsr ghost_get_tile_type
-        sta dbg3
         cmp #$00
         beq gd3
         lda ghost0_direction,x          ; check current direction
         cmp #down                       ; if it's down, skip to next
         beq gd3                         ; (cannot reverse direction)
         lda #1
-        sta dbg7
         ldy dir5
         lda #up
         sta dir1,y
-        sta dbg11
         inc dir5
 
 gd3     lda tmp2                        ; restore the original offset (where the ghost is now)
         clc
         adc #27                         ; add 27 to look at the tile below
-        sta dbg19
         tay                             ; transfer to y register (used as an offset in ghost_get_tile_type)
         
         lda ghost0_x_tile,x
         sta num1
-        sta dbg23
         
         lda ghost0_y_tile,x             ; load accumulator with ghost y tile position
         clc
         adc #1
-        sta dbg27
 
         jsr ghost_get_tile_type
-        sta dbg4
         cmp #$00
         beq gd4
         lda ghost0_direction,x          ; check current direction
         cmp #up                         ; if it's up, skip to end
         beq gd4                         ; (cannot reverse direction)
         lda #1
-        sta dbg8
         ldy dir5
         lda #down
         sta dir1,y
-        sta dbg12
         inc dir5
 gd4     rts
 
@@ -391,22 +351,23 @@ ggtt4   lda num1
 
 ggtt_top_section
         lda #1
-        sta dbg39
         lda level0,y                    ; load the tile type index, using x as an offset
         rts
 ggtt_mid_section
         lda #2
-        sta dbg39
         lda level0+256,y
         rts
 
 ggtt_bottom_section
-        lda num1
-        cmp #255                        ; .x gets erroneously set to $ff when it should be $00
-        bne ggtt5                       ; when targeting first tile - I have no idea why :(
-        lda #3                          ; so just return a 3 in that case, which is the value we're after
+        cpy #255                        ; .y gets erroneously set to $ff when it should be $00
+        beq ggtt5                       ; when targeting first tile - I have no idea why :(
+        cpy #0                  
+        beq ggtt6
+        jmp ggtt7
+ggtt5   lda #3                          
         rts
-ggtt5   lda #3
-        sta dbg39
+ggtt6   lda #0
+        rts
+ggtt7   lda #3
         lda level0+512,y
         rts

@@ -175,7 +175,7 @@ move_left_sub
         sta pacman_x_sub                ; store that back to memory
         cmp #5                          ; does it equal 5?
         bne mls1                        ; if not, skip next instruction
-        jsr eat_power_pill              ; if so, clear power pill and increment score              
+        jsr eat_dot                     ; if so, clear power pill and increment score              
 mls1    jsr set_pacman_sprite_left      ; set sprite pointer to the correct animation frame
         jsr update_pacman_sprite        ; update the sprite on screen
         lda #1                          ; return 1 in .a (moved)
@@ -242,7 +242,7 @@ move_right_sub
         sta pacman_x_sub                ; store that back to memory
         cmp #5                          ; does it equal 5?
         bne mrs1                        ; if not, skip next instruction
-        jsr eat_power_pill              ; if so, clear power pill and increment score  
+        jsr eat_dot                     ; if so, clear power pill and increment score  
 mrs1    jsr set_pacman_sprite_right
         jsr update_pacman_sprite
         lda #1                          ; return 1 in .a (moved)
@@ -309,7 +309,7 @@ move_up_sub
         sta pacman_y_sub                ; store that back to memory
         cmp #5                          ; does it equal 5?
         bne mus1                        ; if not, skip next instruction
-        jsr eat_power_pill              ; if so, clear power pill and increment score  
+        jsr eat_dot                     ; if so, clear power pill and increment score  
 mus1    jsr set_pacman_sprite_up
         jsr update_pacman_sprite
         lda #1                          ; return 1 in .a (moved)
@@ -378,7 +378,7 @@ move_down_sub
         sta pacman_y_sub                ; store that back to memory
         cmp #5                          ; does it equal 5?
         bne mds1                        ; if not, skip next instruction
-        jsr eat_power_pill              ; if so, clear power pill and increment score  
+        jsr eat_dot                     ; if so, clear power pill and increment score  
 mds1    jsr set_pacman_sprite_down
         jsr update_pacman_sprite
         lda #1                          ; return 1 in .a (moved)
