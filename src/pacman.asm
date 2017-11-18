@@ -159,10 +159,26 @@ move_left
         cmp #0                          ; if greater than zero ..
         
         bne move_left_sub               ; move left by sub position, otherwise (if zero) ..
-        dec pacman_x_tile               ; decrement x tile position
+
+        ; tunnel wrap-around
+
+        lda pacman_x_tile
+        cmp #1
+        bne ml1
+        lda pacman_y_tile
+        cmp #10                         ; and y tile is 10
+        bne ml1
+        lda #26                         ; set x tile to 26 (will decrement in next step)
+        sta pacman_x_tile
+
+        lda $d010
+        eor #%00000001                  ; flip sprite carry bit
+        sta $d010
+
+ml1     dec pacman_x_tile               ; decrement x tile position
         lda #9                          ; set x sub position to 9 (upper boundary)
-        sta pacman_x_sub   
-        
+        sta pacman_x_sub
+           
         jsr set_pacman_sprite_left
         jsr update_pacman_sprite
         lda #1                          ; return 1 in .a (moved)
@@ -226,7 +242,23 @@ move_right
         lda pacman_x_sub                ; load x sub position
         cmp #9                          ; if less than 9 ..
         bne move_right_sub              ; move right by sub position, otherwise (if zero) ..
-        inc pacman_x_tile               ; increment x tile position
+        
+        ; tunnel wrap-around
+
+        lda pacman_x_tile
+        cmp #25                         ; if x tile is 25
+        bne mr1
+        lda pacman_y_tile
+        cmp #10                         ; and y tile is 10
+        bne mr1
+        lda #0                          ; set x tile to zero (will increment to 1 in next step)
+        sta pacman_x_tile        
+        
+        lda $d010
+        eor #%00000001                  ; flip sprite carry bit
+        sta $d010
+
+mr1     inc pacman_x_tile               ; increment x tile position
         lda #0                          ; set x sub position to 0 (lower boundary)
         sta pacman_x_sub   
         
