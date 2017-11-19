@@ -64,9 +64,12 @@ ghost1_direction = $21
 ghost2_direction = $22
 ghost3_direction = $23
 
-frightened_mode  = $24
-timer_seconds    = $25
-timer_ticks      = $26
+tile_type        = $24
+
+frightened_mode  = $25
+timer_seconds    = $26
+timer_ticks      = $27
+
 
 ; temp storage space for general use
 

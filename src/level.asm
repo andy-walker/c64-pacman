@@ -217,6 +217,19 @@ lf_end  rts
 
 eat_dot
 
+        lda tile_type                   ; load tile type we stored when querying it
+        cmp #4                          ; if it's not 4 (power pill)                       
+        bne ed_start                    ; jump to main part of routine
+                                        ; otherwise ..
+        ; initialise frightened mode
+
+        lda #1                          ; set frightened_mode to 1
+        sta frightened_mode
+        lda #0                          ; zero timer_seconds / timer_ticks
+        sta timer_ticks
+        sta timer_seconds
+
+ed_start
         ldx matrix_offset
         ldy pacman_y_tile
         lda pacman_x_tile

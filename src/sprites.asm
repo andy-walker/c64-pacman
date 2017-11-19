@@ -152,7 +152,6 @@ update_pacman_sprite
         eor #%00000001                  ; flip sprite carry bit
         sta $d010
 
-
 ups1    cpx #0                          ; if previous x was zero
         bne ups2
         cmp #255                        ; and now it's 255
@@ -161,7 +160,6 @@ ups1    cpx #0                          ; if previous x was zero
         lda $d010
         eor #%00000001                  ; flip sprite carry bit
         sta $d010
-
 
         ; set y position
 
