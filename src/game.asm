@@ -64,12 +64,16 @@ ghost1_direction = $21
 ghost2_direction = $22
 ghost3_direction = $23
 
+frightened_mode  = $24
+timer_seconds    = $25
+timer_ticks      = $26
+
 ; temp storage space for general use
 
-tmp1 = $24
-tmp2 = $25
-tmp3 = $26
-tmp4 = $27
+tmp1 = $30
+tmp2 = $31
+tmp3 = $32
+tmp4 = $33
 
 ; ------------------
 ; Main program start
@@ -116,7 +120,7 @@ start
         jsr *
 
 
-irq     
+irq     jsr level_init_frame
         jsr move_character
         jsr move_ghosts
         asl $d019                       ; acknowledge raster irq

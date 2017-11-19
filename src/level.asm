@@ -4,6 +4,7 @@
 
 init_level
         ldx #0
+        stx frightened_mode
 
 loader_loop 
         
@@ -165,6 +166,48 @@ level_init_sprites
         jsr update_ghost_sprite
 
         rts
+
+
+; ----------------------------------------------------
+; Routine to run at the beginning of each cycle
+; of the game loop - handles gameplay mode, timers etc
+; ----------------------------------------------------
+
+level_init_frame
+        
+        ; handle timer for frightened mode
+
+        lda frightened_mode             
+        cmp #0                          ; if ghosts not in frightened mode 
+        beq lf_end                      ; skip to end of subroutine
+                                        ; otherwise ..
+        inc timer_ticks                 ; increment timer ticks
+        ldx timer_ticks                 ; and load into .x
+        cpx #50                         ; compare to 50 (framerate = 50fps)
+        bne lf_end                      ; if not equal, skip to end of sub
+                                        ; otherwise (if equal) ..
+        inc timer_seconds               ; increment timer seconds
+        lda timer_seconds               ; and load the value into .a
+        ldx #0                          ; reset ticks to zero                
+        stx timer_ticks
+
+        cmp #6                          ; if less than 6
+        bcc lf_end                      ; skip to end of subroutine (remain in frightened mode)
+        beq lf_frightened_mode_flash    ; if equal to 6, increment mode (to cause ghosts to flash)
+
+        cmp #8                          ; if 8 seconds ..
+        beq lf_end_frightened_mode      ; jump to end frightened mode branch
+        jmp lf_end                      ; otherwise, skip to end of sub
+
+lf_frightened_mode_flash
+        inc frightened_mode             ; increment frightened mode to 2
+        jmp lf_end                      ; then jump to end 
+
+lf_end_frightened_mode
+        lda #0                          ; set frightened mode to zero
+        sta frightened_mode
+
+lf_end  rts
 
 
 ; ------------------------------------------------------------
