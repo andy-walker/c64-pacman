@@ -179,9 +179,40 @@ level_init_frame
 
         lda frightened_mode             
         cmp #0                          ; if ghosts not in frightened mode 
-        beq lf_end                      ; skip to end of subroutine
-                                        ; otherwise ..
-        inc timer_ticks                 ; increment timer ticks
+        beq lf_exit                     ; skip to end of subroutine
+        jmp lf0
+lf_exit jmp lf_end                                       
+lf0     cmp #2
+        bne lf2
+        ldx timer_ticks
+        cpx #0
+        bne lf1
+       
+        lda #1                          ; set ghost sprites to white
+        sta $d028
+        sta $d029       
+        sta $d02a                 
+        sta $d02b                       
+        lda #2                          ; set eye sprites to red
+        sta $d02c
+        sta $d02d
+        sta $d02e
+        jmp lf2
+
+lf1     cpx #25
+        bne lf2
+
+        lda #6                          ; set ghost sprites to blue
+        sta $d028
+        sta $d029       
+        sta $d02a                 
+        sta $d02b                       
+        lda #1                          ; set eye sprites to purple
+        sta $d02c
+        sta $d02d
+        sta $d02e                
+
+lf2     inc timer_ticks                 ; increment timer ticks
         ldx timer_ticks                 ; and load into .x
         cpx #50                         ; compare to 50 (framerate = 50fps)
         bne lf_end                      ; if not equal, skip to end of sub
@@ -191,24 +222,62 @@ level_init_frame
         ldx #0                          ; reset ticks to zero                
         stx timer_ticks
 
-        cmp #6                          ; if less than 6
+        cmp #5                          ; if less than 5
         bcc lf_end                      ; skip to end of subroutine (remain in frightened mode)
-        beq lf_frightened_mode_flash    ; if equal to 6, increment mode (to cause ghosts to flash)
+        beq lf_frightened_mode_flash    ; if equal to 5, increment mode (to cause ghosts to flash)
 
         cmp #8                          ; if 8 seconds ..
         beq lf_end_frightened_mode      ; jump to end frightened mode branch
         jmp lf_end                      ; otherwise, skip to end of sub
 
 lf_frightened_mode_flash
+
         inc frightened_mode             ; increment frightened mode to 2
         jmp lf_end                      ; then jump to end 
 
 lf_end_frightened_mode
+
         lda #0                          ; set frightened mode to zero
         sta frightened_mode
 
+        lda #2 
+        sta $d028                       ; sprite 1: colour red
+        lda #4
+        sta $d029                       ; sprite 2: colour purple
+        lda #3
+        sta $d02a                       ; sprite 3: colour cyan
+        lda #10
+        sta $d02b                       ; sprite 4: colour orange
+        lda #1
+        sta $d02c
+        sta $d02d
+        sta $d02e
+
 lf_end  rts
 
+
+; --------------------------------
+; Initialise ghost frightened mode
+; --------------------------------
+
+init_frightened_mode
+        
+        lda #1                          ; set frightened_mode to 1
+        sta frightened_mode
+        lda #0                          ; zero timer_seconds / timer_ticks
+        sta timer_ticks
+        sta timer_seconds
+        
+        lda #6                          ; set ghost sprites to blue
+        sta $d028
+        sta $d029       
+        sta $d02a                 
+        sta $d02b                       
+        lda #1                          ; set eye sprites to purple
+        sta $d02c
+        sta $d02d
+        sta $d02e
+        rts
 
 ; ------------------------------------------------------------
 ; Routine to locate the correct dot or power pill character,
@@ -217,21 +286,15 @@ lf_end  rts
 
 eat_dot
 
-        lda tile_type                   ; load tile type we stored when querying it
-        cmp #4                          ; if it's not 4 (power pill)                       
-        bne ed_start                    ; jump to main part of routine
-                                        ; otherwise ..
-        ; initialise frightened mode
-
-        lda #1                          ; set frightened_mode to 1
-        sta frightened_mode
-        lda #0                          ; zero timer_seconds / timer_ticks
-        sta timer_ticks
-        sta timer_seconds
-
-ed_start
         ldx matrix_offset
         ldy pacman_y_tile
+        jsr get_tile_type
+        cmp #4                          ; if it's not 4 (power pill)                       
+        bne ed_start                    ; jump to main part of routine
+        jsr init_frightened_mode        ; otherwise initialise frightened mode (power pill eaten)
+
+ed_start
+
         lda pacman_x_tile
         jsr get_translated
 

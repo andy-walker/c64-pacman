@@ -142,10 +142,10 @@ ccml1   lda pacman_x_sub                ; load .a with x sub position
         jsr multiply                    ; call multiply routine (puts result in .a)
         adc pacman_x_tile               ; add the x tile offset
         tax                             ; move result to x register
+        stx main_offset                 ; save the offset of pacman's position
         dex                             ; decrement (as we want to look one tile to the left)
         stx matrix_offset               ; save the offset value (returned in .x)   
         jsr get_tile_type               ; load the tile type index, using x as an offset
-        sta tile_type                   ; save the tile type for later (used if dot is eaten)
         cmp #2                          ; if the index is 2 or greater ..
         bcs move_left                   ; move the character left
                                         ; otherwise, cannot move in this direction
@@ -231,7 +231,6 @@ ccmr1   lda pacman_x_sub                ; load .a with x sub position
         inx                             ; increment (as we want to look one tile to the right)
         stx matrix_offset               ; save the offset value             
         jsr get_tile_type               ; load the tile type index, using x as an offset
-        sta tile_type                   ; save the tile type for later (used if dot is eaten)
         cmp #2                          ; if the index is 2 or greater ..
         bcs move_right                  ; move the character right
                                         ; otherwise, cannot move in this direction
@@ -315,7 +314,6 @@ ccmu1   lda pacman_y_sub                ; load .a with y sub position
         tax                             ; move result to x register
         stx matrix_offset               ; save the offset value                
         jsr get_tile_type               ; load the tile type index, using x as an offset
-        sta tile_type                   ; save the tile type for later (used if dot is eaten)
         cmp #2                          ; if the index is 2 or greater ..
         bcs move_up                     ; move the character up ..
                                         ; otherwise, cannot move in this direction
@@ -384,7 +382,6 @@ ccmd1   lda pacman_y_sub                ; load .a with y sub position
         tax                             ; move result to x register
         stx matrix_offset               ; save the offset value
         jsr get_tile_type               ; load the tile type index, using x as an offset
-        sta tile_type                   ; save the tile type for later (used if dot is eaten)
         cmp #2                          ; if the index is 2 or greater ..
         bcs move_down                   ; move the character down ..
                                         ; otherwise, cannot move in this direction

@@ -183,6 +183,36 @@ ups2    lda pacman_y_tile               ; get y tile position
 ; --------------------------------------------
 
 set_ghost_sprite
+
+        lda frightened_mode
+        cmp #0
+        beq sgs_main
+
+sgs_frightened
+        
+        cpy #2                          ; determine ghost direction
+        bcc sgsf_lr                      
+sgsf_ud lda ghost0_y_sub,x              ; when up/down, get y sub position
+        jmp sgsf1
+sgsf_lr lda ghost0_x_sub,x              ; when left/right, get x sub position
+sgsf1   sta num1                        ; store sub position temporarily
+        lsr                             ; shift right (divide by 2)
+        asl                             ; shift left (multiply by 2)
+        cmp num1                        
+        beq sgsf_even                    ; if it's still the same number, number is an even number
+                                        ; otherwise, it's an odd number
+sgsf_odd 
+        lda #$95                        ; load accumulator with index of frightened 'A' sprite
+        jmp sgsf2
+sgsf_even 
+        lda #$96                        ; load accumulator with index of frightened 'B' sprite
+sgsf2        
+        sta $07f9,x                     ; set sprite pointer, using .x (ghost index) as an offset
+        lda #$99                        ; load accumulator with index of first sprite for ghost's eyes
+        sta $07fd,x                     ; store the resulting sprite index using .x as an offset
+        rts        
+
+sgs_main
         cpy #2                          ; determine ghost direction
         bcc sgs_lr                      
 sgs_ud  lda ghost0_y_sub,x              ; when up/down, get y sub position
