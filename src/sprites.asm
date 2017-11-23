@@ -1,4 +1,3 @@
-
 ; --------------------
 ; Sprite setup routine
 ; --------------------
@@ -208,7 +207,7 @@ sgsf_even
         lda #$96                        ; load accumulator with index of frightened 'B' sprite
 sgsf2        
         sta $07f9,x                     ; set sprite pointer, using .x (ghost index) as an offset
-        lda #$99                        ; load accumulator with index of first sprite for ghost's eyes
+        lda #$9d                        ; load accumulator with index of first sprite for ghost's eyes
         sta $07fd,x                     ; store the resulting sprite index using .x as an offset
         rts        
 
@@ -236,6 +235,7 @@ sgs2
         adc num1                        ; and add to sprite index
         sta $07fd,x                     ; store the resulting sprite index using .x as an offset
         rts
+
 
 ; --------------------------------------------
 ; Routine to update a specific ghost sprite

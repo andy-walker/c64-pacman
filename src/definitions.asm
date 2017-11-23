@@ -1,3 +1,7 @@
+; ------------------------
+; Preprocessor definitions 
+; ------------------------
+
 left  = 0
 right = 1
 up    = 2

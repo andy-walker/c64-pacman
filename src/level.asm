@@ -193,7 +193,7 @@ lf0     cmp #2
         sta $d029       
         sta $d02a                 
         sta $d02b                       
-        lda #2                          ; set eye sprites to red
+        lda #4                         ; set eye sprites to purple
         sta $d02c
         sta $d02d
         sta $d02e
@@ -288,18 +288,11 @@ eat_dot
 
         ldx matrix_offset
         ldy pacman_y_tile
-        jsr get_tile_type
-        cmp #4                          ; if it's not 4 (power pill)                       
-        bne ed_start                    ; jump to main part of routine
-        jsr init_frightened_mode        ; otherwise initialise frightened mode (power pill eaten)
-
-ed_start
-
         lda pacman_x_tile
         jsr get_translated
 
-        ldx pacman_x_tile
         lda pacman_y_tile
+        ldx pacman_x_tile
         cmp #5
         beq ed1
         bcs ed2
@@ -317,19 +310,47 @@ ed4     cpy #255
         beq eat3
         jmp eat4
 
-eat1    lda #7
+eat1    lda $0400,y                     ; check if contents of screen memory is 7 (blank space)
+        cmp #7                          ; if so, has already been eaten
+        beq ed_end                      ; (go to end of routine)
+        lda #7                          ; otherwise set screen memory to 7 (blank space character)                       
         sta $0400,y                        
-        rts
-eat2    lda #7
-        sta $0500,y
-        rts
-eat3    lda #7
-        sta $0600,y                        
-        rts
-eat4    lda #7
-        sta $0700,y
-        rts
+        jmp ed_final
 
+eat2    lda $0500,y                     ; check if contents of screen memory is 7 (blank space)
+        cmp #7                          ; if so, has already been eaten
+        beq ed_end                      ; (go to end of routine)
+        lda #7                          ; otherwise set screen memory to 7 (blank space character)  
+        sta $0500,y
+        jmp ed_final
+
+eat3    lda $0600,y                     ; check if contents of screen memory is 7 (blank space)
+        cmp #7                          ; if so, has already been eaten
+        beq ed_end                      ; (go to end of routine)
+        lda #7                          ; otherwise set screen memory to 7 (blank space character)  
+        sta $0600,y                        
+        jmp ed_final
+
+eat4    lda $0700,y                     ; check if contents of screen memory is 7 (blank space)
+        cmp #7                          ; if so, has already been eaten
+        beq ed_end                      ; (go to end of routine)
+        lda #7                          ; otherwise set screen memory to 7 (blank space character)  
+        sta $0700,y
+
+ed_final
+
+        ; if we ate something ..
+
+        ldx matrix_offset
+        ldy pacman_y_tile
+        lda pacman_x_tile
+
+        jsr get_tile_type
+        cmp #4                          ; if it's not 4 (power pill)                       
+        bne ed_end                      ; jump to end
+        jsr init_frightened_mode        ; otherwise initialise frightened mode (power pill eaten)
+
+ed_end  rts
 
 ; -----------------------------------------------
 ; Get translated row offset (helper for the above 
