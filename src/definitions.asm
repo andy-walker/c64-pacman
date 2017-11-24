@@ -61,11 +61,21 @@ ghost1_direction = $21
 ghost2_direction = $22
 ghost3_direction = $23
 
-main_offset      = $24
+ghost0_mode      = $24
+ghost1_mode      = $25
+ghost2_mode      = $26
+ghost3_mode      = $27
 
-frightened_mode  = $25
-timer_seconds    = $26
-timer_ticks      = $27
+score_msb1       = $28
+score_msb2       = $29
+score_lsb1       = $2a
+score_lsb2       = $2b
+
+main_offset      = $2c
+
+frightened_mode  = $2d
+timer_seconds    = $2e
+timer_ticks      = $2f
 
 ; temp storage space for general use
 
