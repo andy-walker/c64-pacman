@@ -7,6 +7,15 @@ right = 1
 up    = 2
 down  = 3
 
+; ghost modes (excl. frightened, which is a global mode)
+
+idle    = 0
+exit    = 1
+chase   = 2
+scatter = 3
+dead    = 4
+
+
 sprite_data_addr = $2000
 char_data_addr   = $3800
 
@@ -83,3 +92,9 @@ tmp1 = $30
 tmp2 = $31
 tmp3 = $32
 tmp4 = $33
+
+ghost1_dot_counter = $34
+ghost2_dot_counter = $35
+ghost3_dot_counter = $36
+
+level_number = $37
