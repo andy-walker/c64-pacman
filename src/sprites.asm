@@ -31,13 +31,13 @@ set_pacman_sprite_left
         bcc spsl1                       ; branch to spsr1 if less than
         beq spsl2                       ; branch to spsr2 if equal
                                         ; otherwise (if greater than)
-        lda #$7b
+        lda #sprite_base-5
         adc pacman_x_sub
         sta $07f8
         rts
 
 spsl1                                   ; less than 5
-        lda #$85
+        lda #sprite_base+5
         sbc pacman_x_sub
         sta $07f8
         rts

@@ -16,8 +16,8 @@ scatter      = 3
 dead         = 4
 cruise_elroy = 5
 
-sprite_base      = $80
-sprite_data_addr = $2000
+sprite_base      = $a0
+sprite_data_addr = $2800
 char_data_addr   = $3800
 
 pra              = $dc00                ; CIA#1 (Port Register A)
