@@ -3,26 +3,26 @@
 ; ----------------------------------
 
 move_ghosts
-        ldx #0
-mg1     lda ghost0_direction,x
-        cmp #2
-        bcs mg1_ud
+        ldx #0                          ; initialise offset register to 0
+mg1                                     ; begin looping over ghosts ..
+        lda ghost0_direction,x          ; load ghost's current direction
+        cmp #2                          ; if 2 or 3 (up / down)
+        bcs mg1_ud                      ; branch to up / down handler                 
+
 mg1_lr  ldy ghost0_x_sub,x
         cpy #5
         bne ghost_move_lr
-        jsr get_available_directions
-        lda dir5
-        sec
-        sbc #1
-        jsr choose_random
-        tay
-        lda dir1,y
-        jmp ghost_change_direction
+        jmp mg1_cd
+
 mg1_ud  ldy ghost0_y_sub,x
         cpy #5
         bne ghost_move_ud
-        jsr get_available_directions
+
+mg1_cd  jsr get_available_directions
         lda dir5
+
+        ; todo: choose direction based on mode
+
         sec
         sbc #1
         jsr choose_random
