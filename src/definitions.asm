@@ -9,13 +9,14 @@ down  = 3
 
 ; ghost modes (excl. frightened, which is a global mode)
 
-idle    = 0
-exit    = 1
-chase   = 2
-scatter = 3
-dead    = 4
+idle         = 0
+exit         = 1
+chase        = 2
+scatter      = 3
+dead         = 4
+cruise_elroy = 5
 
-
+sprite_base      = $80
 sprite_data_addr = $2000
 char_data_addr   = $3800
 

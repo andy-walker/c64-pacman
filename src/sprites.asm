@@ -43,7 +43,7 @@ spsl1                                   ; less than 5
         rts
 
 spsl2                                   ; equal to 5    
-        lda #$80 
+        lda #sprite_base 
         sta $07f8
         rts
 
@@ -55,19 +55,19 @@ set_pacman_sprite_right
         beq spsr2                       ; branch to spsr2 if equal
                                         ; otherwise (if greater than)
 
-        lda #$85
+        lda #sprite_base+5
         adc pacman_x_sub
         sta $07f8
         rts
 
 spsr1                                   ; less than 5
-        lda #$90
+        lda #sprite_base+16
         sbc pacman_x_sub
         sta $07f8
         rts
 
 spsr2                                   ; equal to 5    
-        lda #$80 
+        lda #sprite_base 
         sta $07f8
         rts
 
@@ -79,21 +79,21 @@ set_pacman_sprite_up
         bcc spsu1                       ; branch to spsu1 if less than
         beq spsu2                       ; branch to spsu2 if equal
                                         ; otherwise (if greater than)
-        lda #$89
+        lda #sprite_base+9
         adc pacman_y_sub
         sta $07f8
         rts
 
 spsu1                                   ; less than 5
 
-        lda #$95
+        lda #sprite_base+21
         sbc pacman_y_sub
         sta $07f8
         rts
 
 
 spsu2                                   ; equal to 5    
-        lda #$80 
+        lda #sprite_base 
         sta $07f8
         rts
 
@@ -104,19 +104,19 @@ set_pacman_sprite_down
         bcc spsd1                       ; branch to spsd1 if less than
         beq spsd2                       ; branch to spsd2 if equal
                                         ; otherwise (if greater than)
-        lda #$80
+        lda #sprite_base
         adc pacman_y_sub
         sta $07f8
         rts
 
 spsd1                                   ; less than 5
-        lda #$8b
+        lda #sprite_base+11
         sbc pacman_y_sub
         sta $07f8
         rts
 
 spsd2                                   ; equal to 5    
-        lda #$80 
+        lda #sprite_base 
         sta $07f8
         rts
 
@@ -198,16 +198,16 @@ sgsf1   sta num1                        ; store sub position temporarily
         lsr                             ; shift right (divide by 2)
         asl                             ; shift left (multiply by 2)
         cmp num1                        
-        beq sgsf_even                    ; if it's still the same number, number is an even number
+        beq sgsf_even                   ; if it's still the same number, number is an even number
                                         ; otherwise, it's an odd number
 sgsf_odd 
-        lda #$95                        ; load accumulator with index of frightened 'A' sprite
+        lda #sprite_base+21             ; load accumulator with index of frightened 'A' sprite
         jmp sgsf2
 sgsf_even 
-        lda #$96                        ; load accumulator with index of frightened 'B' sprite
+        lda #sprite_base+22             ; load accumulator with index of frightened 'B' sprite
 sgsf2        
         sta $07f9,x                     ; set sprite pointer, using .x (ghost index) as an offset
-        lda #$9d                        ; load accumulator with index of first sprite for ghost's eyes
+        lda #sprite_base+29             ; load accumulator with index of first sprite for ghost's eyes
         sta $07fd,x                     ; store the resulting sprite index using .x as an offset
         rts        
 
@@ -223,14 +223,14 @@ sgs1    sta num1                        ; store sub position temporarily
         cmp num1                        
         beq sgs_even                    ; if it's still the same number, number is an even number
                                         ; otherwise, it's an odd number
-sgs_odd lda #$97                        ; load accumulator with index of ghost 'A' sprite
+sgs_odd lda #sprite_base+23             ; load accumulator with index of ghost 'A' sprite
         jmp sgs2
 sgs_even 
-        lda #$98                        ; load accumulator with index of ghost 'B' sprite
+        lda #sprite_base+24             ; load accumulator with index of ghost 'B' sprite
 sgs2        
         clc
         sta $07f9,x                     ; set sprite pointer, using .x (ghost index) as an offset
-        lda #$99                        ; load accumulator with index of first sprite for ghost's eyes
+        lda #sprite_base+25             ; load accumulator with index of first sprite for ghost's eyes
         sty num1                        ; temporarily store .y register (ghost direction)
         adc num1                        ; and add to sprite index
         sta $07fd,x                     ; store the resulting sprite index using .x as an offset
