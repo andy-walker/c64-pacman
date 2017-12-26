@@ -341,7 +341,8 @@ ug4     sta $d010
 ; returns tile type index in .a 
 ; --------------------------------------------
 
-ghost_get_tile_type            
+ghost_get_tile_type
+     
         sta tmp1                        ; temporarily store y position
         cmp #9                          ; compare y tile position with 9
         bcc ggtt_top_section            ; if less than 9, branch to top section handler
@@ -359,7 +360,7 @@ ggtt3   lda tmp1                        ; restore y position to .a
         jmp ggtt_mid_section
 ggtt4   lda num1
         cmp #25
-        beq ggtt_bottom_section
+        bcs ggtt_bottom_section
         jmp ggtt_mid_section
 
 ggtt_top_section
@@ -371,6 +372,7 @@ ggtt_mid_section
         lda level0+256,y
         rts
 ggtt_bottom_section
+        lda tmp1
         cmp #19
         beq ggtt7
         lda num1
