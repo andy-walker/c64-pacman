@@ -4,9 +4,6 @@
 
 game_init_sprites
 
-        lda #%01100111 
-        sta $d015                       ; enable sprites
-
         lda #7 
         sta $d027                       ; sprite 0: colour yellow
         lda #2 

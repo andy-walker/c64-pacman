@@ -94,8 +94,11 @@ tmp2 = $31
 tmp3 = $32
 tmp4 = $33
 
-ghost1_dot_counter = $34
-ghost2_dot_counter = $35
-ghost3_dot_counter = $36
+dot_counter  = $34
+pacman_speed = $35
+ghost_speed  = $36
+ghost_active = $37
+level_number = $38
+level_state  = $39
 
-level_number = $37
+
