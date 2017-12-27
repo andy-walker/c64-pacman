@@ -37,7 +37,6 @@ start
         sta level_number
         
         jsr reset_score
-        jsr game_init_sprites
         jsr init_level
 
         ; irq initialisation (this should happen last)

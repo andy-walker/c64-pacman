@@ -7,9 +7,27 @@ init_level
         stx frightened_mode
         stx dot_counter
         stx level_state
+        stx $d010                      ; unset sprite carry bits
 
         lda %00000001                  ; set only blinky as active on level start
         sta ghost_active
+
+        ; set sprite colours
+
+        lda #7 
+        sta $d027                      ; sprite 0: colour yellow
+        lda #2 
+        sta $d028                      ; sprite 1: colour red
+        lda #4
+        sta $d029                      ; sprite 2: colour purple
+        lda #3
+        sta $d02a                      ; sprite 3: colour cyan
+        lda #10
+        sta $d02b                      ; sprite 4: colour orange
+        lda #1
+        sta $d02c
+        sta $d02d
+        sta $d02e
 
 
 loader_loop 
@@ -544,7 +562,8 @@ level_end_reset
         beq ler2
         rts
 
-ler1
+ler1    lda #0
+        sta $d015 
         jsr cls
         rts
 ler2

@@ -2,25 +2,6 @@
 ; Sprite setup routine
 ; --------------------
 
-game_init_sprites
-
-        lda #7 
-        sta $d027                       ; sprite 0: colour yellow
-        lda #2 
-        sta $d028                       ; sprite 1: colour red
-        lda #4
-        sta $d029                       ; sprite 2: colour purple
-        lda #3
-        sta $d02a                       ; sprite 3: colour cyan
-        lda #10
-        sta $d02b                       ; sprite 4: colour orange
-        lda #1
-        sta $d02c
-        sta $d02d
-        sta $d02e
-        rts
-
-
 set_pacman_sprite_left
 
         lda pacman_x_sub                ; get pacman x sub position
