@@ -164,8 +164,8 @@ move_left
         ; tunnel wrap-around
 
         lda pacman_x_tile
-        cmp #1
-        bne ml1
+        cmp #1                          ; if x tile is 1
+        bne ml1                         
         lda pacman_y_tile
         cmp #10                         ; and y tile is 10
         bne ml1

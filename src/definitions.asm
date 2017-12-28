@@ -101,4 +101,18 @@ ghost_active = $37
 level_number = $38
 level_state  = $39
 
+dbg1 = $40
+dbg2 = $41
+dbg3 = $42
+dbg4 = $43
+dbg5 = $44
+dbg6 = $45
+
+dbg11 = $46
+dbg12 = $47
+dbg13 = $48
+dbg14 = $49
+dbg15 = $4a
+dbg16 = $4b
+
 

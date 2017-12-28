@@ -18,11 +18,16 @@ mg1_ud  ldy ghost0_y_sub,x
         cpy #5
         bne ghost_move_ud
 
+; Choose a direction to move in
+
 mg1_cd  jsr get_available_directions
-        lda dir5
 
         ; todo: choose direction based on mode
-
+        ; cpx #0
+        ; bne mg1_tmp
+        ; jsr filter_directions
+mg1_tmp
+        lda dir5
         sec
         sbc #1
         jsr choose_random
@@ -387,4 +392,162 @@ ggtt6   lda #0
         rts
 ggtt7   lda #3
         lda level0+512,y
+        rts
+
+
+; ----------------------------------------------------------
+; Calculate ghost's target tile and choose a direction from
+; the available directions (in dir1-4) based on that
+; .x is our ghost index counter (0-3)
+; Return the chosen direction in .a
+; ----------------------------------------------------------
+
+filter_directions
+
+        lda dir1
+        sta dbg1
+        lda dir2
+        sta dbg2
+        lda dir3
+        sta dbg3
+        lda dir4
+        sta dbg4
+        lda dir5
+        sta dbg5        
+        
+        stx tmp1                        ; save .x register temporarily, as we'll need it below
+
+        lda dir5
+        cmp #1
+        bne fd_start
+        rts
+
+fd_start
+
+; set up a bitfield of available directions (todo: would be good
+; if dir1-5 were replaced with a bitfield in the future)
+        
+        ldy #0
+        lda #%00000000
+cd_loop ldx dir1,y
+        cpx #left
+        bne cdc_right
+        eor #%00001000
+cdc_right
+        cpx #right
+        bne cdc_up
+        eor #%00000100
+cdc_up
+        cpx #up
+        bne cdc_down
+        eor #%00000010
+cdc_down
+        cpx #down
+        bne cdc_end
+        eor #%00000001
+cdc_end
+        iny
+        cpy dir5
+        bcc cd_loop
+
+        ldx tmp1                        ; restore x register
+        sta tmp1                        ; temporarily save the bitfield value to tmp1
+        sta dbg6
+
+; check which ghost we are and set the target square
+; depending on which mode we're in.
+; .a will be set to target x tile
+; .y will be set to target y tile
+
+check_ghost0      
+        cpx #0
+        bne check_ghost1
+        lda pacman_x_tile               ; Blinky always targets pacman, even in scatter mode
+        ldy pacman_y_tile
+
+check_ghost1
+        cpx #1
+        bne check_ghost2
+
+check_ghost2
+        cpx #2
+        bne check_ghost3
+
+check_ghost3
+        ; if we got to here, we must be ghost3 - so skip .x register check
+        
+; check which directions are available, and calculate the 
+; best one to take to reach the target tile in the shortest route
+
+        sta num1                        ; store target x in num1
+        sty num2                        ; store target y in num2
+        lda tmp1                        ; load .a with our bitfield
+
+        ldy ghost0_x_tile,x             ; load .y with ghost x
+        cpy num1                        ; compare to target x
+        beq cgd_y
+        bcs cgd_xgt
+cgd_xlt                                 ; if target x is less
+        and #%11111011                  ; unset right
+        jmp cgd_y
+cgd_xgt                                 ; if target x is greater
+        and #%11110111                  ; unset left
+cgd_y
+        ldy ghost0_y_tile,x             ; load .y with ghost y
+        cpy num2                        ; compare with target y
+        beq cgd_filter_dir
+        bcs cgd_ygt
+cgd_ylt                                 ; if target y is less
+        and #%11111110                  ; unset down
+        jmp cgd_filter_dir
+cgd_ygt                                 ; if target y is greater
+        and #%11111101                  ; unset up
+
+cgd_filter_dir 
+        ldy #0
+        sta num1
+        sta dbg16
+        lda num1
+        and #%00001000
+        beq cgd_right
+        lda #left
+        sta dir1,y
+        iny 
+cgd_right
+        lda num1
+        and #%00000100
+        beq cgd_up
+        lda #right
+        sta dir1,y
+        iny
+cgd_up  
+        lda num1
+        and #%00000010
+        beq cgd_down
+        lda #up
+        sta dir1,y
+        iny
+cgd_down
+        lda num1
+        and #%00000001
+        beq cgd_end
+        lda #down
+        sta dir1,y
+        iny
+
+cgd_end
+        sty dir5
+
+        lda dir1
+        sta dbg11
+        lda dir2
+        sta dbg12
+        lda dir3
+        sta dbg13
+        lda dir4
+        sta dbg14
+        lda dir5
+        sta dbg15
+
+
         rts
