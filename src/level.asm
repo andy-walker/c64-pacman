@@ -6,8 +6,11 @@ init_level
         ldx #0
         stx frightened_mode
         stx dot_counter
-        stx level_state
         stx $d010                      ; unset sprite carry bits
+        stx $d01e                      ; unset sprite collision flags
+
+        lda #gameplay
+        sta game_mode
 
         lda %00000001                  ; set only blinky as active on level start
         sta ghost_active
@@ -465,12 +468,29 @@ gtt5    lda level0+512,x
 
 ; ---------------------------------------------------------
 ; Routine to run at the end of each cycle
-; of the game loop - triggers level end when all dots eaten
+; of the game loop - triggers level end when all dots eaten,
+; checks for collisions with ghosts
 ; ---------------------------------------------------------
 
 level_end_frame
-        
-        lda dot_counter
+
+        ; check for collisions between pacman and ghosts
+
+        ; check hardware sprite collision bitfield (for now - won't work with multiplexing)
+        lda #%00000001
+        bit $d01e
+        beq lef2
+
+        lda #life_lost                  ; set game mode to life_lost
+        sta game_mode
+
+        jmp lef3                        ; jump to end of sub (initialising timer)
+
+        ; lda #1
+        ; sta dbg1
+
+
+lef2    lda dot_counter
         cmp #211
         bcc lef_end
         
@@ -482,10 +502,10 @@ level_end_frame
         lda #sprite_base                ; set default pacman sprite
         sta $07f8
 
-        lda #1
-        sta level_state
+        lda #level_complete
+        sta game_mode
 
-        lda #0
+lef3    lda #0
         sta timer_seconds
         sta timer_ticks
 
@@ -567,9 +587,68 @@ ler1    lda #0
         jsr cls
         rts
 ler2
-        lda #0
-        sta level_state
         inc level_number
         jsr init_level
         rts
 
+
+; -------------------------------
+; Routine to handle losing a life
+; -------------------------------
+
+level_life_lost
+        
+        lda timer_ticks
+        cmp #50
+        bne lll1
+        lda #%00000001                  ; disable ghost sprites
+        sta $d015
+        lda #sprite_base+20
+        sta $07f8
+lll1    cmp #55
+        bne lll2
+        lda #sprite_base+34
+        sta $07f8
+lll2    cmp #60
+        bne lll3
+        lda #sprite_base+35
+        sta $07f8
+lll3    cmp #65
+        bne lll4
+        lda #sprite_base+36
+        sta $07f8
+lll4    cmp #70
+        bne lll5
+        lda #sprite_base+37
+        sta $07f8
+lll5    cmp #75
+        bne lll6
+        lda #sprite_base+38
+        sta $07f8
+lll6    cmp #80
+        bne lll7
+        lda #sprite_base+39
+        sta $07f8
+lll7    cmp #85
+        bne lll8
+        lda #sprite_base+40
+        sta $07f8
+lll8    cmp #90
+        bne lll9
+        lda #sprite_base+41
+        sta $07f8
+lll9    cmp #95
+        bne lll10
+        lda #sprite_base+42
+        sta $07f8
+lll10   cmp #100
+        bne lll11
+        lda #sprite_base+43
+        sta $07f8
+lll11   cmp #125
+        bne lll12
+        lda #0
+        sta $d015 
+lll12         
+        inc timer_ticks
+        rts

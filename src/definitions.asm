@@ -99,7 +99,14 @@ pacman_speed = $35
 ghost_speed  = $36
 ghost_active = $37
 level_number = $38
-level_state  = $39
+game_mode    = $39
+test_mode    = $3a
+
+startup        = 0
+attract        = 1
+gameplay       = 2
+life_lost      = 3
+level_complete = 4
 
 dbg1 = $40
 dbg2 = $41

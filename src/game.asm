@@ -33,6 +33,10 @@ start
         sta $d018                       ; Bits 1-3 ($400+512bytes * low nibble value) of $d018 sets char location
                                         ; $400 + $200*$0E = $3800
         
+        lda #0
+        sta test_mode
+        sta dbg1
+
         lda #1
         sta level_number
         
@@ -57,16 +61,29 @@ start
         jsr *
 
 
-irq     lda level_state
-        cmp #0
-        bne lvl_end
+irq     lda game_mode
+        cmp #gameplay
+        beq mode_gameplay
+        cmp #life_lost
+        beq mode_life_lost
+        cmp #level_complete
+        beq mode_level_complete
+
+mode_gameplay
         jsr level_init_frame
         jsr move_character
         jsr move_ghosts
         jsr level_end_frame
-        jmp irq_end
-lvl_end jsr level_end
-irq_end asl $d019                       ; acknowledge raster irq
+        jmp irq_ack
+
+mode_life_lost
+        jsr level_life_lost
+        jmp irq_ack
+
+mode_level_complete
+        jsr level_end
+
+irq_ack asl $d019                       ; acknowledge raster irq
         jmp $ea31                       ; scan keyboard (only do once per frame)
 
 
