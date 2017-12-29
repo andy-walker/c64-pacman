@@ -101,12 +101,14 @@ ghost_active = $37
 level_number = $38
 game_mode    = $39
 test_mode    = $3a
+lives        = $3b
 
 startup        = 0
 attract        = 1
 gameplay       = 2
 life_lost      = 3
 level_complete = 4
+game_over      = 5
 
 dbg1 = $40
 dbg2 = $41

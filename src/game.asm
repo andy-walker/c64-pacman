@@ -37,9 +37,12 @@ start
         sta test_mode
         sta dbg1
 
-        lda #1
+        lda #1                          ; set level = 1
         sta level_number
         
+        lda #2                          ; set lives = 2
+        sta lives
+
         jsr reset_score
         jsr init_level
 
@@ -68,6 +71,8 @@ irq     lda game_mode
         beq mode_life_lost
         cmp #level_complete
         beq mode_level_complete
+        cmp #game_over
+        beq mode_game_over
 
 mode_gameplay
         jsr level_init_frame
@@ -82,7 +87,10 @@ mode_life_lost
 
 mode_level_complete
         jsr level_end
+        jmp irq_ack
 
+mode_game_over
+        ; todo: handle game over
 irq_ack asl $d019                       ; acknowledge raster irq
         jmp $ea31                       ; scan keyboard (only do once per frame)
 

@@ -477,8 +477,12 @@ level_end_frame
         ; check for collisions between pacman and ghosts
 
         ; check hardware sprite collision bitfield (for now - won't work with multiplexing)
-        lda #%00000001
-        bit $d01e
+        ;lda #%00000001
+        ;bit $d01e
+        ;beq lef2
+
+        jsr detect_collisions
+        cmp #0
         beq lef2
 
         lda #life_lost                  ; set game mode to life_lost
@@ -649,6 +653,53 @@ lll11   cmp #125
         bne lll12
         lda #0
         sta $d015 
-lll12         
+lll12   cmp #150
+        bne lll13
+        lda #gameplay
+        sta game_mode
+        ldy lives
+        cpy #0
+        beq all_lives_lost
+        dey
+        sty lives
+        jsr level_init_sprites
+
+        rts
+lll13
         inc timer_ticks
+        rts
+
+all_lives_lost
+        lda #game_over
+        sta game_mode
+        rts
+
+; -----------------------------------------------------------------
+; Detect collisions between pacman and ghosts
+; Result returned in .a (0 = no collision, 1-4 ghost collided with)
+; -----------------------------------------------------------------
+
+detect_collisions
+        
+        ldx #0
+
+dc_begin
+        
+        lda ghost0_x_tile,x
+        cmp pacman_x_tile
+        bne dc_next
+        lda ghost0_y_tile,x
+        cmp pacman_y_tile
+        bne dc_next
+
+        inx 
+        txa
+        rts
+
+dc_next
+        inx
+        cpx #2
+        bne dc_begin
+        lda #0
+dc_end
         rts
