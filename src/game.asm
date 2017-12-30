@@ -33,9 +33,8 @@ start
         sta $d018                       ; Bits 1-3 ($400+512bytes * low nibble value) of $d018 sets char location
                                         ; $400 + $200*$0E = $3800
         
-        lda #0
+        lda #1                          ; enable test mode (unlimited lives)
         sta test_mode
-        sta dbg1
 
         lda #1                          ; set level = 1
         sta level_number

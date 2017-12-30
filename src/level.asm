@@ -6,8 +6,6 @@ init_level
         ldx #0
         stx frightened_mode
         stx dot_counter
-        stx $d010                      ; unset sprite carry bits
-        stx $d01e                      ; unset sprite collision flags
 
         lda #gameplay
         sta game_mode
@@ -152,7 +150,10 @@ level_init_sprites
 
         lda #%01100111 
         sta $d015                       ; enable sprites
-        
+
+        lda #0
+        sta $d010                       ; unset all carry bits
+
         lda #13                         ; initialise pacman tile position
         sta pacman_x_tile
         lda #15
@@ -476,11 +477,6 @@ level_end_frame
 
         ; check for collisions between pacman and ghosts
 
-        ; check hardware sprite collision bitfield (for now - won't work with multiplexing)
-        ;lda #%00000001
-        ;bit $d01e
-        ;beq lef2
-
         jsr detect_collisions
         cmp #0
         beq lef2
@@ -489,9 +485,6 @@ level_end_frame
         sta game_mode
 
         jmp lef3                        ; jump to end of sub (initialising timer)
-
-        ; lda #1
-        ; sta dbg1
 
 
 lef2    lda dot_counter
@@ -657,11 +650,15 @@ lll12   cmp #150
         bne lll13
         lda #gameplay
         sta game_mode
+        lda test_mode
+        cmp #1
+        beq ll_resume
         ldy lives
         cpy #0
         beq all_lives_lost
         dey
         sty lives
+ll_resume
         jsr level_init_sprites
 
         rts
