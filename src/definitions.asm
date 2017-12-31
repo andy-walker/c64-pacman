@@ -114,7 +114,10 @@ attract        = 1
 gameplay       = 2
 life_lost      = 3
 level_complete = 4
-game_over      = 5
+intermission1  = 5
+intermission2  = 6
+intermission3  = 7
+game_over      = 8
 
 dbg1 = $40
 dbg2 = $41
