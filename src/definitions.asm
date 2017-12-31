@@ -7,6 +7,12 @@ right = 1
 up    = 2
 down  = 3
 
+white = 1
+red = 2
+cyan = 14
+pink = 4
+orange = 10
+
 ; ghost modes (excl. frightened, which is a global mode)
 
 idle         = 0

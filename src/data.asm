@@ -97,7 +97,15 @@ level18 .byte  0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 3, 0, 0, 0, 0, 0, 0, 0,
 level19 .byte  0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0
 level20 .byte  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 
 
-
+attract_title .byte 113, 118, 111, 128, 111, 113, 130, 115, 128, 7, 149, 7, 124, 119, 113, 121, 124, 111, 123, 115  ; character / nickname
+attract_name1 .byte 148, 129, 118, 111, 114, 125, 133, 7    ; -shadow
+attract_nick1 .byte 147, 112, 122, 119, 124, 121, 135, 147  ; "blinky"
+attract_name2 .byte 148, 129, 126, 115, 115, 114, 135, 7    ; -speedy
+attract_nick2 .byte 147, 126, 119, 124, 121, 135, 147, 7    ; "pinky"
+attract_name3 .byte 148, 112, 111, 129, 118, 116, 131, 122  ; -bashful
+attract_nick3 .byte 147, 119, 124, 121, 135, 147, 7, 7      ; "inky"
+attract_name4 .byte 148, 126, 125, 121, 115, 135, 7, 7      ; -pokey
+attract_nick4 .byte 147, 113, 122, 135, 114, 115, 147, 7    ; "clyde"
 
 ; load sprite data
 *=sprite_data_addr	      

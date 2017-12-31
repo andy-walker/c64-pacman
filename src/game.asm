@@ -15,7 +15,8 @@
 *=$080d
 
 start  
-        jsr cls
+
+        jsr cls                         ; clear screen
         
         ; init random number generator using SID's noise waveform generator
         ; read from $d41b to get random number 
@@ -43,7 +44,12 @@ start
         sta lives
 
         jsr reset_score
-        jsr init_level
+        
+        ; jsr init_level
+
+        lda #attract
+        sta game_mode
+        jsr init_attract_mode
 
         ; irq initialisation (this should happen last)
         
@@ -72,6 +78,8 @@ irq     lda game_mode
         beq mode_level_complete
         cmp #game_over
         beq mode_game_over
+        cmp #attract
+        beq mode_attract
 
 mode_gameplay
         jsr level_init_frame
@@ -90,10 +98,15 @@ mode_level_complete
 
 mode_game_over
         ; todo: handle game over
+
+mode_attract
+        jsr attract_mode
+
 irq_ack asl $d019                       ; acknowledge raster irq
         jmp $ea31                       ; scan keyboard (only do once per frame)
 
 
+.include "attract.asm"
 .include "level.asm"
 .include "score.asm"
 .include "pacman.asm"
