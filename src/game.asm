@@ -106,7 +106,6 @@ irq_ack asl $d019                       ; acknowledge raster irq
         jmp $ea31                       ; scan keyboard (only do once per frame)
 
 
-.include "attract.asm"
 .include "level.asm"
 .include "score.asm"
 .include "pacman.asm"
@@ -114,3 +113,7 @@ irq_ack asl $d019                       ; acknowledge raster irq
 .include "sprites.asm"
 .include "utils.asm"
 .include "data.asm"
+
+*=$4000
+
+.include "attract.asm"

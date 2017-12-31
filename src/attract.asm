@@ -38,7 +38,7 @@ init_attract_mode
         sta $07fd
         sta $07ff
 
-        lda #82
+        lda #86
         sta $d000
         sta $d002
         sta $d004
