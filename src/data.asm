@@ -107,6 +107,9 @@ attract_nick3 .byte 147, 119, 124, 121, 135, 147, 7, 7      ; "inky"
 attract_name4 .byte 148, 126, 125, 121, 115, 135, 7, 7      ; -pokey
 attract_nick4 .byte 147, 113, 122, 135, 114, 115, 147, 7    ; "clyde"
 
+attract_points1 .byte 153, 7, 138, 137, 7, 150, 151, 152    ; 10 pts
+attract_points2 .byte 154, 7, 142, 137, 7, 150, 151, 152    ; 50 pts
+
 ; load sprite data
 *=sprite_data_addr	      
     .binary "../resources/sprites.raw"

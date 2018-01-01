@@ -9,9 +9,27 @@ init_attract_mode
         lda #0                          ; reset timer
         sta timer_ticks
         sta timer_seconds        
+        
+        ; init lower sprite x positions
+        lda #200
+        sta tmp1
+        lda #100
+        sta tmp2
+        lda #110
+        sta tmp3
+        lda #120
+        sta tmp4
+        lda #130
+        sta tmp5
+        
         rts
 
-attract_mode
+
+; ------------------------------------------------------
+; Routine to handle upper half of attract mode animation
+; ------------------------------------------------------
+
+attract_mode_upper
 
         jsr set_screen_upper_sprites
 
@@ -21,9 +39,7 @@ attract_mode
         jsr am_stage1
         cpy #9
         bcc am_done
-        lda $d015                       ; enable sprite 0
-        eor #%00000011
-        sta $d015
+        jsr am_stage2
         cpy #15
         bcc am_done
         jsr am_stage3
@@ -32,9 +48,7 @@ attract_mode
         jsr am_stage4
         cpy #21
         bcc am_done
-        lda $d015                       ; enable sprite 1
-        eor #%00001100
-        sta $d015
+        jsr am_stage5
         cpy #27
         bcc am_done
         jsr am_stage6
@@ -43,9 +57,7 @@ attract_mode
         jsr am_stage7
         cpy #33
         bcc am_done
-        lda $d015                       ; enable sprite 2
-        eor #%00110000
-        sta $d015
+        jsr am_stage8
         cpy #39
         bcc am_done
         jsr am_stage9
@@ -54,16 +66,20 @@ attract_mode
         jsr am_stage10
         cpy #45
         bcc am_done
-        lda $d015                       ; enable sprite 3
-        eor #%11000000
-        sta $d015
+        jsr am_stage11
         cpy #51
         bcc am_done
         jsr am_stage12
         cpy #54
         bcc am_done
         jsr am_stage13
-        cpy #100
+        cpy #60
+        bcc am_done
+        jsr am_stage14
+        cpy #66
+        bcc am_done
+        jsr am_stage15
+        cpy #150
         bcc am_done
         
         jsr init_attract_mode
@@ -93,6 +109,12 @@ ams1_start
         bne ams1_start
         rts
 
+am_stage2
+        lda $d015                       ; enable sprite 0
+        eor #%00000011
+        sta $d015
+        rts
+
 am_stage3
         ldx #0
 ams3_start
@@ -115,6 +137,12 @@ ams4_start
         inx
         cpx #8
         bne ams4_start
+        rts
+
+am_stage5
+        lda $d015                       ; enable sprite 1
+        eor #%00001100
+        sta $d015
         rts
 
 am_stage6
@@ -141,6 +169,12 @@ ams7_start
         bne ams7_start
         rts
 
+am_stage8
+        lda $d015                       ; enable sprite 2
+        eor #%00110000
+        sta $d015
+        rts
+
 am_stage9
         ldx #0
 ams9_start
@@ -165,6 +199,11 @@ ams10_start
         bne ams10_start
         rts
 
+am_stage11
+        lda $d015                       ; enable sprite 3
+        eor #%11000000
+        sta $d015
+        rts
 
 am_stage12
         ldx #0
@@ -188,6 +227,30 @@ ams13_start
         inx
         cpx #8
         bne ams13_start
+        rts
+
+am_stage14
+        ldx #0
+ams14_start
+        lda attract_points1,x
+        sta $0758,x 
+        lda attract_points2,x
+        sta $07a8,x 
+        lda #white
+        sta $db58,x
+        sta $dba8,x
+        inx
+        cpx #8
+        bne ams14_start
+        lda #orange
+        sta $db58
+        rts
+
+am_stage15
+        lda #154
+        sta $06b0
+        lda #white
+        sta $dab0
         rts
 
 
@@ -257,4 +320,24 @@ set_screen_upper_sprites
         sta $d02a
         sta $d02c
         sta $d02e
+        rts
+
+
+; ------------------------------------------------------
+; Routine to handle lower half of attract mode animation
+; ------------------------------------------------------
+
+attract_mode_lower
+        rts ; tmp
+        lda #$ff
+        sta $d015
+        lda #sprite_base              ; set pacman sprite
+        sta $07f8
+        lda #yellow
+        sta $d027 
+        lda tmp1
+        sta $d000
+        lda #182
+        sta $d001
+
         rts

@@ -17,7 +17,14 @@
 start  
 
         jsr cls                         ; clear screen
-        
+
+	sei                             ; disable interrupts
+	lda #$7f
+	sta $dc0d
+	sta $dd0d
+	lda #$01
+	sta $d01a
+
         ; init random number generator using SID's noise waveform generator
         ; read from $d41b to get random number 
 
@@ -66,8 +73,19 @@ start
         lda #%00000001                  ; enable raster interrupt signals from VIC
         sta $d01a
 
+	lda $dc0d	                ; clear interrupts and ack irq
+	lda $dd0d
+	asl $d019
+	cli
+
         jsr *
 
+
+; -------------------------------------
+; Primary irq routine
+; Handles main gameplay functions
+; triggered at raster 255
+; -------------------------------------
 
 irq     lda game_mode
         cmp #gameplay
@@ -100,10 +118,38 @@ mode_game_over
         ; todo: handle game over
 
 mode_attract
-        jsr attract_mode
+        jsr attract_mode_upper
 
-irq_ack asl $d019                       ; acknowledge raster irq
-        jmp $ea31                       ; scan keyboard (only do once per frame)
+irq_ack 
+        lda #<irq2
+	ldx #>irq2
+	sta $0314
+	stx $0315
+
+	; Create interrupt at line 165 for secondary raster irq
+	ldy #165
+	sty $d012
+
+        asl $d019                       ; acknowledge raster irq
+        jmp $ea81
+
+
+irq2
+        lda game_mode
+        cmp #attract
+        bne irq2_ack
+        jsr attract_mode_lower
+irq2_ack
+        lda #<irq
+	ldx #>irq
+	sta $0314
+	stx $0315
+
+	; Create interrupt at line 255 for primary raster irq
+	ldy #255
+	sty $d012
+        asl $d019                       ; acknowledge raster irq
+        jmp $ea81
 
 
 .include "level.asm"

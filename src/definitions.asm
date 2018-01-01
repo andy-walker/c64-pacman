@@ -11,6 +11,7 @@ white = 1
 red = 2
 cyan = 14
 pink = 4
+yellow = 7
 orange = 10
 
 ; ghost modes (excl. frightened, which is a global mode)
@@ -99,15 +100,16 @@ tmp1 = $30
 tmp2 = $31
 tmp3 = $32
 tmp4 = $33
+tmp5 = $34
 
-dot_counter  = $34
-pacman_speed = $35
-ghost_speed  = $36
-ghost_active = $37
-level_number = $38
-game_mode    = $39
-test_mode    = $3a
-lives        = $3b
+dot_counter  = $35
+pacman_speed = $36
+ghost_speed  = $37
+ghost_active = $38
+level_number = $39
+game_mode    = $3a
+test_mode    = $3b
+lives        = $3c
 
 startup        = 0
 attract        = 1
