@@ -11,7 +11,7 @@ init_attract_mode
         sta timer_seconds        
         
         ; init lower sprite x positions
-        lda #200
+        lda #255
         sta tmp1
         lda #100
         sta tmp2
@@ -24,6 +24,21 @@ init_attract_mode
         
         rts
 
+
+; -------------------------------
+; Routine to run the attract mode 
+; pacman animation
+; -------------------------------
+
+attract_animation
+
+        lda timer_seconds
+        cmp #93
+        bcs aa1
+        dec tmp1
+        rts
+aa1     inc tmp1
+        rts
 
 ; ------------------------------------------------------
 ; Routine to handle upper half of attract mode animation
@@ -79,6 +94,9 @@ attract_mode_upper
         cpy #66
         bcc am_done
         jsr am_stage15
+        cpy #72
+        bcc am_done
+        jsr attract_animation
         cpy #150
         bcc am_done
         
@@ -328,7 +346,12 @@ set_screen_upper_sprites
 ; ------------------------------------------------------
 
 attract_mode_lower
-        rts ; tmp
+        lda timer_seconds
+        cmp #72
+        bcc aml_end
+        cmp #110
+        bcs aml_end
+
         lda #$ff
         sta $d015
         lda #sprite_base              ; set pacman sprite
@@ -339,5 +362,5 @@ attract_mode_lower
         sta $d000
         lda #182
         sta $d001
-
+aml_end
         rts
