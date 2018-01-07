@@ -11,19 +11,14 @@ init_attract_mode
         sta timer_seconds        
         
         ; init lower sprite x positions
-        lda #255
+        lda #255                        ; set pacman x screen position
         sta tmp1
-        lda #100
-        sta tmp2
-        lda #110
+        lda #0                          ; secondary 0-9 counter to animate pacman frames
+        sta tmp4                        ; dot flashing second counter (0-2)
+        sta tmp2                    
+        lda #1                          ; used for dot flashing (toggled between 0/1)
         sta tmp3
-        lda #120
-        sta tmp4
-        lda #130
-        sta tmp5
-        
         rts
-
 
 ; -------------------------------
 ; Routine to run the attract mode 
@@ -32,12 +27,42 @@ init_attract_mode
 
 attract_animation
 
+        lda tmp3
+        cmp #0
+        bne aa1
+        lda #black
+        sta $dba8
+        sta $dab0
+        jmp aa3
+aa1    
+        lda #white
+        sta $dba8
+        sta $dab0
+aa3
         lda timer_seconds
         cmp #93
-        bcs aa1
+        bcs aa5
         dec tmp1
+        
+        ldx tmp2
+        cpx #0
+        beq aa4
+        dex
+        stx tmp2
         rts
-aa1     inc tmp1
+aa4     ldx #9
+        stx tmp2
+        rts
+aa5     inc tmp1
+        ldx tmp2
+        cpx #9
+        beq aa6
+        inx
+        stx tmp2
+        rts
+aa6
+        ldx #0
+        stx tmp2
         rts
 
 ; ------------------------------------------------------
@@ -112,7 +137,7 @@ am_continue
         jsr am_stage15
         cpy #72
         bcc am_done
-        jsr attract_animation
+amc2    jsr attract_animation
         cpy #150
         bcc am_done
         
@@ -126,8 +151,17 @@ am_done
         bcc am_end
         ldx #0
         inc timer_seconds
+        ldy tmp4
+        iny
+        cpy #6
+        bcc am_end
+        ldy #0
+        lda tmp3
+        eor #%00000001
+        sta tmp3
 am_end
         stx timer_ticks
+        sty tmp4
         rts
 
 

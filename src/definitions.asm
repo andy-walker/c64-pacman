@@ -7,10 +7,11 @@ right = 1
 up    = 2
 down  = 3
 
-white = 1
-red = 2
-cyan = 14
-pink = 4
+black  = 0
+white  = 1
+red    = 2
+cyan   = 14
+pink   = 4
 yellow = 7
 orange = 10
 
