@@ -44,16 +44,6 @@ start
         lda #1                          ; enable test mode (unlimited lives)
         sta test_mode
 
-        lda #1                          ; set level = 1
-        sta level_number
-        
-        lda #2                          ; set lives = 2
-        sta lives
-
-        jsr reset_score
-        
-        ; jsr init_level
-
         lda #attract
         sta game_mode
         jsr init_attract_mode
@@ -80,6 +70,19 @@ start
 
         jsr *
 
+
+; -------------------------------------------------
+; Routine to perform general setup / initialisation
+; when beginning a new game
+; -------------------------------------------------
+
+init_game
+        lda #1                          ; set level = 1
+        sta level_number
+        lda #2                          ; set lives = 2
+        sta lives
+        jsr reset_score
+        rts
 
 ; -------------------------------------
 ; Primary irq routine

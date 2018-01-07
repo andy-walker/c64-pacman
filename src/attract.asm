@@ -46,6 +46,22 @@ aa1     inc tmp1
 
 attract_mode_upper
 
+        ; Detect if spacebar pressed
+
+        lda #%01111111                  ; select row 7
+        sta pra 
+        lda prb                         ; load column information
+        and #%00010000                  ; test space key  
+        bne am_continue
+        
+        lda #gameplay
+        sta game_mode
+        jsr init_game
+        jsr init_level
+        rts
+
+am_continue
+
         jsr set_screen_upper_sprites
 
         ldy timer_seconds
