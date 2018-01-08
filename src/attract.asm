@@ -81,10 +81,11 @@ attract_mode_upper
         
         ; If so ...
 
-        lda #gameplay                   ; set to gameplay mode
+        lda #intro1                     ; set to mode: intro1
         sta game_mode
         jsr init_game                   ; init new game
         jsr init_level                  ; init new level
+        jsr init_intro1                 ; init game intro
         rts                             ; and return
 
         ; Otherwise, continue with the animation ...
@@ -252,7 +253,7 @@ am_stage9
 ams9_start
         lda attract_name3,x
         sta $059b,x  
-        lda #cyan
+        lda #purple
         sta $d99b,x
         inx
         cpx #8
@@ -264,7 +265,7 @@ am_stage10
 ams10_start
         lda attract_nick3,x
         sta $05a6,x  
-        lda #cyan
+        lda #purple
         sta $d9a6,x
         inx
         cpx #8
@@ -387,7 +388,7 @@ set_screen_upper_sprites
         sta $d027                     
         lda #pink 
         sta $d029                     
-        lda #cyan
+        lda #purple
         sta $d02b                      
         lda #orange
         sta $d02d

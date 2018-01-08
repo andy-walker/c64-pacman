@@ -7,8 +7,8 @@ init_level
         stx frightened_mode
         stx dot_counter
 
-        lda #gameplay
-        sta game_mode
+        ; lda #gameplay
+        ; sta game_mode
 
         lda %00000001                  ; set only blinky as active on level start
         sta ghost_active

@@ -101,6 +101,12 @@ irq     lda game_mode
         beq mode_game_over
         cmp #attract
         beq mode_attract
+        cmp #intro1
+        beq mode_intro1
+
+mode_intro1
+        jsr intro1_run
+        jmp irq2_ack
 
 mode_gameplay
         jsr level_init_frame
@@ -166,3 +172,4 @@ irq2_ack
 *=$4000
 
 .include "attract.asm"
+.include "intro.asm"

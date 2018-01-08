@@ -10,10 +10,11 @@ down  = 3
 black  = 0
 white  = 1
 red    = 2
-cyan   = 14
+cyan   = 3
 pink   = 4
 yellow = 7
 orange = 10
+purple = 14
 
 ; ghost modes (excl. frightened, which is a global mode)
 
@@ -114,13 +115,15 @@ lives        = $3c
 
 startup        = 0
 attract        = 1
-gameplay       = 2
-life_lost      = 3
-level_complete = 4
-intermission1  = 5
-intermission2  = 6
-intermission3  = 7
-game_over      = 8
+intro1         = 2
+intro2         = 3
+gameplay       = 4
+life_lost      = 5
+level_complete = 6
+intermission1  = 7
+intermission2  = 8
+intermission3  = 9
+game_over      = 10
 
 dbg1 = $40
 dbg2 = $41
