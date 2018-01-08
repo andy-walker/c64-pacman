@@ -79,11 +79,15 @@ attract_mode_upper
         and #%00010000                  ; test space key  
         bne am_continue
         
-        lda #gameplay
+        ; If so ...
+
+        lda #gameplay                   ; set to gameplay mode
         sta game_mode
-        jsr init_game
-        jsr init_level
-        rts
+        jsr init_game                   ; init new game
+        jsr init_level                  ; init new level
+        rts                             ; and return
+
+        ; Otherwise, continue with the animation ...
 
 am_continue
 
@@ -315,8 +319,12 @@ ams14_start
         rts
 
 am_stage15
-        lda #154
-        sta $06b0
+        cpy #93
+        bcc ams15_1
+        lda #7
+        jmp ams15_2
+ams15_1 lda #154
+ams15_2 sta $06b0
         lda #white
         sta $dab0
         rts
@@ -396,6 +404,7 @@ set_screen_upper_sprites
 ; ------------------------------------------------------
 
 attract_mode_lower
+        
         lda timer_seconds
         cmp #72
         bcc aml_end
@@ -404,7 +413,44 @@ attract_mode_lower
 
         lda #$ff
         sta $d015
-        lda #sprite_base              ; set pacman sprite
+
+        ldy tmp2
+
+        lda timer_seconds
+        cmp #93
+        bcs aml2
+
+        ; set pacman sprite for leftward movement
+
+        cpy #6
+        bcs aml1
+        lda #sprite_base              
+        clc
+        adc tmp2
+        jmp aml_set_sprites
+aml1    lda #sprite_base+10
+        sec
+        sbc tmp2
+        jmp aml_set_sprites
+        
+        ; set pacman sprite for rightward movement
+
+aml2    cpy #0
+        beq aml3
+        cpy #6
+        bcs aml4
+        bcc aml5
+aml3    lda #sprite_base
+        jmp aml_set_sprites
+aml4    lda #sprite_base+20
+        sec
+        sbc tmp2
+        jmp aml_set_sprites
+aml5    lda #sprite_base+10
+        clc
+        adc tmp2
+        
+aml_set_sprites    
         sta $07f8
         lda #yellow
         sta $d027 
