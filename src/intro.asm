@@ -81,8 +81,18 @@ i1r_end inc timer_ticks
 
 
 init_intro2
+        
         lda #intro2
         sta game_mode
+        
+        ; ensure power pills are set to white (in case they were flashed off when player died)
+
+        lda #white
+        sta $d87d
+        sta $d89b
+        sta $dad5
+        sta $daf3
+
         rts
 
 ;--------------------------------
@@ -164,7 +174,7 @@ intro2_run
 
         ; start the game
 
-        jsr init_level                  ; call init_level to reset the sprites
+        jsr level_init_sprites          ; call init_level to reset the sprites
         lda #gameplay                   ; set game mode to 'gameplay'
         sta game_mode
 

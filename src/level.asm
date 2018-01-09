@@ -8,30 +8,6 @@ init_level
         stx dot_counter
         stx flash_counter
 
-        ; lda #gameplay
-        ; sta game_mode
-
-        lda %00000001                  ; set only blinky as active on level start
-        sta ghost_active
-
-        ; set sprite colours
-
-        lda #7 
-        sta $d027                      ; sprite 0: colour yellow
-        lda #2 
-        sta $d028                      ; sprite 1: colour red
-        lda #4
-        sta $d029                      ; sprite 2: colour purple
-        lda #3
-        sta $d02a                      ; sprite 3: colour cyan
-        lda #10
-        sta $d02b                      ; sprite 4: colour orange
-        lda #1
-        sta $d02c
-        sta $d02d
-        sta $d02e
-
-
 loader_loop 
         
         ; load characters for each line
@@ -154,6 +130,26 @@ level_init_sprites
 
         lda #0
         sta $d010                       ; unset all carry bits
+
+        lda %00000001                   ; set only blinky as active on level start
+        sta ghost_active
+
+        ; set sprite colours
+
+        lda #7 
+        sta $d027                       ; sprite 0: colour yellow
+        lda #2 
+        sta $d028                       ; sprite 1: colour red
+        lda #4
+        sta $d029                       ; sprite 2: colour purple
+        lda #3
+        sta $d02a                       ; sprite 3: colour cyan
+        lda #10
+        sta $d02b                       ; sprite 4: colour orange
+        lda #1
+        sta $d02c
+        sta $d02d
+        sta $d02e
 
         lda #13                         ; initialise pacman tile position
         sta pacman_x_tile
@@ -673,8 +669,7 @@ lll11   cmp #125
         sta $d015 
 lll12   cmp #150
         bne lll13
-        lda #gameplay
-        sta game_mode
+        jsr init_intro2
         lda test_mode
         cmp #1
         beq ll_resume
