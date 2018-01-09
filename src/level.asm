@@ -585,6 +585,8 @@ ler1    lda #0
         rts
 ler2
         inc level_number
+        lda #gameplay
+        sta game_mode
         jsr init_level
         rts
 

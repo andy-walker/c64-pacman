@@ -103,10 +103,14 @@ irq     lda game_mode
         beq mode_attract
         cmp #intro1
         beq mode_intro1
-
+        cmp #intro2
+        beq mode_intro2
 mode_intro1
         jsr intro1_run
         jmp irq2_ack
+
+mode_intro2
+        jmp intro2_run
 
 mode_gameplay
         jsr level_init_frame
