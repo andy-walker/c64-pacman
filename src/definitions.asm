@@ -104,14 +104,18 @@ tmp3 = $32
 tmp4 = $33
 tmp5 = $34
 
-dot_counter  = $35
-pacman_speed = $36
-ghost_speed  = $37
-ghost_active = $38
-level_number = $39
-game_mode    = $3a
-test_mode    = $3b
-lives        = $3c
+dot_counter   = $35
+pacman_speed  = $36
+ghost_speed   = $37
+ghost_active  = $38
+level_number  = $39
+game_mode     = $3a
+test_mode     = $3b
+lives         = $3c
+flash_counter = $3d
+
+
+; game states:
 
 startup        = 0
 attract        = 1

@@ -6,6 +6,7 @@ init_level
         ldx #0
         stx frightened_mode
         stx dot_counter
+        stx flash_counter
 
         ; lda #gameplay
         ; sta game_mode
@@ -206,6 +207,28 @@ level_init_sprites
 
 level_init_frame
         
+        ldx flash_counter
+        inx
+        cpx #12
+        beq lf_flash_black
+        cpx #24
+        beq lf_flash_white
+        jmp lf_next
+lf_flash_black
+        lda #black
+        jmp lf_flash
+lf_flash_white
+        lda #white
+        ldx #0
+        
+lf_flash
+        sta $d87d
+        sta $d89b
+        sta $dad5
+        sta $daf3
+lf_next
+        stx flash_counter
+
         ; handle timer for frightened mode
 
         lda frightened_mode             
