@@ -41,7 +41,7 @@ start
         sta $d018                       ; Bits 1-3 ($400+512bytes * low nibble value) of $d018 sets char location
                                         ; $400 + $200*$0E = $3800
         
-        lda #1                          ; enable test mode (unlimited lives)
+        lda #0                          ; enable/disable test mode (unlimited lives)
         sta test_mode
 
         lda #attract
@@ -97,14 +97,14 @@ irq     lda game_mode
         beq mode_life_lost
         cmp #level_complete
         beq mode_level_complete
-        cmp #game_over
-        beq mode_game_over
         cmp #attract
         beq mode_attract
         cmp #intro1
         beq mode_intro1
         cmp #intro2
         beq mode_intro2
+        cmp #game_over
+        beq mode_game_over
 mode_intro1
         jsr intro1_run
         jmp irq2_ack
@@ -128,7 +128,8 @@ mode_level_complete
         jmp irq_ack
 
 mode_game_over
-        ; todo: handle game over
+        jsr game_over_run
+        jmp irq2_ack
 
 mode_attract
         jsr attract_mode_upper
@@ -176,4 +177,4 @@ irq2_ack
 *=$4000
 
 .include "attract.asm"
-.include "intro.asm"
+.include "screens.asm"

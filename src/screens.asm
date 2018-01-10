@@ -167,7 +167,6 @@ intro2_run
         sta $d02d
         sta $d02e
 
-        ;lda #199
         lda timer_ticks
         cmp #200
         bne i2r_end
@@ -197,7 +196,7 @@ i2r_end
         sta $0314
         stx $0315
 
-        ; Set next interrupt at line 151 for secondary raster irq (lower half of screen)
+        ; Set next interrupt at line 147 for secondary raster irq (lower half of screen)
         ldy #147
         sty $d012
         asl $d019                       ; acknowledge raster irq
@@ -253,3 +252,72 @@ i2_irq
         sty $d012
         asl $d019                       ; acknowledge raster irq
         jmp $ea81
+
+
+; --------------------------------------
+; Routine to initialise game over screen
+; --------------------------------------
+
+init_game_over
+
+        lda #game_over
+        sta game_mode
+
+        lda #0
+        sta timer_ticks
+        
+        lda #%00000111                  ; enable first 3 sprites
+        sta $d015
+
+        lda #0                          ; unset all sprite carry bits
+        sta $d010
+        
+        lda #sprite_base+49
+        sta $07f8
+
+        lda #sprite_base+50
+        sta $07f9
+
+        lda #sprite_base+51
+        sta $07fa
+
+        lda #red
+        sta $d027
+        sta $d028
+        sta $d029
+
+        lda #151
+        sta $d000
+
+        lda #175
+        sta $d002
+
+        lda #199
+        sta $d004
+        
+        lda #115
+        sta $d001
+        sta $d003
+        sta $d005
+
+        rts
+
+game_over_run
+        ldx timer_ticks
+        inx
+        stx timer_ticks
+        cpx #150
+        bcc gor_end
+        beq gor_cls
+        cpx #175
+        bcs gor_reset
+        rts
+gor_cls jsr cls
+        lda #0
+        sta $d015
+        rts
+gor_reset
+        lda #attract
+        sta game_mode
+        jsr init_attract_mode
+gor_end rts

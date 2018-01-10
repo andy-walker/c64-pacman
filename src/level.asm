@@ -594,7 +594,7 @@ level_end_reset
         lda timer_ticks
         cmp #50
         beq ler1
-        cmp #100
+        cmp #75
         beq ler2
         rts
 
@@ -604,9 +604,9 @@ ler1    lda #0
         rts
 ler2
         inc level_number
-        lda #gameplay
-        sta game_mode
         jsr init_level
+        lda #intro2
+        sta game_mode
         rts
 
 
@@ -669,6 +669,8 @@ lll11   cmp #125
         sta $d015 
 lll12   cmp #150
         bne lll13
+        ldx #0
+        stx frightened_mode
         jsr init_intro2
         lda test_mode
         cmp #1
@@ -687,8 +689,7 @@ lll13
         rts
 
 all_lives_lost
-        lda #game_over
-        sta game_mode
+        jsr init_game_over
         rts
 
 ; -----------------------------------------------------------------
