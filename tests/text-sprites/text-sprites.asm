@@ -33,7 +33,7 @@ start
                                         ; $400 + $200*$0E = $3800
 
         jsr init_character_map
-        jsr sprite_writer
+        jsr score_writer
 
         ; irq initialisation
         
@@ -70,18 +70,26 @@ init_character_map
         
         ; set character data in the character map
         ldx #0
-        lda #137
+        lda #0
         clc
+
 icm_loop
-        sta char_1_1,x
+        sta score_charmap,x
         adc #1
         inx
         cpx #6
         bcc icm_loop
 
-        ; enable first three sprites
+        ; enable first two sprites
         lda #%00000111
         sta $d015
+
+        ; set sprites
+        lda #sprite_base+53
+        sta $07f8
+
+        lda #sprite_base+54
+        sta $07f9
 
         ; position sprites
         lda #100
@@ -90,19 +98,15 @@ icm_loop
         lda #124
         sta $d002
 
-        lda #148
-        sta $d004
 
         lda #100
         sta $d001
         sta $d003
-        sta $d005
 
         ; set colour to white
         lda #1
         sta $d027
         sta $d028
-        sta $d029
         rts
 
 
@@ -123,7 +127,12 @@ clsloop lda #7                          ; 7 = blank space char in our custom cha
         bne clsloop  
         rts
 
-.include "sprite-writer.asm"
+
+.include "score-writer.asm"
+
+; load number data
+*=number_data_addr
+    .binary "../../resources/numbers.raw"
 
 ; load sprite data
 *=sprite_data_addr	      
