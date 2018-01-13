@@ -509,6 +509,7 @@ cgd_filter_dir
         sta dbg16
         lda num1
         and #%00001000
+        cmp #0
         beq cgd_right
         lda #left
         sta dir1,y
@@ -516,6 +517,7 @@ cgd_filter_dir
 cgd_right
         lda num1
         and #%00000100
+        cmp #0
         beq cgd_up
         lda #right
         sta dir1,y
@@ -523,6 +525,7 @@ cgd_right
 cgd_up  
         lda num1
         and #%00000010
+        cmp #0
         beq cgd_down
         lda #up
         sta dir1,y
@@ -530,6 +533,7 @@ cgd_up
 cgd_down
         lda num1
         and #%00000001
+        cmp #0
         beq cgd_end
         lda #down
         sta dir1,y

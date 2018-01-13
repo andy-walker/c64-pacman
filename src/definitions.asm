@@ -103,16 +103,17 @@ tmp2 = $31
 tmp3 = $32
 tmp4 = $33
 tmp5 = $34
+tmp6 = $35
 
-dot_counter   = $35
-pacman_speed  = $36
-ghost_speed   = $37
-ghost_active  = $38
-level_number  = $39
-game_mode     = $3a
-test_mode     = $3b
-lives         = $3c
-flash_counter = $3d
+dot_counter   = $36
+pacman_speed  = $37
+ghost_speed   = $38
+ghost_active  = $39
+level_number  = $3a
+game_mode     = $3b
+test_mode     = $3c
+lives         = $3d
+flash_counter = $3e
 
 
 ; game states:
@@ -143,4 +144,102 @@ dbg14 = $49
 dbg15 = $4a
 dbg16 = $4b
 
+; Sprite 0 - pacman
 
+sprite_data     = $60
+
+sprite0_pointer = $60
+sprite0_x       = $61
+sprite0_y       = $62
+sprite0_carry   = $63
+sprite0_colour  = $64
+
+; Sprite 1 - ghost 0 body
+
+sprite1_pointer = $65
+sprite1_x       = $66
+sprite1_y       = $67
+sprite1_carry   = $68
+sprite1_colour  = $69
+
+; Sprite 2 - ghost 1 body
+
+sprite2_pointer = $6a
+sprite2_x       = $6b
+sprite2_y       = $6c
+sprite2_carry   = $6d
+sprite2_colour  = $6e
+
+; Sprite 3 - ghost 2 body
+
+sprite3_pointer = $6f
+sprite3_x       = $70
+sprite3_y       = $71
+sprite3_carry   = $72
+sprite3_colour  = $73
+
+; Sprite 4 - ghost 3 body
+
+sprite4_pointer = $74
+sprite4_x       = $75
+sprite4_y       = $76
+sprite4_carry   = $77
+sprite4_colour  = $78
+
+
+; Sprite 5 - ghost 0 eyes
+
+sprite5_pointer = $79
+sprite5_x       = $7a
+sprite5_y       = $7b
+sprite5_carry   = $7c
+sprite5_colour  = $7d
+
+; Sprite 6 - ghost 1 eyes
+
+sprite6_pointer = $7e
+sprite6_x       = $7f
+sprite6_y       = $80
+sprite6_carry   = $81
+sprite6_colour  = $82
+
+; Sprite 7 - ghost 2 eyes
+
+sprite7_pointer = $83
+sprite7_x       = $84
+sprite7_y       = $85
+sprite7_carry   = $86
+sprite7_colour  = $87
+
+; Sprite 8 - ghost 3 eyes
+
+sprite8_pointer = $88
+sprite8_x       = $89
+sprite8_y       = $8a
+sprite8_carry   = $8b
+sprite8_colour  = $8c
+
+
+; Sprite 9 - fruit colour 1
+
+sprite9_pointer = $8d
+sprite9_x       = $8e
+sprite9_y       = $8f
+sprite9_carry   = $90
+sprite9_colour  = $91
+
+; Sprite 10 - fruit colour 2
+
+sprite10_pointer = $92
+sprite10_x       = $93
+sprite10_y       = $94
+sprite10_carry   = $95
+sprite10_colour  = $96
+
+; Sprite 11 - fruit colour 3
+
+sprite11_pointer = $97
+sprite11_x       = $98
+sprite11_y       = $99
+sprite11_carry   = $9a
+sprite11_colour  = $9b
