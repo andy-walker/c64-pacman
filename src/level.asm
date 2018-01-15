@@ -399,8 +399,26 @@ ed_final
 
         jsr get_tile_type
         cmp #4                          ; if it's not 4 (power pill)                       
-        bne ed_end                      ; jump to end
+        bne ed_10                       ; jump to ed_10 ..
         jsr init_frightened_mode        ; otherwise initialise frightened mode (power pill eaten)
+        
+        ; add 50 points to player score
+
+        lda #0
+        sta num1
+        lda #50
+        sta num2
+        jsr add_to_score
+
+        jmp ed_end
+
+        ; add 10 points to player score
+ed_10   
+        lda #0
+        sta num1
+        lda #10
+        sta num2
+        jsr add_to_score
 
 ed_end  rts
 
