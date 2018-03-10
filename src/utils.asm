@@ -55,8 +55,8 @@ cr_done rts
 ; --------------------
 
 cls     lda #0
-        sta $d020                       ; write to border colour register
         sta $d021                       ; write to screen colour register
+        sta $d020                       ; write to border colour register
         ldx #0
 clsloop lda #7                          ; 7 = blank space char in our custom character set
         sta $0400,x                     ; fill four areas with 256 spacebar characters

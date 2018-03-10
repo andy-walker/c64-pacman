@@ -22,10 +22,10 @@ mg1_ud  ldy ghost0_y_sub,x
 
 mg1_cd  jsr get_available_directions
 
-        ; todo: choose direction based on mode
-        ; cpx #0
-        ; bne mg1_tmp
-        ; jsr filter_directions
+        ; choose direction based on mode
+        cpx #0
+        bne mg1_tmp
+        jsr filter_directions
 mg1_tmp
         lda dir5
         sec
@@ -483,26 +483,35 @@ check_ghost3
         sty num2                        ; store target y in num2
         lda tmp1                        ; load .a with our bitfield
 
+        ldy #0
+        sty dbg20
+        sty dbg21
+        sty dbg22
+        sty dbg23
+
         ldy ghost0_x_tile,x             ; load .y with ghost x
         cpy num1                        ; compare to target x
         beq cgd_y
-        bcs cgd_xgt
+        bcc cgd_xgt
 cgd_xlt                                 ; if target x is less
         and #%11111011                  ; unset right
+        sta dbg20
         jmp cgd_y
 cgd_xgt                                 ; if target x is greater
         and #%11110111                  ; unset left
+        sta dbg21
 cgd_y
         ldy ghost0_y_tile,x             ; load .y with ghost y
         cpy num2                        ; compare with target y
         beq cgd_filter_dir
-        bcs cgd_ygt
+        bcc cgd_ygt
 cgd_ylt                                 ; if target y is less
         and #%11111110                  ; unset down
+        sta dbg22
         jmp cgd_filter_dir
 cgd_ygt                                 ; if target y is greater
         and #%11111101                  ; unset up
-
+        sta dbg23
 cgd_filter_dir 
         ldy #0
         sta num1

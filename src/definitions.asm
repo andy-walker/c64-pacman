@@ -144,6 +144,11 @@ dbg14 = $49
 dbg15 = $4a
 dbg16 = $4b
 
+dbg20 = $50
+dbg21 = $51
+dbg22 = $52
+dbg23 = $53
+
 ; Sprite 0 - pacman
 
 sprite_data     = $60
