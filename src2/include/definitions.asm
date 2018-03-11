@@ -30,8 +30,8 @@ sprite_data_addr = $2800
 char_data_addr   = $3800
 number_data_addr  = $2700
 
-score_sprite1_addr = $2800+(53*64) 
-score_sprite2_addr = $2800+(54*64) 
+score_sprite1_addr = $2800+(52*64) 
+score_sprite2_addr = $2800+(53*64) 
 
 pra              = $dc00                ; CIA#1 (Port Register A)
 prb              = $dc01                ; CIA#1 (Port Register B)

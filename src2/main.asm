@@ -76,6 +76,7 @@ mode_attract
   
 .include "runners/attract-runner.asm"
 .include "include/data.asm"
+.include "include/level.asm"
 .include "include/score.asm"
 .include "include/sprites.asm"
 .include "include/utils.asm"

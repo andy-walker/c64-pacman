@@ -56,7 +56,7 @@ cr_done rts
 
 cls     lda #0
         sta $d021                       ; write to screen colour register
-        lda #red                        ; temp set border colour red 
+        ;lda #red                        ; temp set border colour red 
         sta $d020                       ; write to border colour register
         ldx #0
 clsloop lda #7                          ; 7 = blank space char in our custom character set

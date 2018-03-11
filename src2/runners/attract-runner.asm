@@ -20,7 +20,8 @@ irq2_attract
         lda #>irq1
         sta $315
 
-        lda #%00000011
+        ; enable all sprites for score display
+        lda #%11111111
         sta $d015
 
         jmp $ea7e    

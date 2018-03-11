@@ -6,7 +6,7 @@
 init_attract_mode
         
         jsr cls                         ; clear screen
-        
+        jsr draw_level ; tmp
         lda #0                          ; reset timer
         sta timer_ticks
         sta timer_seconds
