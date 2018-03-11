@@ -28,6 +28,10 @@ cruise_elroy = 5
 sprite_base      = $a0
 sprite_data_addr = $2800
 char_data_addr   = $3800
+number_data_addr  = $2700
+
+score_sprite1_addr = $2800+(53*64) 
+score_sprite2_addr = $2800+(54*64) 
 
 pra              = $dc00                ; CIA#1 (Port Register A)
 prb              = $dc01                ; CIA#1 (Port Register B)
@@ -148,6 +152,15 @@ dbg20 = $50
 dbg21 = $51
 dbg22 = $52
 dbg23 = $53
+
+; ------------------------------
+; 6 locations reserved for score
+; to be rendered as a decimal
+; ------------------------------
+
+out_decimal = $5a    ; -> $5f
+score_charmap = $5a
+
 
 ; Sprite 0 - pacman
 

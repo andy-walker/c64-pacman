@@ -14,7 +14,8 @@
 
 *=$080d
          
-        sei
+        sei                             ; disable interrupts
+        jsr cls                         ; clear screen
 
         ; init random number generator using SID's noise waveform generator
         ; read from $d41b to get random number 
@@ -37,11 +38,10 @@
 
         lda #attract
         sta game_mode
-    
-        lda #$02
-        sta $d020
-        lda #$00
-        sta $d021
+        jsr init_attract_mode
+
+        ; set initial irq handler pointing to irq1
+
         lda #<irq1
         sta $314
         lda #>irq1
@@ -54,25 +54,32 @@
         sta $d01a
         cli
         jmp *
-irq1    inc $d019
-        lda #$00
-        sta $d012
-        lda #$00
-        sta $d011
-        lda #<irq2
-        sta $314
-        lda #>irq2
-        sta $315
-        jmp $ea7e
-irq2    inc $d019
-        lda #$fa
-        sta $d012
-        lda #$1b ;If you want to display a bitmap pic, use #$3b instead
-        sta $d011
-        lda #<irq1
-        sta $314
-        lda #>irq1
-        sta $315
-        jmp $ea7e
 
+irq1    ; irq1 fires in all modes at the start of vblank - mode runners
+        ; will compliment it with a number of other handlers specific
+        ; to the mode we're in (eg: attract, gameplay)
+
+        inc $d019           ; req'd to open borders - must execute before anything else
+        lda #$00
+        sta $d012
+        sta $d011
+
+        ; now hand control to the relevant mode runner 
+
+        lda game_mode
+        cmp #attract
+        beq mode_attract
+
+mode_attract
+        jmp irq1_attract
+
+  
+.include "runners/attract-runner.asm"
 .include "include/data.asm"
+.include "include/score.asm"
+.include "include/sprites.asm"
+.include "include/utils.asm"
+
+*=$4000
+
+.include "include/attract.asm"
