@@ -2,7 +2,7 @@ irq1_attract                        ; triggered on scanline 250
 
         jsr attract_mode_timer_handler
         jsr attract_mode_upper_animation
-        jsr attract_mode_lower_animation
+        ; jsr attract_mode_lower_animation
         jsr set_score_sprites
 
         lda #<irq2_attract          
