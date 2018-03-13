@@ -7,6 +7,8 @@ line_number = timer_seconds
 line_counter = timer_ticks
 attract_animation_stage = tmp1
 upper_sprites_enabled = tmp2
+line_colour = tmp3
+line_offset = tmp4
 
 attract_title_chmem = $045c
 attract_line1_chmem = $04ac
@@ -23,6 +25,11 @@ attract_line3_clmem = $d99c
 attract_line4_clmem = $da14
 attract_line5_clmem = $db55
 attract_line6_clmem = $dba5
+
+attract_line1_col = red
+attract_line2_col = pink
+attract_line3_col = purple
+attract_line4_col = orange
 
 init_attract_mode
         
@@ -80,6 +87,8 @@ asu1    lda attract_title,x
 
         lda #white
         sta attract_title_clmem,x
+
+        lda #black
         sta attract_line1_clmem,x
         sta attract_line2_clmem,x
         sta attract_line3_clmem,x
@@ -101,9 +110,11 @@ attract_mode_timer_handler
         
         ldx line_counter
         inx                             ; increment line counter
-        cpx #0                          ; if we've wrapped around ..
+
+        cpx #100                        ; at 100 ticks (2 secs) ..
         bne amth_end
         inc line_number                 ; increment line number
+        ldx #0
 amth_end
         stx line_counter
         rts
@@ -113,22 +124,31 @@ attract_mode_upper_animation
 
         lda line_number
         ldx line_counter
+        ldy #0
+        sty line_offset
+        
+        cmp #1
+        bcc amua_single
+        cmp #5
+        bcs amua_single
+
         cpx #0
-        beq amua_begin_line
+        beq amua_show_next_sprite
+        cpx #50
+        beq amua_show_next_name
+        cpx #75
+        beq amua_show_next_nick
         rts
 
-amua_begin_line
-
-        cmp #1
-        beq amua_show_next_sprite
-        cmp #2
-        beq amua_show_next_sprite
-        cmp #3
-        beq amua_show_next_sprite
-        cmp #4
-        beq amua_show_next_sprite
-
-        rts        
+amua_single
+        cmp #5
+        bcc amua_single_end
+        cpx #50
+        beq amua_show_scoring
+        cpx #99
+        beq amua_show_pellet
+amua_single_end
+        rts
 
 amua_show_next_sprite
 
@@ -139,6 +159,89 @@ amua_show_next_sprite
         sta upper_sprites_enabled
 
         rts
+
+amua_show_pellet
+
+        rts
+
+amua_show_scoring
+        ldx #0
+amua_ss_loop
+        lda #white
+        sta attract_line5_clmem+3,x
+        sta attract_line6_clmem+3,x
+        inx
+        cpx #8
+        bne amua_ss_loop
+amua_ss_end
+        rts
+
+amua_show_next_nick
+
+        ldy #11
+        sty line_offset
+
+amua_show_next_name
+        
+        ldx #0
+
+        clc
+        txa
+        adc line_offset
+        tax
+
+        ldy line_number
+        lda attract_line_colours,y      ; get the colour we should be using
+        sta line_colour
+
+        ldy #0
+        lda line_number
+
+        cmp #1
+        beq asnn_line1
+        cmp #2
+        beq asnn_line2
+        cmp #3
+        beq asnn_line3
+        cmp #4
+        beq asnn_line4
+
+asnn_line1
+        lda line_colour
+        sta attract_line1_clmem,x 
+        inx
+        iny
+        cpy #8
+        bne asnn_line1
+        rts
+
+asnn_line2
+        lda line_colour
+        sta attract_line2_clmem,x 
+        inx
+        iny
+        cpy #8
+        bne asnn_line2
+        rts
+
+asnn_line3
+        lda line_colour
+        sta attract_line3_clmem,x 
+        inx
+        iny
+        cpy #8
+        bne asnn_line3
+        rts
+
+asnn_line4
+        lda line_colour
+        sta attract_line4_clmem,x 
+        inx
+        iny
+        cpy #8
+        bne asnn_line4
+        rts
+
 
 attract_mode_lower_animation
 

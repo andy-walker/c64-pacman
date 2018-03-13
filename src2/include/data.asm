@@ -117,6 +117,8 @@ attract_line4 .byte 148, 126, 125, 121, 115, 135,   7,   7,   7,   7,   7, 147, 
 attract_line5 .byte   7,   7,   7, 153,   7, 138, 137,   7, 150, 151, 152,   7,   7,   7,   7,   7,   7,   7,   7,   7  ; 10 pts
 attract_line6 .byte   7,   7,   7, 154,   7, 142, 137,   7, 150, 151, 152,   7,   7,   7,   7,   7,   7,   7,   7,   7  ; 50 pts
 
+attract_line_colours .byte white, red, pink, purple, orange
+
 ; load number data
 *=number_data_addr
     .binary "../resources/numbers.raw"

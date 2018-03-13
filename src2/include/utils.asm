@@ -1,6 +1,6 @@
 ; ----------------------------------------------------
 ; General 8bit * 8bit = 8bit multiply
-; Multiplies "num1" by "num2" and returns rendered_decimal in .A
+; Multiplies "num1" by "num2" and returns result in .A
 ; by White Flame (aka David Holz) 20030207
 ;
 ; Input variables:
