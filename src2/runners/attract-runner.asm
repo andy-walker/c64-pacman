@@ -1,10 +1,19 @@
 irq1_attract                        ; triggered on scanline 250 
 
+        jsr detect_spacebar
+        cmp #1
+        bne irq1_attract_continue
+        
+        inc game_mode
+        jsr init_start_screen
+        jmp irq1_attract_end
+
+irq1_attract_continue
         jsr attract_mode_timer_handler
         jsr attract_mode_upper_animation
         ; jsr attract_mode_lower_animation
         jsr set_score_sprites
-
+irq1_attract_end
         lda #<irq2_attract          
         sta $314
         lda #>irq2_attract

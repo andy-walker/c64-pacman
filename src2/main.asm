@@ -69,12 +69,17 @@ irq1    ; irq1 fires in all modes at the start of vblank - mode runners
         lda game_mode
         cmp #attract
         beq mode_attract
+        cmp #startscreen
+        beq mode_startscreen
 
 mode_attract
         jmp irq1_attract
+mode_startscreen
+        jmp irq1_startscreen
 
   
 .include "runners/attract-runner.asm"
+.include "runners/startscreen-runner.asm"
 .include "include/data.asm"
 .include "include/level.asm"
 .include "include/score.asm"
@@ -84,3 +89,4 @@ mode_attract
 *=$4000
 
 .include "include/attract.asm"
+.include "include/startscreen.asm"

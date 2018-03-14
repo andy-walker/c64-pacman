@@ -26,11 +26,6 @@ attract_line4_clmem = $da14
 attract_line5_clmem = $db55
 attract_line6_clmem = $dba5
 
-attract_line1_col = red
-attract_line2_col = pink
-attract_line3_col = purple
-attract_line4_col = orange
-
 init_attract_mode
         
         jsr cls                         ; clear screen

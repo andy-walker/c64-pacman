@@ -124,15 +124,16 @@ flash_counter = $3e
 
 startup        = 0
 attract        = 1
-intro1         = 2
-intro2         = 3
-gameplay       = 4
-life_lost      = 5
-level_complete = 6
-intermission1  = 7
-intermission2  = 8
-intermission3  = 9
-game_over      = 10
+startscreen    = 2
+intro1         = 3
+intro2         = 4
+gameplay       = 5
+life_lost      = 6
+level_complete = 7
+intermission1  = 8
+intermission2  = 9
+intermission3  = 10
+game_over      = 11
 
 dbg1 = $40
 dbg2 = $41

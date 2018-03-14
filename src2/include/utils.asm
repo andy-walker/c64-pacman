@@ -69,6 +69,24 @@ clsloop lda #7                          ; 7 = blank space char in our custom cha
         rts
 
 
+; --------------------------
+; Detect if spacebar pressed
+; Returns 0 or 1 in .a
+; --------------------------
+
+detect_spacebar
+
+        lda #%01111111                  ; select row 7
+        sta pra 
+        lda prb                         ; load column information
+        and #%00010000                  ; test space key  
+        beq spacebar_pressed
+        lda #0
+        rts
+spacebar_pressed
+        lda #1
+        rts
+
 ; -----------------------------------------------
 ; Routine to print a 32 bit value in decimal
 ; -----------------------------------------------
