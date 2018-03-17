@@ -6,7 +6,7 @@ irq1_attract                        ; triggered on scanline 250
         
         inc game_mode
         jsr init_start_screen
-        jmp irq1_attract_end
+        ;jmp irq1_attract_end
 
 irq1_attract_continue
         jsr attract_mode_timer_handler

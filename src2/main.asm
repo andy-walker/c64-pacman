@@ -56,7 +56,7 @@
         jmp *
 
 irq1    ; irq1 fires in all modes at the start of vblank - mode runners
-        ; will compliment it with a number of other handlers specific
+        ; will complement it with a number of other handlers specific
         ; to the mode we're in (eg: attract, gameplay)
 
         inc $d019           ; req'd to open borders - must execute before anything else
@@ -71,15 +71,19 @@ irq1    ; irq1 fires in all modes at the start of vblank - mode runners
         beq mode_attract
         cmp #startscreen
         beq mode_startscreen
+        cmp #intro1
+        beq mode_intro1
 
 mode_attract
         jmp irq1_attract
 mode_startscreen
         jmp irq1_startscreen
-
+mode_intro1
+        jmp irq1_intro1
   
 .include "runners/attract-runner.asm"
 .include "runners/startscreen-runner.asm"
+.include "runners/intro1-runner.asm"
 .include "include/data.asm"
 .include "include/level.asm"
 .include "include/score.asm"
@@ -90,3 +94,4 @@ mode_startscreen
 
 .include "include/attract.asm"
 .include "include/startscreen.asm"
+.include "include/intro1.asm"

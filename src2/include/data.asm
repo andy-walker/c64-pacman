@@ -119,6 +119,10 @@ attract_line6 .byte   7,   7,   7, 154,   7, 142, 137,   7, 150, 151, 152,   7, 
 
 attract_line_colours .byte white, red, pink, purple, orange
 
+startscreen_line1 .byte 7, 7, 7, 7, 7, 126, 131, 129, 118, 7, 129, 130, 111, 128, 130, 7, 112, 131, 130, 130, 125, 124, 7, 7, 7, 7, 7                 ; push start button
+startscreen_line2 .byte 7, 7, 7, 7, 7, 7, 7, 138, 7, 126, 122, 111, 135, 115, 128, 7, 125, 124, 122, 135, 7, 7, 7, 7, 7, 7, 7                              ; 1 player only
+startscreen_line3 .byte 112, 125, 124, 131, 129, 7, 126, 111, 113, 148, 123, 111, 124, 7, 116, 125, 128, 7, 138, 137, 137, 137, 137, 7, 150, 151, 152 ; bonus pac-man for 10000 pts
+
 ; load number data
 *=number_data_addr
     .binary "../resources/numbers.raw"

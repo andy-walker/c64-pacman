@@ -1,4 +1,4 @@
-irq1_startscreen                        ; triggered on scanline 250
+irq1_intro1                         ; triggered on scanline 250
 
         ; disable all sprites for main display
         lda #0
@@ -6,22 +6,21 @@ irq1_startscreen                        ; triggered on scanline 250
 
         jsr set_score_sprites
 
-        jsr detect_spacebar
         cmp #1
-        bne irq1_startscreen_continue
+        bne irq1_intro1_continue
 
         inc game_mode
-        jsr init_intro1
+        ;jsr init_intro2
 
-irq1_startscreen_continue
-        lda #<irq2_startscreen          
+irq1_intro1_continue
+        lda #<irq2_intro1         
         sta $314
-        lda #>irq2_startscreen
+        lda #>irq2_intro1
         sta $315
 
         jmp $ea7e
 
-irq2_startscreen                       ; triggered on scanline 0
+irq2_intro1                         ; triggered on scanline 0
 
         inc $d019
         lda #$fa

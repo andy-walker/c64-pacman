@@ -13,6 +13,7 @@ red    = 2
 cyan   = 3
 pink   = 4
 yellow = 7
+brown  = 8
 orange = 10
 purple = 14
 
@@ -28,7 +29,7 @@ cruise_elroy = 5
 sprite_base      = $a0
 sprite_data_addr = $2800
 char_data_addr   = $3800
-number_data_addr  = $2700
+number_data_addr = $2700
 
 score_sprite1_addr = $2800+(52*64) 
 score_sprite2_addr = $2800+(53*64) 

@@ -30,7 +30,6 @@ init_attract_mode
         
         jsr cls                         ; clear screen
         jsr draw_attract_screen_upper
-        ; jsr draw_level ; tmp
 
         lda #0                          ; reset timer
         sta line_counter
