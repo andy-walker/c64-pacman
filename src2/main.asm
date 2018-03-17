@@ -70,7 +70,15 @@ irq1    ; irq1 fires in all modes at the start of vblank - mode runners
         bne irq_timer1
         ldx #0
 irq_timer1
-        stx flash_counter        
+        stx flash_counter   
+
+        ldx flash_counter2
+        inx
+        cpx #30
+        bne irq_timer2
+        ldx #0
+irq_timer2
+        stx flash_counter2
 
         ; now hand control to the relevant mode runner 
 
@@ -81,6 +89,8 @@ irq_timer1
         beq mode_startscreen
         cmp #intro1
         beq mode_intro1
+        cmp #intro2
+        beq mode_intro2
 
 mode_attract
         jmp irq1_attract
@@ -88,10 +98,14 @@ mode_startscreen
         jmp irq1_startscreen
 mode_intro1
         jmp irq1_intro1
+mode_intro2
+        jmp irq1_intro2
   
 .include "runners/attract-runner.asm"
 .include "runners/startscreen-runner.asm"
 .include "runners/intro1-runner.asm"
+.include "runners/intro2-runner.asm"
+
 .include "include/data.asm"
 .include "include/level.asm"
 .include "include/score.asm"
@@ -103,3 +117,4 @@ mode_intro1
 .include "include/attract.asm"
 .include "include/startscreen.asm"
 .include "include/intro1.asm"
+.include "include/intro2.asm"

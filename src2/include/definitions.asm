@@ -110,16 +110,16 @@ tmp4 = $33
 tmp5 = $34
 tmp6 = $35
 
-dot_counter   = $36
-pacman_speed  = $37
-ghost_speed   = $38
-ghost_active  = $39
-level_number  = $3a
-game_mode     = $3b
-test_mode     = $3c
-lives         = $3d
-flash_counter = $3e
-
+dot_counter    = $36
+pacman_speed   = $37
+ghost_speed    = $38
+ghost_active   = $39
+level_number   = $3a
+game_mode      = $3b
+test_mode      = $3c
+lives          = $3d
+flash_counter  = $3e
+flash_counter2 = $3f
 
 ; game states:
 
