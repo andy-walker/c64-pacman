@@ -15,11 +15,17 @@ startscreen_line1_col = brown
 startscreen_line2_col = cyan
 startscreen_line3_col = orange
 
+startscreen_detect_keypress = tmp1
+
 init_start_screen
 
         jsr cls
         jsr draw_start_screen
         
+        lda #0
+        sta flash_counter
+        sta startscreen_detect_keypress
+
         rts
 
 ; ----------------------------------------------

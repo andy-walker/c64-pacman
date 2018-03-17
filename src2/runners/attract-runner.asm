@@ -2,6 +2,7 @@ irq1_attract                        ; triggered on scanline 250
 
         jsr detect_spacebar
         cmp #1
+        
         bne irq1_attract_continue
         
         inc game_mode

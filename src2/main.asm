@@ -64,6 +64,14 @@ irq1    ; irq1 fires in all modes at the start of vblank - mode runners
         sta $d012
         sta $d011
 
+        ldx flash_counter
+        inx
+        cpx #24
+        bne irq_timer1
+        ldx #0
+irq_timer1
+        stx flash_counter        
+
         ; now hand control to the relevant mode runner 
 
         lda game_mode

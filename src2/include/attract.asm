@@ -36,6 +36,7 @@ init_attract_mode
         sta line_number
         sta upper_sprites_enabled
         sta attract_animation_stage
+        sta dir1
 
         ; init score sprites for attract mode
 

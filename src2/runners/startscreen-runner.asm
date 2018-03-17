@@ -6,6 +6,18 @@ irq1_startscreen                        ; triggered on scanline 250
 
         jsr set_score_sprites
 
+        lda flash_counter
+        cmp #23
+        bne irq1_startscreen_timer1
+        lda #1
+        sta startscreen_detect_keypress
+
+irq1_startscreen_timer1
+
+        lda startscreen_detect_keypress
+        cmp #0
+        beq irq1_startscreen_continue
+
         jsr detect_spacebar
         cmp #1
         bne irq1_startscreen_continue
