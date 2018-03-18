@@ -1,5 +1,6 @@
 irq1_game
 
+        jsr level_init_frame
         jsr set_score_sprites
 
         lda #<irq2_game         

@@ -121,7 +121,6 @@ main_init
 
 .include "include/game.asm"
 .include "include/data.asm"
-.include "include/level.asm"
 .include "include/score.asm"
 .include "include/sprites.asm"
 .include "include/utils.asm"
@@ -132,3 +131,4 @@ main_init
 .include "include/startscreen.asm"
 .include "include/intro1.asm"
 .include "include/intro2.asm"
+.include "include/level.asm"

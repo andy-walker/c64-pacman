@@ -121,3 +121,31 @@ draw_level
         rts
 next_char
         jmp draw_level
+
+
+; ----------------------------------------------------
+; Routine to run at the beginning of each cycle
+; of the game loop - handles gameplay mode, timers etc
+; ----------------------------------------------------
+
+level_init_frame
+        
+        ldx flash_counter
+        cpx #12
+        beq lf_flash_black
+        cpx #0
+        beq lf_flash_white
+        jmp lf_next
+lf_flash_black
+        lda #black
+        jmp lf_flash
+lf_flash_white
+        lda #white
+        ldx #0
+        
+lf_flash
+        sta $d87d
+        sta $d89b
+        sta $dad5
+        sta $daf3
+lf_next rts
