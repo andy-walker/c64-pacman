@@ -3,10 +3,23 @@ set_score_sprites
         lda #%00000000
         sta $d015
 
-        lda #sprite_base+52             ; 1 UP / score sprites
-        sta $07f8
-        lda #sprite_base+53
-        sta $07f9
+        ldx #sprite_base+52             ; 1 UP / score sprites
+        ldy #sprite_base+53
+
+        lda game_mode
+        cmp #intro1
+        bcc sss1
+
+        lda flash_counter2
+        cmp #17
+        bcs sss1
+
+        ldx #sprite_base+62
+        ldy #sprite_base+63
+
+sss1
+        stx $07f8
+        sty $07f9
 
         lda #sprite_base+54             ; High score sprites
         sta $07fa
@@ -69,4 +82,3 @@ set_score_sprites
         rts
 
 
-        

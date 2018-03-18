@@ -1,9 +1,5 @@
 irq1_startscreen                        ; triggered on scanline 250
 
-        ; disable all sprites for main display
-        lda #0
-        sta $d015
-
         jsr set_score_sprites
 
         lda flash_counter

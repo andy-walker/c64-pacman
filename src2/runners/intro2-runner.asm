@@ -1,16 +1,12 @@
 irq1_intro2                         ; triggered on scanline 250
 
-        ; disable all sprites for main display
-        lda #0
-        sta $d015
-
         inc timer_ticks
         lda timer_ticks
         cmp #200
         bne irq_intro2_timer1
         
-        ;inc game_mode
-        ;jsr init_intro2
+        inc game_mode
+        jsr init_game
 
 irq_intro2_timer1
 
@@ -66,8 +62,8 @@ irq4_intro2                         ; triggered on scanline 147
         inc $d019
         lda #$fa
         sta $d012
-        lda #$1b
-        sta $d011
+        ;lda #$1b
+        ;sta $d011
 
         jsr set_intro2_lower_sprites
 

@@ -155,6 +155,7 @@ dbg21 = $51
 dbg22 = $52
 dbg23 = $53
 
+
 ; ------------------------------
 ; 6 locations reserved for score
 ; to be rendered as a decimal
@@ -263,3 +264,7 @@ sprite11_x       = $98
 sprite11_y       = $99
 sprite11_carry   = $9a
 sprite11_colour  = $9b
+
+
+score_sprite1_ptr = $fc
+score_sprite2_ptr = $fe

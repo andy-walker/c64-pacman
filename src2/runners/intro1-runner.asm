@@ -1,9 +1,5 @@
 irq1_intro1                         ; triggered on scanline 250
 
-        ; disable all sprites for main display
-        lda #0
-        sta $d015
-
         inc timer_ticks
         lda timer_ticks
         cmp #100

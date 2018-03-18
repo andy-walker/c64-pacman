@@ -16,22 +16,7 @@
          
         sei                             ; disable interrupts
         jsr cls                         ; clear screen
-
-        ; init random number generator using SID's noise waveform generator
-        ; read from $d41b to get random number 
-
-        lda #$ff                        ; maximum frequency value 
-        sta $d40e                       ; voice 3 frequency low byte 
-        sta $d40f                       ; voice 3 frequency high byte 
-        lda #$80                        ; noise waveform, gate bit off 
-        sta $d412                       ; voice 3 control register 
-
-        ; character set initialisation
-
-        lda $d018
-        ora #$0e                        ; set chars location to $3800 for displaying the custom font
-        sta $d018                       ; Bits 1-3 ($400+512bytes * low nibble value) of $d018 sets char location
-                                        ; $400 + $200*$0E = $3800
+        jsr main_init
         
         lda #0                          ; enable/disable test mode (unlimited lives)
         sta test_mode
@@ -91,6 +76,8 @@ irq_timer2
         beq mode_intro1
         cmp #intro2
         beq mode_intro2
+        cmp #gameplay
+        beq mode_game
 
 mode_attract
         jmp irq1_attract
@@ -100,12 +87,41 @@ mode_intro1
         jmp irq1_intro1
 mode_intro2
         jmp irq1_intro2
-  
+mode_game
+        jmp irq1_game
+
+
+main_init
+        
+        ; init random number generator using SID's noise waveform generator
+        ; read from $d41b to get random number 
+
+        lda #$ff                        ; maximum frequency value 
+        sta $d40e                       ; voice 3 frequency low byte 
+        sta $d40f                       ; voice 3 frequency high byte 
+        lda #$80                        ; noise waveform, gate bit off 
+        sta $d412                       ; voice 3 control register 
+
+        ; character set initialisation
+
+        lda $d018
+        ora #$0e                        ; set chars location to $3800 for displaying the custom font
+        sta $d018                       ; Bits 1-3 ($400+512bytes * low nibble value) of $d018 sets char location
+                                        ; $400 + $200*$0E = $3800
+        
+        
+
+        rts
+
+
+
 .include "runners/attract-runner.asm"
 .include "runners/startscreen-runner.asm"
 .include "runners/intro1-runner.asm"
 .include "runners/intro2-runner.asm"
+.include "runners/game-runner.asm"
 
+.include "include/game.asm"
 .include "include/data.asm"
 .include "include/level.asm"
 .include "include/score.asm"

@@ -97,18 +97,6 @@ level18 .byte  0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 3, 0, 0, 0, 0, 0, 0, 0,
 level19 .byte  0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0
 level20 .byte  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 
 
-attract_name1 .byte 148, 129, 118, 111, 114, 125, 133, 7    ; -shadow
-attract_nick1 .byte 147, 112, 122, 119, 124, 121, 135, 147  ; "blinky"
-attract_name2 .byte 148, 129, 126, 115, 115, 114, 135, 7    ; -speedy
-attract_nick2 .byte 147, 126, 119, 124, 121, 135, 147, 7    ; "pinky"
-attract_name3 .byte 148, 112, 111, 129, 118, 116, 131, 122  ; -bashful
-attract_nick3 .byte 147, 119, 124, 121, 135, 147, 7, 7      ; "inky"
-attract_name4 .byte 148, 126, 125, 121, 115, 135, 7, 7      ; -pokey
-attract_nick4 .byte 147, 113, 122, 135, 114, 115, 147, 7    ; "clyde"
-
-attract_points1 .byte 153, 7, 138, 137, 7, 150, 151, 152    ; 10 pts
-attract_points2 .byte 154, 7, 142, 137, 7, 150, 151, 152    ; 50 pts
-
 attract_title .byte 113, 118, 111, 128, 111, 113, 130, 115, 128,   7, 149,   7, 124, 119, 113, 121, 124, 111, 123, 115  ; character / nickname
 attract_line1 .byte 148, 129, 118, 111, 114, 125, 133,   7,   7,   7,   7, 147, 112, 122, 119, 124, 121, 135, 147,   7  ; -shadow    "blinky"
 attract_line2 .byte 148, 129, 126, 115, 115, 114, 135,   7,   7,   7,   7, 147, 126, 119, 124, 121, 135, 147,   7,   7  ; -speedy    "pinky"
@@ -120,7 +108,7 @@ attract_line6 .byte   7,   7,   7, 154,   7, 142, 137,   7, 150, 151, 152,   7, 
 attract_line_colours .byte white, red, pink, purple, orange
 
 startscreen_line1 .byte 7, 7, 7, 7, 7, 126, 131, 129, 118, 7, 129, 130, 111, 128, 130, 7, 112, 131, 130, 130, 125, 124, 7, 7, 7, 7, 7                 ; push start button
-startscreen_line2 .byte 7, 7, 7, 7, 7, 7, 7, 138, 7, 126, 122, 111, 135, 115, 128, 7, 125, 124, 122, 135, 7, 7, 7, 7, 7, 7, 7                              ; 1 player only
+startscreen_line2 .byte 7, 7, 7, 7, 7, 7, 7, 138, 7, 126, 122, 111, 135, 115, 128, 7, 125, 124, 122, 135, 7, 7, 7, 7, 7, 7, 7                         ; 1 player only
 startscreen_line3 .byte 112, 125, 124, 131, 129, 7, 126, 111, 113, 148, 123, 111, 124, 7, 116, 125, 128, 7, 138, 137, 137, 137, 137, 7, 150, 151, 152 ; bonus pac-man for 10000 pts
 
 ; load number data
