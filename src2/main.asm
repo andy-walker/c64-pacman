@@ -59,7 +59,7 @@ irq_timer1
 
         ldx flash_counter2
         inx
-        cpx #30
+        cpx #32
         bne irq_timer2
         ldx #0
 irq_timer2
@@ -109,8 +109,6 @@ main_init
         sta $d018                       ; Bits 1-3 ($400+512bytes * low nibble value) of $d018 sets char location
                                         ; $400 + $200*$0E = $3800
         
-        
-
         rts
 
 

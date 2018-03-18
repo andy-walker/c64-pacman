@@ -11,7 +11,7 @@ set_score_sprites
         bcc sss1
 
         lda flash_counter2
-        cmp #17
+        cmp #16
         bcs sss1
 
         ldx #sprite_base+62

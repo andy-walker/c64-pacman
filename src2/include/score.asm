@@ -65,27 +65,35 @@ sw_set_sprite1
 
         lda number_data_addr,y
         sta score_sprite1_addr+(9*3),x
+        sta score_sprite3_addr+(9*3),x
 
         lda number_data_addr+1,y
         sta score_sprite1_addr+(10*3),x
+        sta score_sprite3_addr+(10*3),x
 
         lda number_data_addr+2,y
         sta score_sprite1_addr+(11*3),x
+        sta score_sprite3_addr+(11*3),x
 
         lda number_data_addr+3,y
         sta score_sprite1_addr+(12*3),x
+        sta score_sprite3_addr+(12*3),x
 
         lda number_data_addr+4,y
         sta score_sprite1_addr+(13*3),x
+        sta score_sprite3_addr+(13*3),x
 
         lda number_data_addr+5,y
         sta score_sprite1_addr+(14*3),x
+        sta score_sprite3_addr+(14*3),x
 
         lda number_data_addr+6,y
         sta score_sprite1_addr+(15*3),x
+        sta score_sprite3_addr+(15*3),x
 
         lda number_data_addr+7,y
         sta score_sprite1_addr+(16*3),x
+        sta score_sprite3_addr+(16*3),x
 
         jmp end_set_sprite
 
@@ -95,32 +103,41 @@ sw_set_sprite2
 
         lda number_data_addr,y
         sta score_sprite2_addr+(8*3),x
+        sta score_sprite4_addr+(8*3),x
 
         lda number_data_addr+1,y
         sta score_sprite2_addr+(9*3),x
+        sta score_sprite4_addr+(9*3),x
 
         lda number_data_addr+2,y
         sta score_sprite2_addr+(10*3),x
+        sta score_sprite4_addr+(10*3),x
 
         lda number_data_addr+3,y
         sta score_sprite2_addr+(11*3),x
+        sta score_sprite4_addr+(11*3),x
 
         lda number_data_addr+4,y
         sta score_sprite2_addr+(12*3),x
+        sta score_sprite4_addr+(12*3),x
 
         lda number_data_addr+5,y
         sta score_sprite2_addr+(13*3),x
+        sta score_sprite4_addr+(13*3),x
 
         lda number_data_addr+6,y
         sta score_sprite2_addr+(14*3),x
+        sta score_sprite4_addr+(14*3),x
 
         lda number_data_addr+7,y
         sta score_sprite2_addr+(15*3),x
+        sta score_sprite4_addr+(15*3),x
 
 end_set_sprite
 
         inx                         ; increment (next digit)
         cpx #6                      ; is 6th digit?
-        bcc sw_loop
-
+        beq sw_end
+        jmp sw_loop
+sw_end
         rts
