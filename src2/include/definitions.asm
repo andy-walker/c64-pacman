@@ -48,44 +48,38 @@ ddrb             = $dc03                ; CIA#1 (Data Direction Register B)
 
 num1             = $02
 num2             = $03
-dir1             = $04
-dir2             = $05
-dir3             = $06
-dir4             = $07
-dir5             = $08
-pacman_x_tile    = $09
-pacman_x_sub     = $0a
-pacman_y_tile    = $0b
-pacman_y_sub     = $0c
-pacman_direction = $0d
-matrix_offset    = $0e
-directions       = $0f
+directions       = $04
+matrix_offset    = $05
 
+pacman_x_tile    = $07
+ghost0_x_tile    = $08
+ghost1_x_tile    = $09
+ghost2_x_tile    = $0a
+ghost3_x_tile    = $0b
 
-ghost0_x_tile    = $10
-ghost1_x_tile    = $11
-ghost2_x_tile    = $12
-ghost3_x_tile    = $13
+pacman_x_sub     = $0c
+ghost0_x_sub     = $0d
+ghost1_x_sub     = $0e
+ghost2_x_sub     = $0f
+ghost3_x_sub     = $10
 
-ghost0_x_sub     = $14
-ghost1_x_sub     = $15
-ghost2_x_sub     = $16
-ghost3_x_sub     = $17
+pacman_y_tile    = $11
+ghost0_y_tile    = $12
+ghost1_y_tile    = $13
+ghost2_y_tile    = $14
+ghost3_y_tile    = $15
 
-ghost0_y_tile    = $18
-ghost1_y_tile    = $19
-ghost2_y_tile    = $1a
-ghost3_y_tile    = $1b
+pacman_y_sub     = $16
+ghost0_y_sub     = $17
+ghost1_y_sub     = $18
+ghost2_y_sub     = $19
+ghost3_y_sub     = $1a
 
-ghost0_y_sub     = $1c
-ghost1_y_sub     = $1d
-ghost2_y_sub     = $1e
-ghost3_y_sub     = $1f
-
-ghost0_direction = $20
-ghost1_direction = $21
-ghost2_direction = $22
-ghost3_direction = $23
+pacman_direction = $1b
+ghost0_direction = $1c
+ghost1_direction = $1d
+ghost2_direction = $1e
+ghost3_direction = $1f
 
 ghost0_mode      = $24
 ghost1_mode      = $25
