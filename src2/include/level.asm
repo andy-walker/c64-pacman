@@ -148,4 +148,83 @@ lf_flash
         sta $d89b
         sta $dad5
         sta $daf3
-lf_next rts
+lf_next 
+
+        ; handle timer for frightened mode
+
+        lda frightened_mode             
+        cmp #0                          ; if ghosts not in frightened mode 
+        beq lf_exit                     ; skip to end of subroutine
+        jmp lf0
+lf_exit jmp lf_end                                       
+lf0     cmp #2
+        bne lf2
+        ldx timer_ticks
+        cpx #0
+        bne lf1
+        lda #1                          ; set ghost sprites to white
+        ;sta $d028
+        ;sta $d029       
+        ;sta $d02a                 
+        ;sta $d02b                       
+        lda #4                          ; set eye sprites to purple
+        ;sta $d02c
+        ;sta $d02d
+        ;sta $d02e
+        jmp lf2
+
+lf1     cpx #25
+        bne lf2
+
+        lda #6                          ; set ghost sprites to blue
+        ;sta $d028
+        ;sta $d029       
+        ;sta $d02a                 
+        ;sta $d02b                       
+        lda #1                          ; set eye sprites to purple
+        ;sta $d02c
+        ;sta $d02d
+        ;sta $d02e                
+
+lf2     inc timer_ticks                 ; increment timer ticks
+        ldx timer_ticks                 ; and load into .x
+        cpx #50                         ; compare to 50 (framerate = 50fps)
+        bne lf_end                      ; if not equal, skip to end of sub
+                                        ; otherwise (if equal) ..
+        inc timer_seconds               ; increment timer seconds
+        lda timer_seconds               ; and load the value into .a
+        ldx #0                          ; reset ticks to zero                
+        stx timer_ticks
+
+        cmp #5                          ; if less than 5
+        bcc lf_end                      ; skip to end of subroutine (remain in frightened mode)
+        beq lf_frightened_mode_flash    ; if equal to 5, increment mode (to cause ghosts to flash)
+
+        cmp #8                          ; if 8 seconds ..
+        beq lf_end_frightened_mode      ; jump to end frightened mode branch
+        jmp lf_end                      ; otherwise, skip to end of sub
+
+lf_frightened_mode_flash
+
+        inc frightened_mode             ; increment frightened mode to 2
+        jmp lf_end                      ; then jump to end 
+
+lf_end_frightened_mode
+
+        lda #0                          ; set frightened mode to zero
+        sta frightened_mode
+
+        lda #2 
+        ;sta $d028                       ; sprite 1: colour red
+        lda #4
+        ;sta $d029                       ; sprite 2: colour purple
+        lda #3
+        ;sta $d02a                       ; sprite 3: colour cyan
+        lda #10
+        ;sta $d02b                       ; sprite 4: colour orange
+        lda #1
+        ;sta $d02c
+        ;sta $d02d
+        ;sta $d02e
+
+lf_end  rts
