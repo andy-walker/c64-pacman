@@ -228,3 +228,85 @@ lf_end_frightened_mode
         ;sta $d02e
 
 lf_end  rts
+
+
+; -----------------------------------------------
+; Get translated row offset (helper for the above 
+; routine - may be useful elsewhere)
+; .x should be loaded with the matrix offset
+; .y should be loaded with y tile position
+; .a should be loaded with x tile position
+; returns translated offset in .y
+; -----------------------------------------------
+
+get_translated
+        cpy #9
+        bcc gtr_top_section
+        beq gtr2
+        bcs gtr3
+gtr2    cmp #13
+        bcs gtr_mid_section
+        jmp gtr_top_section
+gtr3    cpy #18
+        beq gtr4
+        bcs gtr_bottom_section
+        jmp gtr_mid_section
+gtr4    cmp #25
+        beq gtr_bottom_section
+        jmp gtr_mid_section
+
+gtr_top_section
+        ldy translate0,x                ; load the translation offset, using x as an offset
+        rts
+
+gtr_mid_section
+        ldy translate0+256,x
+        rts
+
+gtr_bottom_section
+        cpx #255                        ; .x gets erroneously set to $ff when it should be $00
+        bne gtr5                        ; when targeting first tile - I have no idea why :(
+        ldy #147                        ; so just return a 147 in that case, which is the value we're after
+        rts
+gtr5    ldy translate0+512,x
+        rts
+
+
+; --------------------------------------------
+; Routine to get the type of a tile
+; .x should be loaded with the offset from 0,0
+; .y should be loaded with the y tile index
+; returns tile type index in .a 
+; --------------------------------------------
+
+get_tile_type
+        lda pacman_x_tile               ; load x tile position into .a  
+        cpy #9                          ; compare y tile position with 9
+        bcc gtt_top_section             ; if less than 9, branch to top section handler
+        beq gtt2                        ; if it's equal to 9, go to second check
+        bcs gtt3                        ; if it's greater than 9, go to third check
+gtt2    cmp #13                         ; compare x tile position with 13
+        bcs gtt_mid_section             ; if >= 13, branch to mid section handler
+        jmp gtt_top_section             ; otherwise, branch to top section handler
+gtt3    cpy #18
+        beq gtt4
+        bcs gtt_bottom_section
+        jmp gtt_mid_section             ; tmp - todo: more conditions for bottom section
+gtt4    cmp #25
+        beq gtt_bottom_section
+        jmp gtt_mid_section
+
+gtt_top_section
+        lda level0,x                    ; load the tile type index, using x as an offset
+        rts
+gtt_mid_section
+        lda level0+256,x
+        rts
+
+gtt_bottom_section
+        cpx #255                        ; .x gets erroneously set to $ff when it should be $00
+        bne gtt5                        ; when targeting first tile - I have no idea why :(
+        lda #3                          ; so just return a 3 in that case, which is the value we're after
+        rts
+gtt5    lda level0+512,x
+        rts
