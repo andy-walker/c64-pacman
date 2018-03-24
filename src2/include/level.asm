@@ -162,15 +162,26 @@ lf0     cmp #2
         ldx timer_ticks
         cpx #0
         bne lf1
-        lda #1                          ; set ghost sprites to white
+        lda #white                      ; set ghost sprites to white
         ;sta $d028
         ;sta $d029       
         ;sta $d02a                 
-        ;sta $d02b                       
-        lda #4                          ; set eye sprites to purple
+        ;sta $d02b      
+
+        sta sprite1_colour
+        sta sprite2_colour
+        sta sprite3_colour
+        sta sprite4_colour
+
+        lda #pink                       ; set eye sprites to pink
         ;sta $d02c
         ;sta $d02d
         ;sta $d02e
+        sta sprite5_colour
+        sta sprite6_colour
+        sta sprite7_colour
+        sta sprite8_colour
+
         jmp lf2
 
 lf1     cpx #25
@@ -180,11 +191,20 @@ lf1     cpx #25
         ;sta $d028
         ;sta $d029       
         ;sta $d02a                 
-        ;sta $d02b                       
+        ;sta $d02b     
+        sta sprite1_colour
+        sta sprite2_colour
+        sta sprite3_colour
+        sta sprite4_colour
+
         lda #1                          ; set eye sprites to purple
         ;sta $d02c
         ;sta $d02d
-        ;sta $d02e                
+        ;sta $d02e   
+        sta sprite5_colour
+        sta sprite6_colour
+        sta sprite7_colour
+        sta sprite8_colour             
 
 lf2     inc timer_ticks                 ; increment timer ticks
         ldx timer_ticks                 ; and load into .x
@@ -214,15 +234,24 @@ lf_end_frightened_mode
         lda #0                          ; set frightened mode to zero
         sta frightened_mode
 
-        lda #2 
+        lda #red 
+        sta sprite1_colour
         ;sta $d028                       ; sprite 1: colour red
-        lda #4
+        lda #pink
+        sta sprite2_colour
         ;sta $d029                       ; sprite 2: colour purple
-        lda #3
+        lda #cyan
+        sta sprite3_colour
         ;sta $d02a                       ; sprite 3: colour cyan
-        lda #10
+        lda #orange
+        sta sprite4_colour
         ;sta $d02b                       ; sprite 4: colour orange
-        lda #1
+        
+        lda #white
+        sta sprite5_colour
+        sta sprite6_colour
+        sta sprite7_colour
+        sta sprite8_colour          
         ;sta $d02c
         ;sta $d02d
         ;sta $d02e
