@@ -49,8 +49,10 @@ ddrb             = $dc03                ; CIA#1 (Data Direction Register B)
 
 num1             = $02
 num2             = $03
-directions       = $04
-matrix_offset    = $05
+num3             = $04
+num4             = $05
+
+directions       = $06
 
 pacman_x_tile    = $07
 ghost0_x_tile    = $08
@@ -82,10 +84,12 @@ ghost1_direction = $1d
 ghost2_direction = $1e
 ghost3_direction = $1f
 
-ghost0_mode      = $24
-ghost1_mode      = $25
-ghost2_mode      = $26
-ghost3_mode      = $27
+ghost0_mode      = $20
+ghost1_mode      = $21
+ghost2_mode      = $22
+ghost3_mode      = $23
+
+matrix_offset    = $24
 
 score_msb1       = $28
 score_msb2       = $29
@@ -158,8 +162,8 @@ dbg23 = $53
 ; to be rendered as a decimal
 ; ------------------------------
 
-out_decimal = $5a    ; -> $5f
-score_charmap = $5a
+
+
 
 
 ; Sprite 0 - pacman
@@ -262,6 +266,8 @@ sprite11_y       = $99
 sprite11_carry   = $9a
 sprite11_colour  = $9b
 
+out_decimal   = $e0
+score_charmap = $e4
 
 score_sprite1_ptr = $fc
 score_sprite2_ptr = $fe

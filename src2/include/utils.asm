@@ -93,6 +93,18 @@ spacebar_pressed
 ; -----------------------------------------------
 
 print32
+
+        ldy #0
+
+        ldx score_msb1
+        stx num1
+        ldx score_msb2
+        stx num2
+        ldx score_lsb1
+        stx num3
+        ldx score_lsb2
+        stx num4
+
         jsr hex2dec
 
         ldx #9
@@ -103,7 +115,8 @@ l1      lda out_decimal,x
 
 l2      lda out_decimal,x
         ora #$30
-        jsr $ffd2
+        ; jsr $ffd2
+
         dex
         bpl l2
         rts
@@ -119,7 +132,7 @@ l3      jsr div10
         rts
 
         ; divides a 32 bit value by 10
-        ; remainder is returned in .a
+        ; remainder is returned in akku
 div10
         ldy #32         ; 32 bits
         lda #0
@@ -128,10 +141,10 @@ l4      rol
         cmp #10
         bcc skip
         sbc #10
-skip    rol score_msb1
-        rol score_msb2
-        rol score_lsb1
-        rol score_lsb2
+skip    rol num1
+        rol num1+1
+        rol num1+2
+        rol num1+3
         dey
         bpl l4
         rts

@@ -16,7 +16,7 @@ irq2_game                        ; triggered on scanline 0
 
         inc $d019
         
-        lda #64
+        lda #44
         sta $d012
         lda #$1b
         sta $d011
@@ -32,7 +32,7 @@ irq2_game                        ; triggered on scanline 0
 
         jmp $ea7e
 
-irq3_game                        ; triggered on scanline 64
+irq3_game                        ; triggered on scanline 44
 
         inc $d019
         lda #$fa
