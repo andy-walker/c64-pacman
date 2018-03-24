@@ -12,6 +12,7 @@ white  = 1
 red    = 2
 cyan   = 3
 pink   = 4
+blue   = 6
 yellow = 7
 brown  = 8
 orange = 10

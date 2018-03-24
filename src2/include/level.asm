@@ -123,6 +123,206 @@ next_char
         jmp draw_level
 
 
+; --------------------------------
+; Initialise ghost frightened mode
+; --------------------------------
+
+init_frightened_mode
+        
+        lda #1                          ; set frightened_mode to 1
+        sta frightened_mode
+        lda #0                          ; zero timer_seconds / timer_ticks
+        sta timer_ticks
+        sta timer_seconds
+        
+        lda #blue                       ; set ghost sprites to blue
+        sta sprite1_colour
+        sta sprite2_colour
+        sta sprite3_colour
+        sta sprite4_colour                  
+        
+        lda #white                      ; set eye sprites to purple
+        sta sprite5_colour
+        sta sprite6_colour
+        sta sprite7_colour
+        sta sprite8_colour
+
+        rts
+
+
+; ------------------------------------------------------------
+; Routine to locate the correct dot or power pill character,
+; remove it and increment player score.
+; ------------------------------------------------------------
+
+eat_dot
+
+        ldx matrix_offset
+        ldy pacman_y_tile
+        lda pacman_x_tile
+        jsr get_translated
+
+        lda pacman_y_tile
+        ldx pacman_x_tile
+        cmp #5
+        beq ed1
+        bcs ed2
+        jmp eat1
+ed1     cpx #10
+        bcc eat1
+        jmp eat2
+ed2     cmp #11
+        bcs ed3
+        jmp eat2
+ed3     cmp #16
+        bcs ed4
+        jmp eat3
+ed4     cpy #255
+        beq eat3
+        jmp eat4
+
+eat1    lda $0400,y                     ; check if contents of screen memory is 7 (blank space)
+        cmp #7                          ; if so, has already been eaten
+        beq ed_end                      ; (go to end of routine)
+        lda #7                          ; otherwise set screen memory to 7 (blank space character)                       
+        sta $0400,y                        
+        jmp ed_final
+
+eat2    lda $0500,y                     ; check if contents of screen memory is 7 (blank space)
+        cmp #7                          ; if so, has already been eaten
+        beq ed_end                      ; (go to end of routine)
+        lda #7                          ; otherwise set screen memory to 7 (blank space character)  
+        sta $0500,y
+        jmp ed_final
+
+eat3    lda $0600,y                     ; check if contents of screen memory is 7 (blank space)
+        cmp #7                          ; if so, has already been eaten
+        beq ed_end                      ; (go to end of routine)
+        lda #7                          ; otherwise set screen memory to 7 (blank space character)  
+        sta $0600,y                        
+        jmp ed_final
+
+eat4    lda $0700,y                     ; check if contents of screen memory is 7 (blank space)
+        cmp #7                          ; if so, has already been eaten
+        beq ed_end                      ; (go to end of routine)
+        lda #7                          ; otherwise set screen memory to 7 (blank space character)  
+        sta $0700,y
+
+ed_final
+
+        ; if we ate something ..
+        
+        inc dot_counter
+
+        ldx matrix_offset
+        ldy pacman_y_tile
+        lda pacman_x_tile
+
+        jsr get_tile_type
+        cmp #4                          ; if it's not 4 (power pill)                       
+        bne ed_10                       ; jump to ed_10 ..
+        jsr init_frightened_mode        ; otherwise initialise frightened mode (power pill eaten)
+        
+        ; add 50 points to player score
+
+        lda #0
+        sta num1
+        lda #50
+        sta num2
+        jsr add_to_score
+
+        jmp ed_end
+
+        ; add 10 points to player score
+ed_10   
+        lda #0
+        sta num1
+        lda #10
+        sta num2
+        jsr add_to_score
+
+ed_end  rts
+
+
+; ----------------------------------------------
+; Initialise character sprites to their starting 
+; positions at the beginning of a level
+; ----------------------------------------------
+
+level_init_sprites
+
+        ;lda #%01100111 
+        ;sta $d015                       ; enable sprites
+
+        ;lda #0
+        ;sta $d010                       ; unset all carry bits
+
+        lda %00000001                   ; set only blinky as active on level start
+        sta ghost_active
+
+        ; set sprite colours
+
+        lda #yellow 
+        sta sprite0_colour              ; sprite 0: colour yellow
+        lda #red
+        sta sprite1_colour              ; sprite 1: colour red
+        lda #pink
+        sta sprite2_colour              ; sprite 2: colour purple
+        lda #cyan
+        sta sprite3_colour              ; sprite 3: colour cyan
+        lda #orange
+        sta sprite4_colour              ; sprite 4: colour orange
+        lda #white
+        sta sprite5_colour
+        sta sprite6_colour
+        sta sprite7_colour
+        sta sprite8_colour 
+
+        lda #13                         ; initialise pacman tile position
+        sta pacman_x_tile
+        lda #15
+        sta pacman_y_tile
+        
+        lda #13                         ; initialise ghost0 (blinky) tile position
+        sta ghost0_x_tile
+        lda #7
+        sta ghost0_y_tile
+
+        lda #11
+        sta ghost1_x_tile
+        lda #9
+        sta ghost1_y_tile
+
+        lda #5                          ; initialise all x sub positions to 5 (tile centre)
+        sta pacman_x_sub
+        sta ghost0_x_sub
+        sta ghost1_x_sub
+
+        lda #5                          ; initialise all y sub positions to 5 (tile centre)
+        sta ghost0_y_sub
+        sta ghost1_y_sub
+        sta pacman_y_sub
+
+        jsr set_pacman_sprite_left
+        jsr update_pacman_sprite
+
+        ;ldx #0                          ; set .x to ghost index (0)
+        ;ldy #left                       ; set .y to ghost direction
+        ;sty ghost0_direction            ; store direction
+
+        ;jsr set_ghost_sprite            ; set and update ghost0 sprites
+        ;jsr update_ghost_sprite
+
+        ;ldx #1                          ; set .x to ghost index (1)
+        ;ldy #down                       ; set .y to ghost direction
+        ;sty ghost1_direction            ; store direction
+
+        ;jsr set_ghost_sprite            ; set and update ghost0 sprites
+        ;jsr update_ghost_sprite
+
+        rts
+
+
 ; ----------------------------------------------------
 ; Routine to run at the beginning of each cycle
 ; of the game loop - handles gameplay mode, timers etc
@@ -197,7 +397,7 @@ lf1     cpx #25
         sta sprite3_colour
         sta sprite4_colour
 
-        lda #1                          ; set eye sprites to purple
+        lda #1                          ; set eye sprites to white
         ;sta $d02c
         ;sta $d02d
         ;sta $d02e   

@@ -132,3 +132,4 @@ main_init
 .include "include/intro1.asm"
 .include "include/intro2.asm"
 .include "include/level.asm"
+.include "include/pacman.asm"
