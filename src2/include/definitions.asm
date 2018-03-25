@@ -275,5 +275,11 @@ hiscore_1     = $f3
 hiscore_2     = $f4
 hiscore_3     = $f5
 
+dir1 = $f6      ; tmp - will be removing these
+dir2 = $f7
+dir3 = $f8
+dir4 = $f9
+dir5 = $fa
+
 score_sprite1_ptr = $fc
 score_sprite2_ptr = $fe
