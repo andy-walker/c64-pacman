@@ -263,3 +263,133 @@ ups2    lda pacman_y_tile               ; get y tile position
         sta sprite0_y                   ; store in $d001
         
         rts
+
+
+
+; --------------------------------------------
+; Routine to set the correct ghost sprites
+; .x should be preloaded with ghost index
+; .y should be preloaded with ghost direction
+; --------------------------------------------
+
+set_ghost_sprite
+
+        lda frightened_mode
+        cmp #0
+        beq sgs_main
+
+sgs_frightened
+        
+        cpy #2                          ; determine ghost direction
+        bcc sgsf_lr                      
+sgsf_ud lda ghost0_y_sub,x              ; when up/down, get y sub position
+        jmp sgsf1
+sgsf_lr lda ghost0_x_sub,x              ; when left/right, get x sub position
+sgsf1   sta num1                        ; store sub position temporarily
+        lsr                             ; shift right (divide by 2)
+        asl                             ; shift left (multiply by 2)
+        cmp num1                        
+        beq sgsf_even                   ; if it's still the same number, number is an even number
+                                        ; otherwise, it's an odd number
+sgsf_odd 
+        lda #sprite_base+21             ; load accumulator with index of frightened 'A' sprite
+        jmp sgsf2
+sgsf_even 
+        lda #sprite_base+22             ; load accumulator with index of frightened 'B' sprite
+sgsf2        
+        sta sprite1_pointer,x           ; set sprite pointer, using .x (ghost index) as an offset
+        lda #sprite_base+29             ; load accumulator with index of first sprite for ghost's eyes
+        sta sprite5_pointer,x                     ; store the resulting sprite index using .x as an offset
+        rts        
+
+sgs_main
+        cpy #2                          ; determine ghost direction
+        bcc sgs_lr                      
+sgs_ud  lda ghost0_y_sub,x              ; when up/down, get y sub position
+        jmp sgs1
+sgs_lr  lda ghost0_x_sub,x              ; when left/right, get x sub position
+sgs1    sta num1                        ; store sub position temporarily
+        lsr                             ; shift right (divide by 2)
+        asl                             ; shift left (multiply by 2)
+        cmp num1                        
+        beq sgs_even                    ; if it's still the same number, number is an even number
+                                        ; otherwise, it's an odd number
+sgs_odd lda #sprite_base+23             ; load accumulator with index of ghost 'A' sprite
+        jmp sgs2
+sgs_even 
+        lda #sprite_base+24             ; load accumulator with index of ghost 'B' sprite
+sgs2        
+        clc
+        sta sprite1_pointer,x           ; set sprite pointer, using .x (ghost index) as an offset
+        lda #sprite_base+25             ; load accumulator with index of first sprite for ghost's eyes
+        sty num1                        ; temporarily store .y register (ghost direction)
+        adc num1                        ; and add to sprite index
+        sta sprite5_pointer,x                     ; store the resulting sprite index using .x as an offset
+        rts
+
+
+; --------------------------------------------
+; Routine to update a specific ghost sprite
+; .x should be preloaded with ghost index
+; .y should be preloaded with ghost direction
+; --------------------------------------------
+
+update_ghost_sprite
+
+        txa                             ; setup .y as an offset register
+        asl                             ; should be 2 * .x
+        sta tmp1                        ; temporarily store
+        tay                             ; and transfer to .y
+        
+        lda sprite1_x,y                 ; note previous x position (for overflow checking)
+        sta tmp2
+
+        lda ghost0_x_tile,x             ; get x tile position
+        asl                             ; multiply by 10
+        asl
+        asl
+        clc
+        adc ghost0_x_tile,x
+        adc ghost0_x_tile,x
+        adc ghost0_x_sub,x              ; add x sub tile position
+        adc #45                         ; add 45 (the x offset of the background graphic)
+        sta sprite1_x,x                 ; store in $d002 (todo: need to offset with y * 2)  
+        sta sprite5_x,x                 ; same for eyes sprite
+
+        ; primitively handle the sprite's x carry bit
+
+        ldy tmp2
+        cpy #255                        ; if previous x was 255
+        bne ugs1
+        cmp #0                          ; and now it's zero
+        bne ugs1
+
+        lda #1                          ; set carry bits
+        sta sprite1_carry,x             ; for main ghost sprite
+        sta sprite5_carry,x             ; and eyes sprite
+
+
+
+ugs1    cpy #0                          ; if previous x was zero
+        bne ugs2
+        cmp #255                        ; and now it's 255
+        bne ugs2
+
+        lda #0                          ; unset carry bits
+        sta sprite1_carry,x             ; for main ghost sprite
+        sta sprite5_carry,x             ; and eyes sprite
+
+ugs2    ldy tmp1
+        lda ghost0_y_tile,x             ; get y tile position
+        asl                             ; multiply by 10
+        asl
+        asl
+        clc
+        adc ghost0_y_tile,x
+        adc ghost0_y_tile,x
+        adc ghost0_y_sub,x              ; add y sub position
+        adc #37                         ; add 37 (the y offset of the level)
+        sta sprite1_y,x                 ; store in $d003 (todo: need to offset with y * 2) 
+        sta sprite5_y,x                 ; same for eyes sprite
+
+        rts
