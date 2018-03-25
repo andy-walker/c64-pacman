@@ -81,6 +81,36 @@ sss1
 
         rts
 
+set_lower_game_sprites
+        lda #%00000011
+        sta $d015
+        lda #yellow
+        sta $d027 
+        sta $d028
+        lda #0
+        sta $d010
+        lda #253
+        sta $d001
+        sta $d003
+        lda #65
+        sta $d000
+        lda #91
+        sta $d002
+        lda #sprite_base+61
+        sta $07f8
+        lda #sprite_base+60
+        sta $07f9
+        ldx #0
+sls_loop
+        nop
+        nop
+        nop
+        inx
+        cpx #200
+        bne sls_loop
+
+        rts
+
 
 ; --------------------
 ; Sprite setup routine
