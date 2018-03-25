@@ -4,13 +4,16 @@
 
 reset_score
 
-    lda #0
-    sta score_msb1
-    sta score_msb2
-    sta score_lsb1
-    sta score_lsb2
+        lda #0
+        ; sta score_msb1
+        ; sta score_msb2
+        ; sta score_lsb1
+        ; sta score_lsb2
 
-    rts
+        sta score_1
+        sta score_2
+        sta score_3
+        rts
 
 ; ------------------------------------------------
 ; Add to score
@@ -21,23 +24,53 @@ reset_score
 add_to_score
     
         clc
-        
-        lda score_lsb2
+        sed
+
+        lda score_3
         adc num2
-        sta score_lsb2
-        lda score_lsb1
+        sta score_3
+        lda score_2
         adc num1
-        sta score_lsb1
-        lda score_msb2
+        sta score_2
+        lda score_1
         adc #0
-        sta score_msb2
-        lda score_msb1
-        adc #0
-        sta score_msb1
+        sta score_1
 
-        ; jsr print32
+        cld
 
-        ; intentionally falls through to ..
+        lda score_1
+        lsr
+        lsr
+        lsr
+        lsr
+        sta score_charmap
+
+        lda score_1
+        and #%00001111
+        sta score_charmap+1
+
+        lda score_2
+        lsr
+        lsr
+        lsr
+        lsr
+        sta score_charmap+2
+
+        lda score_2
+        and #%00001111
+        sta score_charmap+3
+
+        lda score_3
+        lsr
+        lsr
+        lsr
+        lsr
+        sta score_charmap+4
+
+        lda score_3
+        and #%00001111
+        sta score_charmap+5
+        
 
 
 ; ----------------------------------------------

@@ -225,9 +225,9 @@ ed_final
         
         ; add 50 points to player score
 
-        lda #0
+        lda #$00
         sta num1
-        lda #50
+        lda #$50
         sta num2
         jsr add_to_score
 
@@ -235,9 +235,9 @@ ed_final
 
         ; add 10 points to player score
 ed_10   
-        lda #0
+        lda #$00
         sta num1
-        lda #10
+        lda #$10
         sta num2
         jsr add_to_score
 
@@ -362,21 +362,14 @@ lf0     cmp #2
         ldx timer_ticks
         cpx #0
         bne lf1
-        lda #white                      ; set ghost sprites to white
-        ;sta $d028
-        ;sta $d029       
-        ;sta $d02a                 
-        ;sta $d02b      
 
+        lda #white                      ; set ghost sprites to white   
         sta sprite1_colour
         sta sprite2_colour
         sta sprite3_colour
         sta sprite4_colour
 
         lda #pink                       ; set eye sprites to pink
-        ;sta $d02c
-        ;sta $d02d
-        ;sta $d02e
         sta sprite5_colour
         sta sprite6_colour
         sta sprite7_colour
@@ -387,20 +380,13 @@ lf0     cmp #2
 lf1     cpx #25
         bne lf2
 
-        lda #6                          ; set ghost sprites to blue
-        ;sta $d028
-        ;sta $d029       
-        ;sta $d02a                 
-        ;sta $d02b     
+        lda #blue                       ; set ghost sprites to blue
         sta sprite1_colour
         sta sprite2_colour
         sta sprite3_colour
         sta sprite4_colour
 
-        lda #1                          ; set eye sprites to white
-        ;sta $d02c
-        ;sta $d02d
-        ;sta $d02e   
+        lda #white                      ; set eye sprites to white
         sta sprite5_colour
         sta sprite6_colour
         sta sprite7_colour
@@ -435,26 +421,19 @@ lf_end_frightened_mode
         sta frightened_mode
 
         lda #red 
-        sta sprite1_colour
-        ;sta $d028                       ; sprite 1: colour red
+        sta sprite1_colour              ; sprite 1: colour red
         lda #pink
-        sta sprite2_colour
-        ;sta $d029                       ; sprite 2: colour purple
+        sta sprite2_colour              ; sprite 2: colour purple
         lda #cyan
-        sta sprite3_colour
-        ;sta $d02a                       ; sprite 3: colour cyan
+        sta sprite3_colour              ; sprite 3: colour cyan
         lda #orange
-        sta sprite4_colour
-        ;sta $d02b                       ; sprite 4: colour orange
+        sta sprite4_colour              ; sprite 4: colour orange
         
         lda #white
         sta sprite5_colour
         sta sprite6_colour
         sta sprite7_colour
         sta sprite8_colour          
-        ;sta $d02c
-        ;sta $d02d
-        ;sta $d02e
 
 lf_end  rts
 

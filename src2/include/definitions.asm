@@ -269,5 +269,9 @@ sprite11_colour  = $9b
 out_decimal   = $e0
 score_charmap = $e4
 
+score_1       = $f0
+score_2       = $f1
+score_3       = $f2
+
 score_sprite1_ptr = $fc
 score_sprite2_ptr = $fe

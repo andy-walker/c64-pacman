@@ -116,7 +116,7 @@ l1      lda out_decimal,x
 l2      lda out_decimal,x
         ora #$30
         ; jsr $ffd2
-
+        
         dex
         bpl l2
         rts

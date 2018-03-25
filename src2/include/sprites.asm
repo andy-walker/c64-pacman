@@ -209,10 +209,6 @@ update_pacman_sprite
         cmp #0                          ; and now it's zero
         bne ups1
 
-        ;lda $d010
-        ;eor #%00000001                  ; flip sprite carry bit
-        ;sta $d010
-
         lda #1                          ; set sprite carry bit
         sta sprite0_carry
 
@@ -220,10 +216,6 @@ ups1    cpx #0                          ; if previous x was zero
         bne ups2
         cmp #255                        ; and now it's 255
         bne ups2
-
-        ; lda $d010
-        ; eor #%00000001                  ; flip sprite carry bit
-        ;sta $d010
         
         lda #0                          ; unset sprite carry bit
         sta sprite0_carry
