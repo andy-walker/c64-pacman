@@ -84,6 +84,21 @@ construct_charmap
         and #%00001111
         sta score_charmap+5
 
+cc_strip
+        ldx #0
+        clc
+
+cc_strip_loop
+        lda score_charmap,x
+        cmp #0
+        bne cc_strip_end
+        adc #10
+        sta score_charmap,x
+        inx
+        cpx #4
+        bne cc_strip_loop
+
+cc_strip_end
 
 ; ----------------------------------------------
 ; Routine to write score to upper border sprites

@@ -278,6 +278,6 @@ score_3       = $f2
 hiscore_1     = $f3
 hiscore_2     = $f4
 hiscore_3     = $f5
-hiscore_beaten = $f6
+
 score_sprite1_ptr = $fc
 score_sprite2_ptr = $fe
