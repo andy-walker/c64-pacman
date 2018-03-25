@@ -45,8 +45,6 @@ irq3_intro2                         ; triggered on scanline 64
         inc $d019
         lda #147
         sta $d012
-        ;lda #$1b
-        ;sta $d011
 
         jsr set_intro2_upper_sprites
 
@@ -62,8 +60,6 @@ irq4_intro2                         ; triggered on scanline 147
         inc $d019
         lda #$fa
         sta $d012
-        ;lda #$1b
-        ;sta $d011
 
         jsr set_intro2_lower_sprites
 

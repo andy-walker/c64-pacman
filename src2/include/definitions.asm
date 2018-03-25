@@ -164,10 +164,6 @@ dbg23 = $53
 ; to be rendered as a decimal
 ; ------------------------------
 
-
-
-
-
 ; Sprite 0 - pacman
 
 sprite_data     = $60
