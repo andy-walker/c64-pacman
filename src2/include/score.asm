@@ -12,9 +12,9 @@ reset_score
         rts
 
 
-; --------------------
+; ----------------------
 ; Reset hi-score to zero
-; --------------------
+; ----------------------
 
 reset_hiscore
 
@@ -84,16 +84,20 @@ construct_charmap
         and #%00001111
         sta score_charmap+5
 
+; strip leading zeroes from charmap ..
+
 cc_strip
+        
         ldx #0
         clc
 
 cc_strip_loop
-        lda score_charmap,x
+
+        lda score_charmap,x         ; iterate over first 4 characters
         cmp #0
-        bne cc_strip_end
-        adc #10
-        sta score_charmap,x
+        bne cc_strip_end            ; if non-zero, break - no further work needed
+        adc #10                     ; if zero, convert to space
+        sta score_charmap,x         ; store value
         inx
         cpx #4
         bne cc_strip_loop
@@ -209,27 +213,27 @@ compare_hiscore
 
         lda score_1                 ; compare high bytes
         cmp hiscore_1
-        bcc hs_unbeaten             ; if NUM1H < NUM2H then NUM1 < NUM2
-        bne hs_beaten               ; if NUM1H <> NUM2H then NUM1 > NUM2 (so NUM1 >= NUM2)
+        bcc hs_unbeaten             ; if score_1 < hiscore_1 then score < hiscore
+        bne hs_beaten               ; if score_1 <> hiscore_1 then score > hiscore (so score >= hiscore)
         lda score_2                 ; compare middle bytes
         cmp hiscore_2
-        bcc hs_unbeaten             ; if NUM1M < NUM2M then NUM1 < NUM2
-        bne hs_beaten               ; if NUM1M <> NUM2M then NUM1 > NUM2 (so NUM1 >= NUM2)
+        bcc hs_unbeaten             ; if score_2 < hiscore_2 then score < hiscore
+        bne hs_beaten               ; if score_2 <> hiscore_2 then score > hiscore (so score >= hiscore)
         lda score_3                 ; compare low bytes
         cmp hiscore_3
-        beq hs_unbeaten
-        bcs hs_beaten               ; if NUM1L >= NUM2L then NUM1 >= NUM2
+        beq hs_unbeaten             ; if score_3 == hiscore_3, hi-score still unbeaten
+        bcs hs_beaten               ; if score_3 > hiscore_3, hi-score beaten!
 
 hs_unbeaten
         rts
 
-hs_beaten
-        
-        lda score_1
+hs_beaten                           ; hi-score has been beaten ..
+                                    ; copy score to hi-score
+        lda score_1                 ; high byte
         sta hiscore_1
-        lda score_2
+        lda score_2                 ; middle byte
         sta hiscore_2
-        lda score_3
+        lda score_3                 ; low byte
         sta hiscore_3
 
 hiscore_writer
