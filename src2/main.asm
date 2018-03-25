@@ -109,6 +109,10 @@ main_init
         sta $d018                       ; Bits 1-3 ($400+512bytes * low nibble value) of $d018 sets char location
                                         ; $400 + $200*$0E = $3800
         
+        ; reset score + hi-score
+        jsr reset_score
+        jsr reset_hiscore
+        
         rts
 
 
@@ -121,7 +125,6 @@ main_init
 
 .include "include/game.asm"
 .include "include/data.asm"
-.include "include/score.asm"
 .include "include/sprites.asm"
 .include "include/utils.asm"
 
@@ -133,3 +136,4 @@ main_init
 .include "include/intro2.asm"
 .include "include/level.asm"
 .include "include/pacman.asm"
+.include "include/score.asm"

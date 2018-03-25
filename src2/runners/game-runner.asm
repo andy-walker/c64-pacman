@@ -1,8 +1,8 @@
 irq1_game
 
         jsr level_init_frame
-        jsr move_character
         jsr set_score_sprites
+        jsr move_character
 
         lda #<irq2_game         
         sta $314

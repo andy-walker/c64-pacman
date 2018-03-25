@@ -32,10 +32,12 @@ sprite_data_addr = $2800
 char_data_addr   = $3800
 number_data_addr = $2700
 
-score_sprite1_addr = $2800+(52*64) 
-score_sprite2_addr = $2800+(53*64) 
-score_sprite3_addr = $2800+(62*64) 
-score_sprite4_addr = $2800+(63*64) 
+score_sprite1_addr   = $2800+(52*64) 
+score_sprite2_addr   = $2800+(53*64) 
+score_sprite3_addr   = $2800+(62*64) 
+score_sprite4_addr   = $2800+(63*64) 
+hiscore_sprite1_addr = $2800+(55*64)
+hiscore_sprite2_addr = $2800+(56*64)
 
 pra              = $dc00                ; CIA#1 (Port Register A)
 prb              = $dc01                ; CIA#1 (Port Register B)
@@ -273,5 +275,9 @@ score_1       = $f0
 score_2       = $f1
 score_3       = $f2
 
+hiscore_1     = $f3
+hiscore_2     = $f4
+hiscore_3     = $f5
+hiscore_beaten = $f6
 score_sprite1_ptr = $fc
 score_sprite2_ptr = $fe
