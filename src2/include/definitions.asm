@@ -166,103 +166,102 @@ dbg23 = $53
 
 ; Sprite 0 - pacman
 
-sprite_data     = $60
 
-sprite0_pointer = $60
-sprite0_x       = $61
-sprite0_y       = $62
-sprite0_carry   = $63
-sprite0_colour  = $64
-
-; Sprite 1 - ghost 0 body
-
-sprite1_pointer = $65
-sprite1_x       = $66
-sprite1_y       = $67
-sprite1_carry   = $68
-sprite1_colour  = $69
-
-; Sprite 2 - ghost 1 body
-
-sprite2_pointer = $6a
-sprite2_x       = $6b
-sprite2_y       = $6c
-sprite2_carry   = $6d
-sprite2_colour  = $6e
-
-; Sprite 3 - ghost 2 body
-
-sprite3_pointer = $6f
-sprite3_x       = $70
-sprite3_y       = $71
-sprite3_carry   = $72
-sprite3_colour  = $73
-
-; Sprite 4 - ghost 3 body
-
-sprite4_pointer = $74
-sprite4_x       = $75
-sprite4_y       = $76
-sprite4_carry   = $77
-sprite4_colour  = $78
-
-
-; Sprite 5 - ghost 0 eyes
-
-sprite5_pointer = $79
-sprite5_x       = $7a
-sprite5_y       = $7b
-sprite5_carry   = $7c
-sprite5_colour  = $7d
-
-; Sprite 6 - ghost 1 eyes
-
-sprite6_pointer = $7e
-sprite6_x       = $7f
-sprite6_y       = $80
-sprite6_carry   = $81
-sprite6_colour  = $82
-
-; Sprite 7 - ghost 2 eyes
-
-sprite7_pointer = $83
-sprite7_x       = $84
-sprite7_y       = $85
-sprite7_carry   = $86
-sprite7_colour  = $87
-
-; Sprite 8 - ghost 3 eyes
-
-sprite8_pointer = $88
-sprite8_x       = $89
-sprite8_y       = $8a
-sprite8_carry   = $8b
-sprite8_colour  = $8c
-
-
-; Sprite 9 - fruit colour 1
-
-sprite9_pointer = $8d
-sprite9_x       = $8e
-sprite9_y       = $8f
-sprite9_carry   = $90
-sprite9_colour  = $91
-
+; Allocate memory to keep track of 12 sprites
+; Sprite 0  - pacman
+; Sprite 1  - ghost 0 body
+; Sprite 2  - ghost 1 body
+; Sprite 3  - ghost 2 body
+; Sprite 4  - ghost 3 body
+; Sprite 5  - ghost 0 eyes
+; Sprite 6  - ghost 1 eyes
+; Sprite 7  - ghost 2 eyes
+; Sprite 8  - ghost 3 eyes
+; Sprite 9  - fruit colour 1
 ; Sprite 10 - fruit colour 2
-
-sprite10_pointer = $92
-sprite10_x       = $93
-sprite10_y       = $94
-sprite10_carry   = $95
-sprite10_colour  = $96
-
 ; Sprite 11 - fruit colour 3
 
-sprite11_pointer = $97
-sprite11_x       = $98
-sprite11_y       = $99
-sprite11_carry   = $9a
-sprite11_colour  = $9b
+sprite_data      = $60
+
+sprite0_pointer  = $60
+sprite1_pointer  = $61
+sprite2_pointer  = $62
+sprite3_pointer  = $63
+sprite4_pointer  = $64
+sprite5_pointer  = $65
+sprite6_pointer  = $66
+sprite7_pointer  = $67
+sprite8_pointer  = $68
+sprite9_pointer  = $69
+sprite10_pointer = $6a
+sprite11_pointer = $6b
+
+sprite0_x  = $6c
+sprite1_x  = $6d
+sprite2_x  = $6e
+sprite3_x  = $6f
+sprite4_x  = $70
+sprite5_x  = $71
+sprite6_x  = $72
+sprite7_x  = $73
+sprite8_x  = $74
+sprite9_x  = $75
+sprite10_x = $76
+sprite11_x = $77
+
+sprite0_y  = $78
+sprite1_y  = $79
+sprite2_y  = $7a
+sprite3_y  = $7b
+sprite4_y  = $7c
+sprite5_y  = $7d
+sprite6_y  = $7e
+sprite7_y  = $7f
+sprite8_y  = $80
+sprite9_y  = $81
+sprite10_y = $82
+sprite11_y = $83
+
+sprite0_carry  = $84
+sprite1_carry  = $85
+sprite2_carry  = $86
+sprite3_carry  = $87
+sprite4_carry  = $88
+sprite5_carry  = $89
+sprite6_carry  = $8a
+sprite7_carry  = $8b
+sprite8_carry  = $8c
+sprite9_carry  = $8d
+sprite10_carry = $8e
+sprite11_carry = $8f
+
+sprite0_colour  = $90
+sprite1_colour  = $91
+sprite2_colour  = $92
+sprite3_colour  = $93
+sprite4_colour  = $94
+sprite5_colour  = $95
+sprite6_colour  = $96
+sprite7_colour  = $97
+sprite8_colour  = $98
+sprite9_colour  = $99
+sprite10_colour = $9a
+sprite11_colour = $9b
+
+
+; Sprite 0  - pacman
+; Sprite 1  - ghost 0 body
+; Sprite 2  - ghost 1 body
+; Sprite 3  - ghost 2 body
+; Sprite 4  - ghost 3 body
+; Sprite 5  - ghost 0 eyes
+; Sprite 6  - ghost 1 eyes
+; Sprite 7  - ghost 2 eyes
+; Sprite 8  - ghost 3 eyes
+; Sprite 9  - fruit colour 1
+; Sprite 10 - fruit colour 2
+; Sprite 11 - fruit colour 3
+
 
 out_decimal   = $e0
 score_charmap = $e4
