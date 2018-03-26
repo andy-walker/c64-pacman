@@ -172,9 +172,8 @@ move_left
         lda #26                         ; set x tile to 26 (will decrement in next step)
         sta pacman_x_tile
 
-        lda $d010
-        eor #%00000001                  ; flip sprite carry bit
-        sta $d010
+        lda #1                          ; set sprite carry bit
+        sta sprite0_carry
 
 ml1     dec pacman_x_tile               ; decrement x tile position
         lda #9                          ; set x sub position to 9 (upper boundary)
@@ -255,9 +254,8 @@ move_right
         lda #0                          ; set x tile to zero (will increment to 1 in next step)
         sta pacman_x_tile        
         
-        lda $d010
-        eor #%00000001                  ; flip sprite carry bit
-        sta $d010
+        lda #0                          ; unset sprite carry bit
+        sta sprite0_carry
 
 mr1     inc pacman_x_tile               ; increment x tile position
         lda #0                          ; set x sub position to 0 (lower boundary)
