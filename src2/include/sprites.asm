@@ -81,59 +81,39 @@ sss1
 
         rts
 
-set_lower_game_sprites
 
-        lda #%11100011
-        sta $d015
-        lda #yellow
-        sta $d027 
-        sta $d028
-        lda #%11100000
-        sta $d010
-        lda #253
-        sta $d001
-        sta $d003
-        lda #65
-        sta $d000
-        lda #89
-        sta $d002
+; ----------------------------------------
+; Set lower border sprites during gameplay
+; (lives / level indicators) - will be 
+; subsequently rendered on an interrupt
+; ----------------------------------------
+
+set_lower_border_sprites
+        
+        ldx lives
+        cpx #0
+        bne sls1
+        lda #0                          ; zero lives
+        sta life_sprites_enabled
+        rts
+sls1    cpx #1
+        bne sls2
+        lda #%11100001
+        sta life_sprites_enabled
+        lda #sprite_base+3
+        sta sprite12_pointer
+        rts
+sls2    lda #%11100011
+        sta life_sprites_enabled
         lda #sprite_base+64
-        sta $07f8
-        lda #sprite_base+66
-        sta $07f9
-
-        lda #sprite_base+67
-        sta $07fd
-        lda #sprite_base+68
-        sta $07fe
-        lda #sprite_base+69
-        sta $07ff
-
-        lda #40
-        sta $d00a
-        sta $d00c
-        sta $d00e
-
-        lda #253
-        sta $d00b
-        sta $d00d
-        sta $d00f
-
-        lda #red
-        sta $d02c
-        lda #white
-        sta $d02d
-        lda #brown
-        sta $d02e
-
-        ldx #0
-sls_loop
-        nop
-        nop
-        inx
-        cpx #200
-        bne sls_loop
-
+        sta sprite12_pointer
+        cpx #2
+        bne sls3
+        lda #sprite_base+65
+        sta sprite13_pointer
+        rts
+sls3    lda #sprite_base+66
+        sta sprite13_pointer
         rts
 
 
@@ -288,7 +268,6 @@ ups2    lda pacman_y_tile               ; get y tile position
         sta sprite0_y                   ; store in $d001
         
         rts
-
 
 
 ; --------------------------------------------

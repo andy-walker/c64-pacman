@@ -159,15 +159,9 @@ dbg22 = $52
 dbg23 = $53
 
 
-; ------------------------------
-; 6 locations reserved for score
-; to be rendered as a decimal
-; ------------------------------
 
-; Sprite 0 - pacman
+; Allocate memory to keep track of 12 game sprites
 
-
-; Allocate memory to keep track of 12
 ; Sprite 0  - pacman
 ; Sprite 1  - ghost 0 body
 ; Sprite 2  - ghost 1 body
@@ -180,6 +174,9 @@ dbg23 = $53
 ; Sprite 9  - fruit colour 1
 ; Sprite 10 - fruit colour 2
 ; Sprite 11 - fruit colour 3
+; Sprite 12 - life sprite 1
+; Sprite 13 - life sprite 2
+; Sprite 14 - life sprite 3
 
 sprite_data      = $60
 
@@ -248,20 +245,10 @@ sprite9_colour  = $99
 sprite10_colour = $9a
 sprite11_colour = $9b
 
-
-; Sprite 0  - pacman
-; Sprite 1  - ghost 0 body
-; Sprite 2  - ghost 1 body
-; Sprite 3  - ghost 2 body
-; Sprite 4  - ghost 3 body
-; Sprite 5  - ghost 0 eyes
-; Sprite 6  - ghost 1 eyes
-; Sprite 7  - ghost 2 eyes
-; Sprite 8  - ghost 3 eyes
-; Sprite 9  - fruit colour 1
-; Sprite 10 - fruit colour 2
-; Sprite 11 - fruit colour 3
-
+sprite12_pointer = $9c
+sprite13_pointer = $9d
+sprite14_pointer = $9e
+life_sprites_enabled = $9f
 
 out_decimal   = $e0
 score_charmap = $e4

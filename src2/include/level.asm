@@ -251,12 +251,6 @@ ed_end  rts
 
 level_init_sprites
 
-        ;lda #%01100111 
-        ;sta $d015                       ; enable sprites
-
-        ;lda #0
-        ;sta $d010                       ; unset all carry bits
-
         lda %00000001                   ; set only blinky as active on level start
         sta ghost_active
 

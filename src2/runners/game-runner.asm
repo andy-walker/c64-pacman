@@ -1,6 +1,6 @@
 irq1_game
 
-        jsr set_lower_game_sprites
+        jsr display_lower_game_sprites
         jsr level_init_frame
 
         jsr move_character

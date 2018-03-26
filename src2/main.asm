@@ -66,6 +66,7 @@ irq_timer2
         stx flash_counter2
 
         ; now hand control to the relevant mode runner
+
         lda game_mode
         cmp #gameplay
         beq mode_game
@@ -135,5 +136,6 @@ main_init
 .include "include/intro1.asm"
 .include "include/intro2.asm"
 .include "include/level.asm"
+.include "include/display.asm"
 .include "include/pacman.asm"
 .include "include/score.asm"

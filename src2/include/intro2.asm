@@ -1,6 +1,10 @@
 init_intro2
         lda #0
         sta timer_ticks
+        
+        dec lives
+        jsr set_lower_border_sprites
+
         rts
 
 set_intro2_upper_sprites

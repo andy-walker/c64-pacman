@@ -1,5 +1,6 @@
 irq1_intro1                         ; triggered on scanline 250
-
+        
+        jsr display_lower_game_sprites
         inc timer_ticks
         lda timer_ticks
         cmp #100
