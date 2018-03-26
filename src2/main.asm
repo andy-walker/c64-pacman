@@ -65,9 +65,10 @@ irq_timer1
 irq_timer2
         stx flash_counter2
 
-        ; now hand control to the relevant mode runner 
-
+        ; now hand control to the relevant mode runner
         lda game_mode
+        cmp #gameplay
+        beq mode_game
         cmp #attract
         beq mode_attract
         cmp #startscreen
@@ -76,8 +77,7 @@ irq_timer2
         beq mode_intro1
         cmp #intro2
         beq mode_intro2
-        cmp #gameplay
-        beq mode_game
+
 
 mode_attract
         jmp irq1_attract
@@ -112,7 +112,7 @@ main_init
         ; reset score + hi-score
         jsr reset_score
         jsr reset_hiscore
-        
+
         rts
 
 

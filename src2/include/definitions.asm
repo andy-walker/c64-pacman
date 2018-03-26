@@ -27,17 +27,17 @@ scatter      = 3
 dead         = 4
 cruise_elroy = 5
 
-sprite_base      = $a0
-sprite_data_addr = $2800
+sprite_base      = $90
+sprite_data_addr = $2400
 char_data_addr   = $3800
-number_data_addr = $2700
+number_data_addr = $2300
 
-score_sprite1_addr   = $2800+(52*64) 
-score_sprite2_addr   = $2800+(53*64) 
-score_sprite3_addr   = $2800+(62*64) 
-score_sprite4_addr   = $2800+(63*64) 
-hiscore_sprite1_addr = $2800+(55*64)
-hiscore_sprite2_addr = $2800+(56*64)
+score_sprite1_addr   = $2400+(52*64) 
+score_sprite2_addr   = $2400+(53*64) 
+score_sprite3_addr   = $2400+(62*64) 
+score_sprite4_addr   = $2400+(63*64) 
+hiscore_sprite1_addr = $2400+(55*64)
+hiscore_sprite2_addr = $2400+(56*64)
 
 pra              = $dc00                ; CIA#1 (Port Register A)
 prb              = $dc01                ; CIA#1 (Port Register B)
@@ -167,7 +167,7 @@ dbg23 = $53
 ; Sprite 0 - pacman
 
 
-; Allocate memory to keep track of 12 sprites
+; Allocate memory to keep track of 12
 ; Sprite 0  - pacman
 ; Sprite 1  - ghost 0 body
 ; Sprite 2  - ghost 1 body

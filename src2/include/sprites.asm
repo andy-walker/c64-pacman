@@ -82,27 +82,52 @@ sss1
         rts
 
 set_lower_game_sprites
-        lda #%00000011
+
+        lda #%11100011
         sta $d015
         lda #yellow
         sta $d027 
         sta $d028
-        lda #0
+        lda #%11100000
         sta $d010
         lda #253
         sta $d001
         sta $d003
         lda #65
         sta $d000
-        lda #91
+        lda #89
         sta $d002
-        lda #sprite_base+61
+        lda #sprite_base+64
         sta $07f8
-        lda #sprite_base+60
+        lda #sprite_base+66
         sta $07f9
+
+        lda #sprite_base+67
+        sta $07fd
+        lda #sprite_base+68
+        sta $07fe
+        lda #sprite_base+69
+        sta $07ff
+
+        lda #40
+        sta $d00a
+        sta $d00c
+        sta $d00e
+
+        lda #253
+        sta $d00b
+        sta $d00d
+        sta $d00f
+
+        lda #red
+        sta $d02c
+        lda #white
+        sta $d02d
+        lda #brown
+        sta $d02e
+
         ldx #0
 sls_loop
-        nop
         nop
         nop
         inx
