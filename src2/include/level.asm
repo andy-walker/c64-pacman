@@ -501,7 +501,7 @@ gtt3    cpy #18
         bcs gtt_bottom_section
         jmp gtt_mid_section             ; tmp - todo: more conditions for bottom section
 gtt4    cmp #25
-        beq gtt_bottom_section
+        bcs gtt_bottom_section
         jmp gtt_mid_section
 
 gtt_top_section
@@ -512,9 +512,14 @@ gtt_mid_section
         rts
 
 gtt_bottom_section
+        stx dbg16
+        cpx #254
+        beq gtt6
         cpx #255                        ; .x gets erroneously set to $ff when it should be $00
-        bne gtt5                        ; when targeting first tile - I have no idea why :(
+        bcc gtt5                        ; when targeting first tile - I have no idea why :(
         lda #3                          ; so just return a 3 in that case, which is the value we're after
         rts
 gtt5    lda level0+512,x
+        rts
+gtt6    lda #0
         rts
