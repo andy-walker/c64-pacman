@@ -70,6 +70,8 @@ irq_timer2
         lda game_mode
         cmp #gameplay
         beq mode_game
+        cmp #level_complete
+        beq mode_level_complete
         cmp #attract
         beq mode_attract
         cmp #startscreen
@@ -90,6 +92,8 @@ mode_intro2
         jmp irq1_intro2
 mode_game
         jmp irq1_game
+mode_level_complete
+        jmp irq1_endlevel
 
 
 main_init
@@ -123,6 +127,7 @@ main_init
 .include "runners/intro1-runner.asm"
 .include "runners/intro2-runner.asm"
 .include "runners/game-runner.asm"
+.include "runners/endlevel-runner.asm"
 
 .include "include/game.asm"
 .include "include/data.asm"

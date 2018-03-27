@@ -1,21 +1,18 @@
-irq1_game
+irq1_endlevel
 
         jsr display_lower_game_sprites
-        jsr level_init_frame
-
-        jsr move_character
         jsr set_score_sprites
-        jsr level_end_frame
-        
-        lda #<irq2_game         
+        jsr level_end
+
+        lda #<irq2_endlevel        
         sta $314
-        lda #>irq2_game
+        lda #>irq2_endlevel
         sta $315
 
         jmp $ea7e
 
 
-irq2_game                        ; triggered on scanline 0
+irq2_endlevel                     ; triggered on scanline 0
 
         inc $d019
         
@@ -28,14 +25,14 @@ irq2_game                        ; triggered on scanline 0
         lda #%00111111
         sta $d015
 
-        lda #<irq3_game
+        lda #<irq3_endlevel
         sta $314
-        lda #>irq3_game
+        lda #>irq3_endlevel
         sta $315
 
         jmp $ea7e
 
-irq3_game                        ; triggered on scanline 44
+irq3_endlevel                     ; triggered on scanline 44
 
         inc $d019
         lda #$fa
@@ -43,7 +40,7 @@ irq3_game                        ; triggered on scanline 44
         lda #$1b
         sta $d011
        
-        ; set all game sprites ..
+        ; display pacman sprite only at the end of the level
 
         lda #0                  ; use .a to keep track of carry bits - initially zeroed
 
@@ -60,9 +57,10 @@ irq3_game                        ; triggered on scanline 44
         stx $d027
 
         eor sprite0_carry
-        
-        
         sta $d010
+       
+        lda #1                  ; enable first sprite only
+        sta $d015
 
 
         lda #<irq1

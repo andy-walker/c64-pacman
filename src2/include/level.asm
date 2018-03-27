@@ -6,7 +6,7 @@ init_level
         ldx #0
         stx frightened_mode
         stx dot_counter
-        stx flash_counter
+        rts
 
 draw_level 
         
@@ -431,6 +431,44 @@ lf_end_frightened_mode
 
 lf_end  rts
 
+; ---------------------------------------------------------
+; Routine to run at the end of each cycle
+; of the game loop - triggers level end when all dots eaten,
+; checks for collisions with ghosts
+; ---------------------------------------------------------
+
+level_end_frame
+
+        ; check for collisions between pacman and ghosts
+
+        ;jsr detect_collisions
+        ;cmp #0
+        ;beq lef2
+
+        ;lda #life_lost                  ; set game mode to life_lost
+        ;sta game_mode
+
+        ;jmp lef3                        ; jump to end of sub (initialising timer)
+
+
+lef2    lda dot_counter
+        cmp #210
+        bcc lef_end
+        
+        ; we've reached the end of the level (all dots eaten)
+        
+        lda #sprite_base                ; set default pacman sprite
+        sta sprite0_pointer
+
+        lda #level_complete
+        sta game_mode
+
+lef3    lda #0
+        sta timer_seconds
+        sta timer_ticks
+
+lef_end rts
+
 
 ; -----------------------------------------------
 ; Get translated row offset (helper for the above 
@@ -516,4 +554,87 @@ gtt_bottom_section
 gtt5    lda level0+512,x
         rts
 gtt6    lda #0
+        rts
+
+
+; ------------------------------------------------
+; Routine to run at the end of the level
+; handles background flash, and starting new level
+; ------------------------------------------------
+
+level_end
+
+        lda timer_seconds
+        cmp #1
+        beq level_end_reset
+
+        inc timer_ticks
+        lda timer_ticks
+        cmp #75
+        beq flash_white
+        cmp #100
+        beq flash_blue
+        cmp #125
+        beq flash_white
+        cmp #150
+        beq flash_blue
+        cmp #175
+        beq flash_white
+        cmp #200
+        beq flash_blue
+        cmp #225
+        beq flash_white
+        cmp #250
+        beq flash_blue
+        cmp #255
+        beq flash_end
+        rts
+
+flash_white
+        ldx #0
+fw_loop lda #1                          ; 7 = blank space char in our custom character set
+        sta $d800,x                     ; fill four areas with 256 spacebar characters
+        sta $d900,x 
+        sta $da00,x 
+        sta $dae8,x 
+        inx         
+        bne fw_loop  
+        rts
+
+flash_blue
+        ldx #0
+fb_loop lda #6                          ; 7 = blank space char in our custom character set
+        sta $d800,x                     ; fill four areas with 256 spacebar characters
+        sta $d900,x 
+        sta $da00,x 
+        sta $dae8,x 
+        inx         
+        bne fb_loop  
+        rts
+
+flash_end
+        lda #0
+        sta timer_ticks
+        lda #1
+        sta timer_seconds
+
+level_end_reset
+        inc timer_ticks
+        lda timer_ticks
+        cmp #50
+        beq ler1
+        cmp #75
+        beq ler2
+        rts
+
+ler1    lda #0
+        sta $d015 
+        jsr cls
+        rts
+ler2
+        inc level_number
+        jsr init_level
+        jsr draw_level
+        lda #intro2
+        sta game_mode
         rts

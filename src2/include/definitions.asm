@@ -248,7 +248,10 @@ sprite11_colour = $9b
 sprite12_pointer = $9c
 sprite13_pointer = $9d
 sprite14_pointer = $9e
-life_sprites_enabled = $9f
+
+game_sprites_enabled1 = $9f
+game_sprites_enabled2 = $a0
+life_sprites_enabled  = $a1
 
 out_decimal   = $e0
 score_charmap = $e4
