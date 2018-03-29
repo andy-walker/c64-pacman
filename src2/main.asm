@@ -137,7 +137,8 @@ main_init
 *=$4000
 
 .include "include/attract.asm"
-.include "include/startscreen.asm"
+.include "include/start-screen.asm"
+.include "include/end-level.asm"
 .include "include/intro1.asm"
 .include "include/intro2.asm"
 .include "include/level.asm"
