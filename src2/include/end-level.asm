@@ -41,28 +41,6 @@ flash_blue
         jsr set_level_colour
         rts
 
-flash_white2
-        ldx #0
-        lda #white                  
-fw_loop sta $d800,x 
-        sta $d900,x 
-        sta $da00,x 
-        sta $dae8,x 
-        inx         
-        bne fw_loop  
-        rts
-
-flash_blue2
-        ldx #0
-        lda #blue              
-fb_loop sta $d800,x 
-        sta $d900,x 
-        sta $da00,x 
-        sta $dae8,x 
-        inx         
-        bne fb_loop  
-        rts
-
 flash_end
         lda #0
         sta timer_ticks
@@ -90,6 +68,12 @@ ler2
         sta game_mode
         rts
 
+
+; ----------------------------------------------
+; Routine to set level wall colour - used
+; for flash at end of level
+; .a should be pre-loaded with the colour index
+; ----------------------------------------------
 
 set_level_colour
 
