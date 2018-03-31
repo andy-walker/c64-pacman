@@ -124,7 +124,7 @@ ghost_move_right
         lda #0                          ; set x tile to zero (will increment to 1 in next step)
         sta ghost0_x_tile,x
         
-        lda #1                          ; unset sprite carry
+        lda #0                          ; unset sprite carry
         sta sprite1_carry,x
         sta sprite5_carry,x
 

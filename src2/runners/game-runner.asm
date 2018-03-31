@@ -42,7 +42,7 @@ irq3_game                        ; triggered on scanline 44
         inc $d019
         jsr display_main_game_sprites
 
-        lda #$fa
+        lda #$f9
         sta $d012
         lda #$1b
         sta $d011

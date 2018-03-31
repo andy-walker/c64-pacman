@@ -68,7 +68,7 @@ cr1
         sta num4
 crloop  lda timer_ticks
         eor num4
-        eor flash_counter
+        eor flash_counter,x
         lsr
         lsr
         cpy #1
