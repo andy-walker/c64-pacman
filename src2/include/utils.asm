@@ -50,6 +50,44 @@ cr_loop lda $d41b
 cr_done rts
 
 
+; ------------------------------------------------------
+; Routine to get a random number between 0 and n (max 3)
+; for choosing a random direction from available directions
+; .x should be preloaded with the ghost index
+; .a should be loaded with n (the upper range)
+; returns output in .a
+; ------------------------------------------------------
+
+choose_random2
+        tay
+        cpy #0
+        bne cr1
+        rts
+cr1
+        lda sprite1_x,x
+        sta num4
+crloop  lda timer_ticks
+        eor num4
+        eor flash_counter
+        lsr
+        lsr
+        cpy #1
+        bne cr2
+        and #%00000001
+        rts
+cr2     
+        and #%00000011
+        cpy #2
+        bne cr3
+        cmp #4
+        bcc cr3
+        lda num4
+        lsr
+        sta num4
+        jmp crloop
+cr3     rts
+
+
 ; --------------------
 ; Clear screen routine
 ; --------------------
