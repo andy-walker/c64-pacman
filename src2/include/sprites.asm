@@ -393,7 +393,7 @@ ugs2    ldy tmp1
         adc ghost0_y_tile,x
         adc ghost0_y_sub,x              ; add y sub position
         adc #37                         ; add 37 (the y offset of the level)
-        sta sprite1_y,x                 ; store in $d003 (todo: need to offset with y * 2) 
+        sta sprite1_y,x                 ; store y position 
         sta sprite5_y,x                 ; same for eyes sprite
 
         rts

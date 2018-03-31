@@ -270,7 +270,17 @@ level_init_sprites
         sta sprite5_colour
         sta sprite6_colour
         sta sprite7_colour
-        sta sprite8_colour 
+        sta sprite8_colour
+
+        lda #0
+        sta sprite0_carry
+        sta sprite1_carry
+        sta sprite2_carry
+        sta sprite3_carry
+        sta sprite4_carry
+        sta sprite5_carry
+        sta sprite6_carry
+        sta sprite7_carry
 
         lda #13                         ; initialise pacman tile position
         sta pacman_x_tile
@@ -300,19 +310,19 @@ level_init_sprites
         jsr set_pacman_sprite_left
         jsr update_pacman_sprite
 
-        ;ldx #0                          ; set .x to ghost index (0)
-        ;ldy #left                       ; set .y to ghost direction
-        ;sty ghost0_direction            ; store direction
+        ldx #0                          ; set .x to ghost index (0)
+        ldy #left                       ; set .y to ghost direction
+        sty ghost0_direction            ; store direction
 
-        ;jsr set_ghost_sprite            ; set and update ghost0 sprites
-        ;jsr update_ghost_sprite
+        jsr set_ghost_sprite            ; set and update ghost[0] sprites
+        jsr update_ghost_sprite
 
-        ;ldx #1                          ; set .x to ghost index (1)
-        ;ldy #down                       ; set .y to ghost direction
-        ;sty ghost1_direction            ; store direction
+        ldx #1                          ; set .x to ghost index (1)
+        ldy #down                       ; set .y to ghost direction
+        sty ghost1_direction            ; store direction
 
-        ;jsr set_ghost_sprite            ; set and update ghost0 sprites
-        ;jsr update_ghost_sprite
+        jsr set_ghost_sprite            ; set and update ghost[1] sprites
+        jsr update_ghost_sprite
 
         rts
 

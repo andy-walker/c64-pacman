@@ -47,10 +47,86 @@ display_lower_game_sprites
 
         ldx #0
 dls_loop
-        nop
-        nop
+        ;nop
+        ;nop
         inx
-        cpx #200
+        cpx #100
         bne dls_loop
 
+        rts
+
+display_main_game_sprites
+        
+        lda #%01100111
+        sta $d015
+
+        lda #0                  ; use .a to keep track of carry bits - initially zeroed
+
+        ldx sprite0_pointer
+        stx $07f8
+        ldx sprite0_x
+        stx $d000
+        ldx sprite0_y
+        stx $d001
+        ldx sprite0_colour
+        stx $d027
+        eor sprite0_carry
+
+        ldx sprite1_pointer
+        stx $07f9
+        ldx sprite1_x
+        stx $d002
+        ldx sprite1_y
+        stx $d003
+        ldx sprite1_colour
+        stx $d028
+        ldy sprite1_carry        
+        cpy #1
+        bne dmgs2
+        eor #%00000010
+dmgs2
+        ldx sprite2_pointer
+        stx $07fa
+        ldx sprite2_x
+        stx $d004
+        ldx sprite2_y
+        stx $d005
+        ldx sprite2_colour
+        stx $d029
+        ldy sprite2_carry  
+        cpy #1
+        bne dmgs3
+        eor #%00000100
+dmgs3
+dmgs5
+        ldx sprite5_pointer
+        stx $07fd
+        ldx sprite5_x
+        stx $d00a
+        ldx sprite5_y
+        stx $d00b
+        ldx sprite5_colour
+        stx $d02c
+        ldy sprite5_carry  
+        cpy #1
+        bne dmgs6
+        eor #%00100000
+
+dmgs6
+        ldx sprite6_pointer
+        stx $07fe
+        ldx sprite6_x
+        stx $d00c
+        ldx sprite6_y
+        stx $d00d
+        ldx sprite6_colour
+        stx $d02d
+        ldy sprite6_carry  
+        cpy #1
+        bne dmgs7
+        eor #%01000000        
+
+dmgs7
+
+        sta $d010
         rts

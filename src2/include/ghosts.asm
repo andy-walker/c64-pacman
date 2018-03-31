@@ -23,14 +23,16 @@ mg1_ud  ldy ghost0_y_sub,x
 mg1_cd  jsr get_available_directions
 
         ; choose direction based on mode
-        cpx #0
-        bne mg1_tmp
-        jsr filter_directions
+        ; cpx #0
+        ; bne mg1_tmp
+        ;jsr filter_directions
 mg1_tmp
         lda dir5
         sec
         sbc #1
-        jsr choose_random
+        
+        ;jsr choose_random
+        ldy #1
         tay
         lda dir1,y
         jmp ghost_change_direction
@@ -67,8 +69,8 @@ ghost_move_left
 
         lda ghost0_x_sub,x              ; load ghost x sub position
         cmp #0                          ; if greater than zero ..        
-        bne ghost_move_left_sub         ; move left by sub position, otherwise (if zero) ..
-
+        bne ghost_move_left_sub         ; move left by sub position
+                                        ; otherwise (if zero) ..
         ; tunnel wrap-around
 
         lda ghost0_x_tile,x
@@ -79,7 +81,10 @@ ghost_move_left
         bne gml1
         lda #26                         ; set x tile to 26 (will decrement in next step)
         sta ghost0_x_tile,x
-        jsr ghost_flip_carry_bits       ; also flip sprites' carry bits
+        
+        lda #1                          ; set sprite carry
+        sta sprite1_carry,x
+        sta sprite5_carry,x
 
 gml1
         dec ghost0_x_tile,x             ; decrement x tile position
@@ -118,7 +123,10 @@ ghost_move_right
         bne gmr1
         lda #0                          ; set x tile to zero (will increment to 1 in next step)
         sta ghost0_x_tile,x
-        jsr ghost_flip_carry_bits       ; also flip sprites' carry bits
+        
+        lda #1                          ; unset sprite carry
+        sta sprite1_carry,x
+        sta sprite5_carry,x
 
 gmr1    
         inc ghost0_x_tile,x             ; increment x tile position
@@ -318,25 +326,6 @@ gd3     lda tmp2                        ; restore the original offset (where the
 gd4     rts
 
 
-; -------------------------------------------------
-; Routine to flip sprite carry bits
-; (possibly not worth the clock cycle penalty
-; of a jsr + rts just to do this, but for now ..)
-; .x should be preloaded with the ghost index (0-3)
-; -------------------------------------------------
-
-ghost_flip_carry_bits
-
-        lda $d010
-        cpx #0
-        bne ug3
-        eor #%00100010                  ; flip sprites' carry bits
-        jmp ug4
-ug3     eor #%01000100
-ug4     sta $d010
-        rts
-
-
 ; --------------------------------------------
 ; Routine to get the type of a tile
 ; .x should be loaded with the ghost index
@@ -369,11 +358,9 @@ ggtt4   lda num1
         jmp ggtt_mid_section
 
 ggtt_top_section
-        lda #1
         lda level0,y                    ; load the tile type index, using x as an offset
         rts
 ggtt_mid_section
-        lda #2
         lda level0+256,y
         rts
 ggtt_bottom_section

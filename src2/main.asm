@@ -144,4 +144,5 @@ main_init
 .include "include/level.asm"
 .include "include/display.asm"
 .include "include/pacman.asm"
+.include "include/ghosts.asm"
 .include "include/score.asm"

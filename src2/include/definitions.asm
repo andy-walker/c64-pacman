@@ -158,8 +158,6 @@ dbg21 = $51
 dbg22 = $52
 dbg23 = $53
 
-
-
 ; Allocate memory to keep track of 12 game sprites
 
 ; Sprite 0  - pacman
