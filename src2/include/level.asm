@@ -6,6 +6,11 @@ init_level
         ldx #0
         stx frightened_mode
         stx dot_counter
+        
+        ; ensure ghost 0 always moves to the left, and
+        ; doesn't head back into the ghost house
+        dec ghost0_x_sub
+
         rts
 
 draw_level 
