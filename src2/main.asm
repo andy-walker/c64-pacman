@@ -98,22 +98,12 @@ mode_level_complete
 
 main_init
         
-        ; init random number generator using SID's noise waveform generator
-        ; read from $d41b to get random number 
-
-        lda #$ff                        ; maximum frequency value 
-        sta $d40e                       ; voice 3 frequency low byte 
-        sta $d40f                       ; voice 3 frequency high byte 
-        lda #$80                        ; noise waveform, gate bit off 
-        sta $d412                       ; voice 3 control register 
-
         ; character set initialisation
 
         lda $d018
         ora #$0e                        ; set chars location to $3800 for displaying the custom font
         sta $d018                       ; Bits 1-3 ($400+512bytes * low nibble value) of $d018 sets char location
-                                        ; $400 + $200*$0E = $3800
-        
+                                        ; $400 + $200*$0E = $3800    
         ; reset score + hi-score
         jsr reset_score
         jsr reset_hiscore

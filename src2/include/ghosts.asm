@@ -31,7 +31,7 @@ mg1_tmp
         sec
         sbc #1
         
-        jsr choose_random2
+        jsr choose_random
         ldy #1
         tay
         lda dir1,y

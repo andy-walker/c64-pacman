@@ -32,33 +32,15 @@ enterLoop                               ; For an accumulating multiply (.A = .A 
         rts
 
 
-; ------------------------------------------------------
-; Routine to get a random number between 0 and n (max 3)
-; for choosing a random direction from available directions
-; .a should be loaded with n (the upper range)
-; returns rendered_decimaling number in .a
-; ------------------------------------------------------
-
-choose_random
-        sta num1
-cr_loop lda $d41b
-        and #%00000011
-        cmp num1
-        bcc cr_done
-        beq cr_done
-        bcs cr_loop
-cr_done rts
-
-
-; ------------------------------------------------------
-; Routine to get a random number between 0 and n (max 3)
+; -----------------------------------------------------------
+; Routine to generate a random number between 0 and n (max 3)
 ; for choosing a random direction from available directions
 ; .x should be preloaded with the ghost index
 ; .a should be loaded with n (the upper range)
 ; returns output in .a
-; ------------------------------------------------------
+; -----------------------------------------------------------
 
-choose_random2
+choose_random
         tay
         cpy #0
         bne cr1
