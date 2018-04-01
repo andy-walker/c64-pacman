@@ -59,7 +59,7 @@ irq_timer1
 
         ldx flash_counter2
         inx
-        cpx #32
+        cpx #33
         bne irq_timer2
         ldx #0
 irq_timer2

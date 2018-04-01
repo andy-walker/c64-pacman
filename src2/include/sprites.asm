@@ -340,12 +340,12 @@ sgs2
 
 update_ghost_sprite
 
-        txa                             ; setup .y as an offset register
-        asl                             ; should be 2 * .x
-        sta tmp1                        ; temporarily store
-        tay                             ; and transfer to .y
+        ;txa                             ; setup .y as an offset register
+        ;asl                             ; should be 2 * .x
+        ;sta tmp1                        ; temporarily store
+        ;tay                             ; and transfer to .y
         
-        lda sprite1_x,y                 ; note previous x position (for overflow checking)
+        lda sprite1_x,x                 ; note previous x position (for overflow checking)
         sta tmp2
 
         lda ghost0_x_tile,x             ; get x tile position
@@ -368,7 +368,7 @@ update_ghost_sprite
         cmp #0                          ; and now it's zero
         bne ugs1
 
-        lda #1                          ; set carry bits
+        lda #1                          ; set carry flags
         sta sprite1_carry,x             ; for main ghost sprite
         sta sprite5_carry,x             ; and eyes sprite
 
@@ -379,7 +379,7 @@ ugs1    cpy #0                          ; if previous x was zero
         cmp #255                        ; and now it's 255
         bne ugs2
 
-        lda #0                          ; unset carry bits
+        lda #0                          ; unset carry flags
         sta sprite1_carry,x             ; for main ghost sprite
         sta sprite5_carry,x             ; and eyes sprite
 

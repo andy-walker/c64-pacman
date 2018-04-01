@@ -69,8 +69,9 @@ cr1
 crloop  lda timer_ticks
         eor num4
         eor flash_counter,x
-        lsr
-        lsr
+        eor flash_counter2,x
+        ;lsr
+        ;lsr
         cpy #1
         bne cr2
         and #%00000001
