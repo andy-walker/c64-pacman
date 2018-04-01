@@ -15,14 +15,18 @@
 *=$080d
          
         sei                             ; disable interrupts
+	lda #$7f
+	sta $dc0d
+	sta $dd0d
+	lda #$01
+	sta $d01a
+
         jsr cls                         ; clear screen
         jsr main_init
         
         lda #0                          ; enable/disable test mode (unlimited lives)
         sta test_mode
 
-        lda #attract
-        sta game_mode
         jsr init_attract_mode
 
         ; set initial irq handler pointing to irq1
@@ -72,6 +76,10 @@ irq_timer2
         beq mode_game
         cmp #level_complete
         beq mode_level_complete
+        cmp #life_lost
+        beq mode_life_lost
+        cmp #game_over
+        beq mode_game_over
         cmp #attract
         beq mode_attract
         cmp #startscreen
@@ -92,8 +100,12 @@ mode_intro2
         jmp irq1_intro2
 mode_game
         jmp irq1_game
+mode_life_lost
+        jmp irq1_lifelost
 mode_level_complete
         jmp irq1_endlevel
+mode_game_over
+        jmp irq1_gameover
 
 
 main_init
@@ -107,6 +119,9 @@ main_init
         ; reset score + hi-score
         jsr reset_score
         jsr reset_hiscore
+        
+        lda #attract
+        sta game_mode
 
         rts
 
@@ -117,7 +132,9 @@ main_init
 .include "runners/intro1-runner.asm"
 .include "runners/intro2-runner.asm"
 .include "runners/game-runner.asm"
+.include "runners/lifelost-runner.asm"
 .include "runners/endlevel-runner.asm"
+.include "runners/gameover-runner.asm"
 
 .include "include/game.asm"
 .include "include/data.asm"
@@ -135,4 +152,6 @@ main_init
 .include "include/display.asm"
 .include "include/pacman.asm"
 .include "include/ghosts.asm"
+.include "include/life-lost.asm"
+.include "include/game-over.asm"
 .include "include/score.asm"

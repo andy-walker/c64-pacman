@@ -456,14 +456,14 @@ level_end_frame
 
         ; check for collisions between pacman and ghosts
 
-        ;jsr detect_collisions
-        ;cmp #0
-        ;beq lef2
+        jsr detect_collisions
+        cmp #0
+        beq lef2
 
-        ;lda #life_lost                  ; set game mode to life_lost
-        ;sta game_mode
+        lda #life_lost                  ; set game mode to life_lost
+        sta game_mode
 
-        ;jmp lef3                        ; jump to end of sub (initialising timer)
+        jmp lef3                        ; jump to end of sub (initialising timer)
 
 
 lef2    lda dot_counter
@@ -569,4 +569,35 @@ gtt_bottom_section
 gtt5    lda level0+512,x
         rts
 gtt6    lda #0
+        rts
+
+
+; -----------------------------------------------------------------
+; Detect collisions between pacman and ghosts
+; Result returned in .a (0 = no collision, 1-4 ghost collided with)
+; -----------------------------------------------------------------
+
+detect_collisions
+        
+        ldx #0
+
+dc_begin
+        
+        lda ghost0_x_tile,x
+        cmp pacman_x_tile
+        bne dc_next
+        lda ghost0_y_tile,x
+        cmp pacman_y_tile
+        bne dc_next
+
+        inx 
+        txa
+        rts
+
+dc_next
+        inx
+        cpx #2
+        bne dc_begin
+        lda #0
+dc_end
         rts
