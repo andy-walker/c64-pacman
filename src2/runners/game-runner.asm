@@ -42,7 +42,12 @@ irq3_game                        ; triggered on scanline 44
         inc $d019
         jsr display_main_game_sprites
 
+        ; for some strange reason, a bug which causes the border sprites to disappear
+        ; manifests itself when a ghost is displayed on the bottom line using the 
+        ; usual line 250 interrupt - haven't quite figured out what's going on, but
+        ; triggering the interrupt on the previous line (249) seems to fix it for now .. 
         lda #$f9
+
         sta $d012
         lda #$1b
         sta $d011

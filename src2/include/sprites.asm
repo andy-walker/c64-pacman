@@ -372,8 +372,6 @@ update_ghost_sprite
         sta sprite1_carry,x             ; for main ghost sprite
         sta sprite5_carry,x             ; and eyes sprite
 
-
-
 ugs1    cpy #0                          ; if previous x was zero
         bne ugs2
         cmp #255                        ; and now it's 255
