@@ -3,7 +3,7 @@
 ; -------------------------------
 
 level_life_lost
-        
+
         lda timer_ticks
         cmp #50
         bne lll1
@@ -63,13 +63,13 @@ lll12   cmp #150
         cmp #1
         beq ll_resume
         ldy lives
-        cpy #0
+        cpy #255
         beq all_lives_lost
-        dey
-        sty lives
+        ;dey
+        ;sty lives
 ll_resume
         jsr level_init_sprites
-        lda #gameplay
+        lda #intro2
         sta game_mode
         rts
 lll13
@@ -79,5 +79,7 @@ lll13
 all_lives_lost
         lda #game_over
         sta game_mode
+        lda #0
+        sta lives
         jsr init_game_over
         rts

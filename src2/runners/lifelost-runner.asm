@@ -3,7 +3,6 @@ irq1_lifelost
         jsr display_lower_game_sprites
         jsr level_life_lost
         jsr set_score_sprites
-        jsr level_end_frame
         
         lda #<irq2_lifelost        
         sta $314

@@ -56,8 +56,18 @@ dls_loop
         rts
 
 display_main_game_sprites
-        
+
+        ldy game_mode
+        cpy #gameplay
+        bne dms1
         lda #%01100111
+        jmp dms_end
+dms1    cpy #life_lost
+        bne dms2
+        lda #%00000001
+        jmp dms_end
+dms2    lda #%00000111          ; assume game over
+dms_end
         sta $d015
 
         lda #0                  ; use .a to keep track of carry bits - initially zeroed

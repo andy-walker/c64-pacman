@@ -3,7 +3,6 @@ irq1_gameover
         jsr display_lower_game_sprites
         jsr game_over_run
         jsr set_score_sprites
-        jsr level_end_frame
         
         lda #<irq2_gameover        
         sta $314
