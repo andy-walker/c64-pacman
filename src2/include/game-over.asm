@@ -7,6 +7,8 @@ init_game_over
         lda #game_over
         sta game_mode
 
+        jsr set_lower_border_sprites
+
         lda #0
         sta timer_ticks
         

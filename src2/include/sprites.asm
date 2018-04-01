@@ -93,7 +93,7 @@ set_lower_border_sprites
         ldx lives
         cpx #0
         bne sls1
-        lda #0                          ; zero lives
+        lda #%11100000                          ; zero lives
         sta life_sprites_enabled
         rts
 sls1    cpx #1
