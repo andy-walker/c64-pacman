@@ -3,10 +3,17 @@
 ; ----------------
 
 init_level
-        ldx #0
-        stx frightened_mode
-        stx dot_counter
+        lda #0
+        sta frightened_mode
+        sta dot_counter
         
+        sta ghost1_mode
+        sta ghost2_mode
+        sta ghost3_mode
+
+        lda #chase
+        sta ghost0_mode
+
         ; ensure ghost 0 always moves to the left, and
         ; doesn't head back into the ghost house
         dec ghost0_x_sub

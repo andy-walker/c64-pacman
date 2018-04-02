@@ -32,7 +32,7 @@ mg1_tmp
         sbc #1
         
         jsr choose_random
-        ldy #1
+
         tay
         lda dir1,y
         jmp ghost_change_direction
