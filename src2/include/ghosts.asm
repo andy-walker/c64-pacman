@@ -21,7 +21,9 @@ mg1_ud  ldy ghost0_y_sub,x
 ; Choose a direction to move in
 
 mg1_cd  jsr get_available_directions
-
+        ;jsr get_available_directions2
+        ;jsr choose_random_direction
+        ;jmp mg1_tmp2
         ; choose direction based on mode
         ; cpx #0
         ; bne mg1_tmp
@@ -35,6 +37,7 @@ mg1_tmp
 
         tay
         lda dir1,y
+mg1_tmp2
         jmp ghost_change_direction
 
 ghost_move_lr

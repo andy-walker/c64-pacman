@@ -71,6 +71,40 @@ cr2
 cr3     rts
 
 
+
+choose_random_direction
+        ldy #0
+        lda directions
+        and #%00001000
+        bne crd1
+        lda #left
+        sta tmp1
+        iny
+crd1    lda directions
+        and #%00000100
+        bne crd2
+        lda #right
+        sta tmp1,y
+        iny
+crd2    lda directions
+        and #%00000010
+        bne crd3
+        lda #up
+        sta tmp1,y
+        iny
+crd3    lda directions
+        and #%00000001
+        bne crd4
+        lda #down
+        sta tmp1,y
+        iny
+crd4    tya
+        jsr choose_random
+        tay
+        lda tmp1,y
+        rts
+
+
 ; --------------------
 ; Clear screen routine
 ; --------------------

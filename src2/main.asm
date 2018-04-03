@@ -139,7 +139,6 @@ main_init
 .include "include/game.asm"
 .include "include/data.asm"
 .include "include/sprites.asm"
-.include "include/utils.asm"
 
 *=$4000
 
@@ -155,3 +154,4 @@ main_init
 .include "include/life-lost.asm"
 .include "include/game-over.asm"
 .include "include/score.asm"
+.include "include/utils.asm"
