@@ -60,7 +60,7 @@ display_main_game_sprites
         ldy game_mode
         cpy #gameplay
         bne dms1
-        lda #%01100111
+        lda #%11101111
         jmp dms_end
 dms1    cpy #life_lost
         bne dms2
@@ -108,6 +108,19 @@ dmgs2
         bne dmgs3
         eor #%00000100
 dmgs3
+        ldx sprite3_pointer
+        stx $07fb
+        ldx sprite3_x
+        stx $d006
+        ldx sprite3_y
+        stx $d007
+        ldx sprite3_colour
+        stx $d02a
+        ldy sprite3_carry  
+        cpy #1
+        bne dmgs4
+        eor #%00001000
+dmgs4
 dmgs5
         ldx sprite5_pointer
         stx $07fd
@@ -138,5 +151,18 @@ dmgs6
 
 dmgs7
 
+        ldx sprite7_pointer
+        stx $07ff
+        ldx sprite7_x
+        stx $d00e
+        ldx sprite7_y
+        stx $d00f
+        ldx sprite7_colour
+        stx $d02e
+        ldy sprite7_carry  
+        cpy #1
+        bne dmgs8
+        eor #%10000000    
+dmgs8
         sta $d010
         rts

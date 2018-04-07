@@ -214,7 +214,7 @@ ghost_move_down_sub
         jmp ghost_move_end              ; jump to end of routine 
 
 ghost_move_end
-        cpx #1
+        cpx #2
         beq ghost_move_all_complete
         inx
         jmp mg1

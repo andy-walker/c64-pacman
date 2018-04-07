@@ -6,6 +6,7 @@ init_level
         lda #0
         sta frightened_mode
         
+        lda #idle
         sta ghost2_mode
         sta ghost3_mode
 
@@ -276,7 +277,7 @@ level_init_sprites
         sta sprite1_colour              ; sprite 1: colour red
         lda #pink
         sta sprite2_colour              ; sprite 2: colour purple
-        lda #cyan
+        lda #purple
         sta sprite3_colour              ; sprite 3: colour cyan
         lda #orange
         sta sprite4_colour              ; sprite 4: colour orange
@@ -308,17 +309,28 @@ level_init_sprites
 
         lda #13
         sta ghost1_x_tile
+        lda #11
+        sta ghost2_x_tile
+        lda #15
+        sta ghost3_x_tile
+
         lda #9
         sta ghost1_y_tile
+        sta ghost2_y_tile
+        sta ghost3_y_tile
 
         lda #5                          ; initialise all x sub positions to 5 (tile centre)
         sta pacman_x_sub
         sta ghost0_x_sub
         sta ghost1_x_sub
+        sta ghost2_x_sub
+        sta ghost3_x_sub
 
         lda #5                          ; initialise all y sub positions to 5 (tile centre)
-        sta ghost0_y_sub
         sta pacman_y_sub
+        sta ghost0_y_sub
+        sta ghost2_y_sub
+        sta ghost3_y_sub
 
         lda #7
         sta ghost1_y_sub
@@ -339,6 +351,20 @@ level_init_sprites
 
         jsr set_ghost_sprite            ; set and update ghost[1] sprites
         jsr update_ghost_sprite
+
+        ldx #2
+        ldy #down
+        sty ghost2_direction
+
+        jsr set_ghost_sprite
+        jsr update_ghost_sprite
+
+        ;ldx #3
+        ;ldy #down
+        ;sty ghost3_direction
+
+        ;jsr set_ghost_sprite
+        ;jsr update_ghost_sprite
 
         rts
 
@@ -444,7 +470,7 @@ lf_end_frightened_mode
         sta sprite1_colour              ; sprite 1: colour red
         lda #pink
         sta sprite2_colour              ; sprite 2: colour purple
-        lda #cyan
+        lda #purple
         sta sprite3_colour              ; sprite 3: colour cyan
         lda #orange
         sta sprite4_colour              ; sprite 4: colour orange
