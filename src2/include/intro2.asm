@@ -59,9 +59,9 @@ set_intro2_upper_sprites
         
         lda #red
         sta $d027
-        lda #pink
-        sta $d028
         lda #purple
+        sta $d028
+        lda #pink
         sta $d029
         lda #orange
         sta $d02a

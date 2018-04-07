@@ -8,6 +8,8 @@ mg1                                     ; begin iterating over ghosts ..
         lda ghost0_mode,x
         cmp #idle
         beq mg_idle
+        cmp #exit
+        beq mg_exit
 
         lda ghost0_direction,x          ; load ghost's current direction
         cmp #2                          ; if 2 or 3 (up / down)
@@ -24,6 +26,7 @@ mg1_ud  ldy ghost0_y_sub,x
         jmp mg1_cd
 
 mg_idle jmp ghost_idle
+mg_exit jmp ghost_exit
 
 ; Choose a direction to move in
 
@@ -240,6 +243,23 @@ gi_down cpy #5
         bne gid_mv
         jmp giu_mv
 gid_mv  jmp ghost_move_down
+
+; ghost exit mode - move left / right, then up and out of the ghost house
+
+ghost_exit
+        lda ghost0_y_tile,x
+        cmp #7
+        bne gex1
+        inc ghost0_mode,x
+gex1    cpx #pinky
+        bne gex2
+        jmp ghost_move_up
+gex2    cpx #inky
+        bne gex3
+
+
+gex3        
+
 
 ; ----------------------------------------
 ; Get directions in which ghost can move

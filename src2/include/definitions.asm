@@ -7,6 +7,11 @@ right = 1
 up    = 2
 down  = 3
 
+blinky = 0
+pinky  = 1
+inky   = 2
+clyde  = 3
+
 black  = 0
 white  = 1
 red    = 2
@@ -157,6 +162,7 @@ dbg20 = $50
 dbg21 = $51
 dbg22 = $52
 dbg23 = $53
+dbg24 = $54
 
 ; Allocate memory to keep track of 12 game sprites
 

@@ -6,13 +6,17 @@ init_level
         lda #0
         sta frightened_mode
         sta dot_counter
+        sta dbg24
         
-        sta ghost1_mode
         sta ghost2_mode
         sta ghost3_mode
 
         lda #chase
         sta ghost0_mode
+
+        ; pinky should leave ghost house when level begins
+        lda #exit
+        sta ghost1_mode
 
         ; ensure ghost 0 always moves to the left, and
         ; doesn't head back into the ghost house
@@ -304,7 +308,7 @@ level_init_sprites
         lda #7
         sta ghost0_y_tile
 
-        lda #11
+        lda #13
         sta ghost1_x_tile
         lda #9
         sta ghost1_y_tile
@@ -316,8 +320,10 @@ level_init_sprites
 
         lda #5                          ; initialise all y sub positions to 5 (tile centre)
         sta ghost0_y_sub
-        sta ghost1_y_sub
         sta pacman_y_sub
+
+        lda #7
+        sta ghost1_y_sub
 
         jsr set_pacman_sprite_left
         jsr update_pacman_sprite
@@ -330,7 +336,7 @@ level_init_sprites
         jsr update_ghost_sprite
 
         ldx #1                          ; set .x to ghost index (1)
-        ldy #down                       ; set .y to ghost direction
+        ldy #up                         ; set .y to ghost direction
         sty ghost1_direction            ; store direction
 
         jsr set_ghost_sprite            ; set and update ghost[1] sprites
