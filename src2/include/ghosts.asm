@@ -4,7 +4,11 @@
 
 move_ghosts
         ldx #0                          ; initialise offset register to 0
-mg1                                     ; begin looping over ghosts ..
+mg1                                     ; begin iterating over ghosts ..
+        lda ghost0_mode,x
+        cmp #idle
+        beq mg_idle
+
         lda ghost0_direction,x          ; load ghost's current direction
         cmp #2                          ; if 2 or 3 (up / down)
         bcs mg1_ud                      ; branch to up / down handler                 
@@ -17,6 +21,9 @@ mg1_lr  ldy ghost0_x_sub,x
 mg1_ud  ldy ghost0_y_sub,x
         cpy #5
         bne ghost_move_ud
+        jmp mg1_cd
+
+mg_idle jmp ghost_idle
 
 ; Choose a direction to move in
 
@@ -203,7 +210,6 @@ ghost_move_down_sub
         jsr update_ghost_sprite         ; update the sprite on screen
         jmp ghost_move_end              ; jump to end of routine 
 
-
 ghost_move_end
         cpx #1
         beq ghost_move_all_complete
@@ -213,6 +219,27 @@ ghost_move_end
 ghost_move_all_complete
         rts
 
+; ghost idle mode - move up and down within the ghost house until 'exit' mode triggered
+
+ghost_idle
+        lda ghost0_direction,x
+        ldy ghost0_y_sub,x
+        cmp #down
+        beq gi_down
+gi_up   cpy #5
+        bne giu_mv
+        lda ghost0_y_tile,x
+        cmp #9
+        bne giu_mv
+        jmp gid_mv
+giu_mv  jmp ghost_move_up
+gi_down cpy #5
+        bne gid_mv
+        lda ghost0_y_tile,x
+        cmp #11
+        bne gid_mv
+        jmp giu_mv
+gid_mv  jmp ghost_move_down
 
 ; ----------------------------------------
 ; Get directions in which ghost can move
@@ -328,139 +355,6 @@ gd3     lda tmp2                        ; restore the original offset (where the
         inc dir5
 gd4     rts
 
-
-
-; ----------------------------------------
-; Get directions in which ghost can move
-; .x should be loaded with the ghost index
-; returns result in .a as a bitfield
-; ----------------------------------------
-
-get_available_directions2
-
-        lda #0
-        sta directions                  ; zero the directions bitfield
-
-        lda #27
-        sta num1                        ; set multiplicand to 27 (the length of a row)
-        lda ghost0_y_tile,x
-        sta num2                        ; set multiplier to ghost y tile
-        jsr multiply
-        clc
-        adc ghost0_x_tile,x             ; add the x tile offset
-        sta tmp2                        ; store the offset (where the ghost is now)
-        sec
-        sbc #1                          ; subtract 1 to look to the left
-        tay                             ; transfer to y register (used as an offset in ghost_get_tile_type)
-        
-        lda ghost0_x_tile,x
-        sec
-        sbc #1
-        sta num1
-
-        lda ghost0_y_tile,x             ; load accumulator with ghost y tile position
-        jsr ghost_get_tile_type
-        cmp #$00
-        beq gad1
-        lda ghost0_direction,x          ; check current direction
-        cmp #right                      ; if it's right, skip to next
-        beq gad1                        ; (cannot reverse direction)
-        ;lda #1
-        ;lda #left
-        ;sta dir1
-        ;inc dir5
-        lda directions
-        eor #%00001000
-        sta directions
-
-
-
-gad1     lda tmp2                        ; restore the original offset (where the ghost is now)
-        clc
-        adc #1                          ; add 1 to look to the right
-        tay                             ; transfer to y register (used as an offset in ghost_get_tile_type)
-
-        lda ghost0_x_tile,x
-        clc
-        adc #1
-        sta num1
-
-        lda ghost0_y_tile,x             ; load accumulator with ghost y tile position
-
-        jsr ghost_get_tile_type
-        clc
-        cmp #$00
-        beq gad2
-        lda ghost0_direction,x          ; check current direction
-        cmp #left                       ; if it's left, skip to next
-        beq gad2                         ; (cannot reverse direction)
-        ;lda #1
-        ;ldy dir5
-        ;lda #right
-        ;sta dir1,y
-        ;inc dir5
-
-        lda directions
-        eor #%00000100
-        sta directions
-
-gad2     lda tmp2                        ; restore the original offset (where the ghost is now)
-        sec
-        sbc #27                         ; subtract 27 to look at the tile above
-        tay                             ; transfer to y register (used as an offset in ghost_get_tile_type)
-        
-        lda ghost0_x_tile,x
-        sta num1
-
-        lda ghost0_y_tile,x             ; load accumulator with ghost y tile position
-        sec
-        sbc #1
-
-        jsr ghost_get_tile_type
-        cmp #$00
-        beq gad3
-        lda ghost0_direction,x          ; check current direction
-        cmp #down                       ; if it's down, skip to next
-        beq gad3                         ; (cannot reverse direction)
-        ;lda #1
-        ;ldy dir5
-        ;lda #up
-        ;sta dir1,y
-        ;inc dir5
-
-        lda directions
-        eor #%00000010
-        sta directions
-
-gad3     lda tmp2                        ; restore the original offset (where the ghost is now)
-        clc
-        adc #27                         ; add 27 to look at the tile below
-        tay                             ; transfer to y register (used as an offset in ghost_get_tile_type)
-        
-        lda ghost0_x_tile,x
-        sta num1
-        
-        lda ghost0_y_tile,x             ; load accumulator with ghost y tile position
-        clc
-        adc #1
-
-        jsr ghost_get_tile_type
-        cmp #$00
-        beq gad4
-        lda ghost0_direction,x          ; check current direction
-        cmp #up                         ; if it's up, skip to end
-        beq gad4                         ; (cannot reverse direction)
-        ;lda #1
-        ;ldy dir5
-        ;lda #down
-        ;sta dir1,y
-        ;inc dir5
-
-        lda directions
-        eor #%00000001
-        sta directions        
-
-gad4     rts
 
 ; --------------------------------------------
 ; Routine to get the type of a tile
