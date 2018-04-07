@@ -7,7 +7,7 @@ irq1_intro2                         ; triggered on scanline 250
         bne irq_intro2_timer1
         
         inc game_mode
-        jsr init_game
+        jsr level_init_sprites
         jsr init_level
 
 irq_intro2_timer1

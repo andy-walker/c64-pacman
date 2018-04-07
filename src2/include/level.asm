@@ -5,8 +5,6 @@
 init_level
         lda #0
         sta frightened_mode
-        sta dot_counter
-        sta dbg24
         
         sta ghost2_mode
         sta ghost3_mode
@@ -490,6 +488,9 @@ lef2    lda dot_counter
 
         lda #level_complete
         sta game_mode
+
+        lda #0
+        sta dot_counter                 ; reset the dot counter ready for next level
 
 lef3    lda #0
         sta timer_seconds

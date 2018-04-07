@@ -19,6 +19,7 @@ irq1_startscreen_timer1
         bne irq1_startscreen_continue
 
         inc game_mode
+        jsr init_game
         jsr init_intro1
 
 irq1_startscreen_continue

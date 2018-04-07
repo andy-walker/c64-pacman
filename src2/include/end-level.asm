@@ -66,6 +66,8 @@ ler2
         jsr draw_level
         lda #intro2
         sta game_mode
+        lda #0
+        sta dot_counter
         rts
 
 
