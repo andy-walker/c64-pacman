@@ -291,8 +291,8 @@ get_available_directions
 
         lda ghost0_y_tile,x             ; load accumulator with ghost y tile position
         jsr ghost_get_tile_type
-        cmp #$00
-        beq gd1
+        cmp #$02
+        bcc gd1
         lda ghost0_direction,x          ; check current direction
         cmp #right                      ; if it's right, skip to next
         beq gd1                         ; (cannot reverse direction)
@@ -315,8 +315,8 @@ gd1     lda tmp2                        ; restore the original offset (where the
 
         jsr ghost_get_tile_type
         clc
-        cmp #$00
-        beq gd2
+        cmp #$02
+        bcc gd2
         lda ghost0_direction,x          ; check current direction
         cmp #left                       ; if it's left, skip to next
         beq gd2                         ; (cannot reverse direction)
@@ -339,8 +339,8 @@ gd2     lda tmp2                        ; restore the original offset (where the
         sbc #1
 
         jsr ghost_get_tile_type
-        cmp #$00
-        beq gd3
+        cmp #$02
+        bcc gd3
         lda ghost0_direction,x          ; check current direction
         cmp #down                       ; if it's down, skip to next
         beq gd3                         ; (cannot reverse direction)
@@ -363,8 +363,8 @@ gd3     lda tmp2                        ; restore the original offset (where the
         adc #1
 
         jsr ghost_get_tile_type
-        cmp #$00
-        beq gd4
+        cmp #$02
+        bcc gd4
         lda ghost0_direction,x          ; check current direction
         cmp #up                         ; if it's up, skip to end
         beq gd4                         ; (cannot reverse direction)
