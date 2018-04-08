@@ -42,6 +42,25 @@ irq3_game                        ; triggered on scanline 44
         inc $d019
         jsr display_main_game_sprites
 
+        lda irq_scanline
+        sec
+        sbc #5
+        sta $d012
+        lda #$1b
+        sta $d011
+
+        lda #<irq4_game
+        sta $314
+        lda #>irq4_game
+        sta $315         
+
+        jmp $ea7e
+
+irq4_game                        ; triggered on scanline x (45-240)
+
+        inc $d019
+        jsr display_secondary_game_sprites
+
         lda #$f9
 
         sta $d012

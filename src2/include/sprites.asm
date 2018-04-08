@@ -450,23 +450,26 @@ sort4
         bcs sort5
         lda #5
         sta highest_sprite
+        sty highest_y
 sort5
         ldy sprite6_y
         cpy highest_y
         bcs sort6
         lda #6
         sta highest_sprite
+        sty highest_y
 sort6
         ldy sprite7_y
         cpy highest_y
         bcs sort7
         lda #7
         sta highest_sprite
+        sty highest_y
 sort7
-        ldy sprite8_y
-        cpy highest_y
-        bcs sort8
-        lda #8
-        sta highest_sprite
+        ;ldy sprite8_y
+        ;cpy highest_y
+        ;bcs sort8
+        ;lda #8
+        ;sta highest_sprite
 sort8        
         rts

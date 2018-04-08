@@ -70,111 +70,230 @@ dms2    lda #%00000111          ; assume game over
 dms_end
         sta $d015
 
-        lda #0                  ; use .a to keep track of carry bits - initially zeroed
+        lda #0                  ; use num1 to keep track of carry bits - initially zeroed
+        sta num1
+        ldx #0
 
-        ldx sprite0_pointer
-        stx $07f8
-        ldx sprite0_x
-        stx $d000
-        ldx sprite0_y
-        stx $d001
-        ldx sprite0_colour
-        stx $d027
-        eor sprite0_carry
+        lda lowest_sprite
+        cmp #0
+        bne *+3
+        inx
 
-        ldx sprite1_pointer
-        stx $07f9
-        ldx sprite1_x
-        stx $d002
-        ldx sprite1_y
-        stx $d003
-        ldx sprite1_colour
-        stx $d028
-        ldy sprite1_carry        
-        cpy #1
+        lda sprite0_pointer,x
+        sta $07f8
+        lda sprite0_x,x
+        sta $d000
+        lda sprite0_y,x
+        sta $d001
+        lda sprite0_colour,x
+        sta $d027
+        lda sprite0_carry,x
+        cmp #1
+        bne dmgs1
+        lda num1
+        eor #%00000001
+        sta num1
+dmgs1
+        lda sprite1_pointer,x
+        sta $07f9
+        lda sprite1_x,x
+        sta $d002
+        lda sprite1_y,x
+        sta $d003
+        lda sprite1_colour,x
+        sta $d028
+        lda sprite1_carry,x        
+        cmp #1
         bne dmgs2
+        lda num1
         eor #%00000010
+        sta num1
 dmgs2
-        ldx sprite2_pointer
-        stx $07fa
-        ldx sprite2_x
-        stx $d004
-        ldx sprite2_y
-        stx $d005
-        ldx sprite2_colour
-        stx $d029
-        ldy sprite2_carry  
-        cpy #1
+        lda sprite2_pointer,x
+        sta $07fa
+        lda sprite2_x,x
+        sta $d004
+        lda sprite2_y,x
+        sta $d005
+        lda sprite2_colour,x
+        sta $d029
+        lda sprite2_carry,x  
+        cmp #1
         bne dmgs3
+        lda num1
         eor #%00000100
+        sta num1
 dmgs3
-        ldx sprite3_pointer
-        stx $07fb
-        ldx sprite3_x
-        stx $d006
-        ldx sprite3_y
-        stx $d007
-        ldx sprite3_colour
-        stx $d02a
-        ldy sprite3_carry  
-        cpy #1
+        lda sprite3_pointer,x
+        sta $07fb
+        lda sprite3_x,x
+        sta $d006
+        lda sprite3_y,x
+        sta $d007
+        lda sprite3_colour,x
+        sta $d02a
+        lda sprite3_carry,x
+        cmp #1
         bne dmgs4
+        lda num1
         eor #%00001000
+        sta num1
 dmgs4
-        ldx sprite4_pointer
-        stx $07fc
-        ldx sprite4_x
-        stx $d008
-        ldx sprite4_y
-        stx $d009
-        ldx sprite4_colour
-        stx $d02b
-        ldy sprite4_carry  
-        cpy #1
+        lda sprite4_pointer,x
+        sta $07fc
+        lda sprite4_x,x
+        sta $d008
+        lda sprite4_y,x
+        sta $d009
+        lda sprite4_colour,x
+        sta $d02b
+        lda sprite4_carry,x 
+        cmp #1
         bne dmgs5
+        lda num1
         eor #%00010000
+        sta num1
 dmgs5
-        ldx sprite5_pointer
-        stx $07fd
-        ldx sprite5_x
-        stx $d00a
-        ldx sprite5_y
-        stx $d00b
-        ldx sprite5_colour
-        stx $d02c
-        ldy sprite5_carry  
-        cpy #1
+        lda lowest_sprite
+        cmp #5
+        bne *+3
+        inx
+
+        lda sprite5_pointer,x
+        sta $07fd
+        lda sprite5_x,x
+        sta $d00a
+        lda sprite5_y,x
+        sta $d00b
+        lda sprite5_colour,x
+        sta $d02c
+        lda sprite5_carry,x
+        cmp #1
         bne dmgs6
+        lda num1
         eor #%00100000
+        sta num1
 
 dmgs6
-        ldx sprite6_pointer
-        stx $07fe
-        ldx sprite6_x
-        stx $d00c
-        ldx sprite6_y
-        stx $d00d
-        ldx sprite6_colour
-        stx $d02d
-        ldy sprite6_carry  
-        cpy #1
+        lda lowest_sprite
+        cmp #6
+        bne *+3
+        inx
+
+        lda sprite6_pointer,x
+        sta $07fe
+        lda sprite6_x,x
+        sta $d00c
+        lda sprite6_y,x
+        sta $d00d
+        lda sprite6_colour,x
+        sta $d02d
+        lda sprite6_carry,x  
+        cmp #1
         bne dmgs7
-        eor #%01000000        
+        lda num1
+        eor #%01000000   
+        sta num1     
 
 dmgs7
+        lda lowest_sprite
+        cmp #7
+        bne *+3
+        inx
 
-        ldx sprite7_pointer
-        stx $07ff
-        ldx sprite7_x
-        stx $d00e
-        ldx sprite7_y
-        stx $d00f
-        ldx sprite7_colour
-        stx $d02e
-        ldy sprite7_carry  
-        cpy #1
+        lda sprite7_pointer,x
+        sta $07ff
+        lda sprite7_x,x
+        sta $d00e
+        lda sprite7_y,x
+        sta $d00f
+        lda sprite7_colour,x
+        sta $d02e
+        lda sprite7_carry,x
+        cmp #1
         bne dmgs8
-        eor #%10000000    
+        lda num1
+        eor #%10000000   
+        sta num1 
 dmgs8
+        lda num1
         sta $d010
+        rts
+
+
+display_secondary_game_sprites
+        
+        ldx lowest_sprite
+        ldy highest_sprite
+        lda sprite0_pointer,x
+        sta $07f8,y
+        lda sprite0_colour,x
+        sta $d027,y
+
+        lda sprite0_carry,x
+        cmp #1
+        bne dsgs4
+
+        cpy #0
+        bne dsgs1
+        lda $d010
+        ora #%00000001
+        jmp dsgs8
+dsgs1
+        cpy #5
+        bne dsgs2
+        lda $d010
+        ora #%00100000
+        jmp dsgs8
+dsgs2
+        cpy #6
+        bne dsgs3
+        lda $d010
+        ora #%01000000
+        jmp dsgs8
+dsgs3
+        cpy #7
+        bne dsgs9
+        lda $d010
+        ora #%10000000
+        jmp dsgs8
+
+dsgs4
+        cpy #0
+        bne dsgs5
+        lda $d010
+        and #%11111110
+        jmp dsgs8
+dsgs5
+        cpy #5
+        bne dsgs6
+        lda $d010
+        and #%11011111
+        jmp dsgs8
+dsgs6
+        cpy #6
+        bne dsgs7
+        lda $d010
+        and #%10111111
+        jmp dsgs8
+
+dsgs7
+        cpy #7
+        bne dsgs9
+        lda $d010
+        and #%01111111
+        jmp dsgs8
+
+dsgs8
+        sta $d010
+dsgs9
+
+        tya
+        asl
+        tay
+
+        lda sprite0_x,x
+        sta $d000,y
+        lda sprite0_y,x
+        sta $d001,y
         rts
