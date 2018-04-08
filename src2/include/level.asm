@@ -269,6 +269,8 @@ ed_10
         sta num2
         jsr add_to_score
 ed_11
+        lda #0
+        sta ghost_dc_timer
         lda ghost_dc_mode
         cmp #counter_a
         bne ed_12
@@ -523,7 +525,9 @@ level_end_frame
 
         jsr detect_collisions
         cmp #0
-        beq lef2
+        beq lef1
+
+        ; detected a collision ..
 
         lda #life_lost                  ; set game mode to life_lost
         sta game_mode
@@ -533,6 +537,29 @@ level_end_frame
 
         jmp lef3                        ; jump to end of sub (initialising timer)
 
+lef1    lda ghost_dc_timer
+        cmp #200
+        bcc lef2
+        lda #0
+        sta ghost_dc_timer
+        lda ghost1_mode
+        cmp #chase
+        bcs lef1_inky
+        jmp cgm_release_pinky
+
+lef1_inky
+        
+        lda ghost2_mode
+        cmp #chase
+        bcs lef1_clyde
+        jmp cgm_release_inky
+
+lef1_clyde
+
+        lda ghost3_mode
+        cmp #chase
+        bcs lef2
+        jmp cgm_release_clyde
 
 lef2    lda ghost_dc_mode
         cmp #counter_a
@@ -571,18 +598,27 @@ counter_g_mode
 
 cgm_release_pinky
         
+        lda ghost1_mode
+        cmp #chase
+        bcs check_dot_counter
         lda #exit
         sta ghost1_mode
         jmp check_dot_counter
 
 cgm_release_inky
         
+        lda ghost2_mode
+        cmp #chase
+        bcs check_dot_counter
         lda #exit
         sta ghost2_mode
         jmp check_dot_counter
 
 cgm_release_clyde
 
+        lda ghost3_mode
+        cmp #chase
+        bcs check_dot_counter
         lda #exit
         sta ghost3_mode
 
@@ -733,7 +769,7 @@ dc_begin
 
 dc_next
         inx
-        cpx #2
+        cpx #4
         bne dc_begin
         lda #0
 dc_end

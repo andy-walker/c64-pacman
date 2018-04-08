@@ -50,7 +50,7 @@ dls_loop
         ;nop
         ;nop
         inx
-        cpx #100
+        cpx #92
         bne dls_loop
 
         rts
