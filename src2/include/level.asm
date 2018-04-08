@@ -504,6 +504,10 @@ level_end_frame
 
 
 lef2    lda dot_counter
+        cmp #30
+        beq lef_inky_exit
+        cmp #90
+        beq lef_clyde_exit
         cmp #210
         bcc lef_end
         
@@ -523,6 +527,15 @@ lef3    lda #0
         sta timer_ticks
 
 lef_end rts
+
+lef_inky_exit
+        lda #exit
+        sta ghost2_mode
+        rts
+lef_clyde_exit
+        lda #exit
+        inc ghost3_mode
+        rts
 
 
 ; -----------------------------------------------

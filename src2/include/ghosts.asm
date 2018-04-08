@@ -222,7 +222,7 @@ ghost_move_end
 ghost_move_all_complete
         rts
 
-; ghost idle mode - move up and down within the ghost house until 'exit' mode triggered
+; ghost idle mode - move ghost up and down within the ghost house until 'exit' mode triggered
 
 ghost_idle
         lda ghost0_direction,x
@@ -244,22 +244,37 @@ gi_down cpy #5
         jmp giu_mv
 gid_mv  jmp ghost_move_down
 
-; ghost exit mode - move left / right, then up and out of the ghost house
+; ghost exit mode - move ghost left / right, then up and out of the ghost house
 
 ghost_exit
         lda ghost0_y_tile,x
         cmp #7
         bne gex1
         inc ghost0_mode,x
-gex1    cpx #pinky
+gex1    cpx #pinky                              ; pinky - only needs to move up
         bne gex2
         jmp ghost_move_up
-gex2    cpx #inky
+gex2    cpx #inky                               ; inky - move right, then up
         bne gex3
+        lda ghost0_x_tile,x
+        cmp #13
+        bcc gex_move_right
+        lda ghost0_x_sub,x
+        cmp #5
+        bcc gex_move_right
+        jmp ghost_move_up
+gex3    lda ghost0_x_tile,x                     ; clyde - move left, then up
+        cmp #14
+        bcs gex_move_left
+        lda ghost0_x_sub,x
+        cmp #6
+        bcs gex_move_left
+        jmp ghost_move_up
 
-
-gex3        
-
+gex_move_left
+        jmp ghost_move_left
+gex_move_right
+        jmp ghost_move_right
 
 ; ----------------------------------------
 ; Get directions in which ghost can move
