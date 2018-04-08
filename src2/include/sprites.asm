@@ -395,3 +395,78 @@ ugs2    ldy tmp1
         sta sprite5_y,x                 ; same for eyes sprite
 
         rts
+
+
+; -----------------------------------------
+; Determine sprite with the highest y value
+; and set zeropage vars
+; -----------------------------------------
+
+highest_y = num1
+lowest_y  = irq_scanline
+
+sort_game_sprites
+        
+        lda #0
+        sta lowest_sprite
+        sta highest_sprite
+        ldy sprite0_y
+        sty lowest_y
+        sty highest_y
+
+        ldy sprite5_y
+        cpy lowest_y
+        bcc sort1
+        sty lowest_y
+        lda #5
+        sta lowest_sprite
+sort1
+        ldy sprite6_y
+        cpy lowest_y
+        bcc sort2
+        sty lowest_y
+        lda #6
+        sta lowest_sprite
+sort2
+        ldy sprite7_y
+        cpy lowest_y
+        bcc sort3
+        sty lowest_y
+        lda #7
+        sta lowest_sprite
+sort3
+        ldy sprite8_y
+        cpy lowest_y
+        bcc sort4
+        sty lowest_y
+        lda #8
+        sta lowest_sprite
+sort4
+        dec irq_scanline
+        dec irq_scanline
+
+        ldy sprite5_y
+        cpy highest_y
+        bcs sort5
+        lda #5
+        sta highest_sprite
+sort5
+        ldy sprite6_y
+        cpy highest_y
+        bcs sort6
+        lda #6
+        sta highest_sprite
+sort6
+        ldy sprite7_y
+        cpy highest_y
+        bcs sort7
+        lda #7
+        sta highest_sprite
+sort7
+        ldy sprite8_y
+        cpy highest_y
+        bcs sort8
+        lda #8
+        sta highest_sprite
+sort8        
+        rts

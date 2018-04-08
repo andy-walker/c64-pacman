@@ -6,7 +6,7 @@ irq1_game
         jsr move_character
         jsr set_score_sprites
         jsr move_ghosts
-
+        jsr sort_game_sprites
         jsr level_end_frame
         
         lda #<irq2_game         
@@ -41,7 +41,7 @@ irq3_game                        ; triggered on scanline 44
 
         inc $d019
         jsr display_main_game_sprites
-        
+
         lda #$f9
 
         sta $d012

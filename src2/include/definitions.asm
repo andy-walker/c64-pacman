@@ -106,10 +106,10 @@ ghost_dc_global  = $26
 ghost_dc_timer   = $27
 ghost_dc_mode    = $28
 
+lowest_sprite    = $29
+highest_sprite   = $2a
+irq_scanline     = $2b
 
-
-matrix_offset    = $2b
-main_offset      = $2c
 
 frightened_mode  = $2d
 timer_seconds    = $2e
@@ -265,6 +265,9 @@ life_sprites_enabled  = $a1
 
 out_decimal   = $e0
 score_charmap = $e4
+
+matrix_offset = $ee
+main_offset   = $ef
 
 score_1       = $f0
 score_2       = $f1
