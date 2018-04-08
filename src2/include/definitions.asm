@@ -12,6 +12,10 @@ pinky  = 1
 inky   = 2
 clyde  = 3
 
+counter_a = 0
+counter_b = 1
+counter_g = 2
+
 black  = 0
 white  = 1
 red    = 2
@@ -96,13 +100,15 @@ ghost1_mode      = $21
 ghost2_mode      = $22
 ghost3_mode      = $23
 
-matrix_offset    = $24
+ghost_dc_1       = $24
+ghost_dc_2       = $25
+ghost_dc_global  = $26
+ghost_dc_timer   = $27
+ghost_dc_mode    = $28
 
-score_msb1       = $28
-score_msb2       = $29
-score_lsb1       = $2a
-score_lsb2       = $2b
 
+
+matrix_offset    = $2b
 main_offset      = $2c
 
 frightened_mode  = $2d
@@ -273,6 +279,8 @@ dir2 = $f7
 dir3 = $f8
 dir4 = $f9
 dir5 = $fa
+
+
 
 score_sprite1_ptr = $fc
 score_sprite2_ptr = $fe

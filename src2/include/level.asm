@@ -3,8 +3,22 @@
 ; ----------------
 
 init_level
+
+        lda ghost_dc_mode
+        cmp #counter_g
+        beq init_lvl1
+        lda #0
+        sta ghost_dc_mode
+        sta ghost_dc_1
+        sta ghost_dc_2
+
+init_lvl1
+
         lda #0
         sta frightened_mode
+
+        sta ghost_dc_global
+        sta ghost_dc_timer
         
         lda #idle
         sta ghost2_mode
@@ -245,8 +259,7 @@ ed_final
         lda #$50
         sta num2
         jsr add_to_score
-
-        jmp ed_end
+        jmp ed_11
 
         ; add 10 points to player score
 ed_10   
@@ -255,6 +268,21 @@ ed_10
         lda #$10
         sta num2
         jsr add_to_score
+ed_11
+        lda ghost_dc_mode
+        cmp #counter_a
+        bne ed_12
+        inc ghost_dc_1
+        jmp ed_end
+ed_12
+        cmp #counter_b
+        bne ed_13
+        inc ghost_dc_2
+        jmp ed_end
+ed_13
+        cmp #counter_g
+        bne ed_end
+        inc ghost_dc_global
 
 ed_end  rts
 
@@ -500,14 +528,67 @@ level_end_frame
         lda #life_lost                  ; set game mode to life_lost
         sta game_mode
 
+        lda #counter_g                  ; set ghost dot counter mode to global
+        sta ghost_dc_mode
+
         jmp lef3                        ; jump to end of sub (initialising timer)
 
 
-lef2    lda dot_counter
+lef2    lda ghost_dc_mode
+        cmp #counter_a
+        beq counter_a_mode
+        cmp #counter_b
+        beq counter_b_mode
+        cmp #counter_g
+        beq counter_g_mode
+
+counter_a_mode
+
+        lda ghost_dc_1
         cmp #30
-        beq lef_inky_exit
-        cmp #90
-        beq lef_clyde_exit
+        bne check_dot_counter
+        lda #counter_b
+        sta ghost_dc_mode
+        jmp cgm_release_inky
+
+counter_b_mode
+
+        lda ghost_dc_2
+        cmp #60
+        bne check_dot_counter
+        jmp cgm_release_clyde
+
+counter_g_mode
+
+        lda ghost_dc_global
+        cmp #7
+        beq cgm_release_pinky
+        cmp #17
+        beq cgm_release_inky
+        cmp #32
+        beq cgm_release_clyde
+        jmp check_dot_counter
+
+cgm_release_pinky
+        
+        lda #exit
+        sta ghost1_mode
+        jmp check_dot_counter
+
+cgm_release_inky
+        
+        lda #exit
+        sta ghost2_mode
+        jmp check_dot_counter
+
+cgm_release_clyde
+
+        lda #exit
+        sta ghost3_mode
+
+check_dot_counter
+
+        lda dot_counter
         cmp #210
         bcc lef_end
         
@@ -521,6 +602,9 @@ lef2    lda dot_counter
 
         lda #0
         sta dot_counter                 ; reset the dot counter ready for next level
+
+        lda #counter_a
+        sta ghost_dc_mode
 
 lef3    lda #0
         sta timer_seconds

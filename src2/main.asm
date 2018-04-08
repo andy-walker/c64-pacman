@@ -68,6 +68,7 @@ irq_timer1
         ldx #0
 irq_timer2
         stx flash_counter2
+        inc ghost_dc_timer
 
         ; now hand control to the relevant mode runner
 
@@ -135,13 +136,12 @@ main_init
 .include "runners/lifelost-runner.asm"
 .include "runners/endlevel-runner.asm"
 .include "runners/gameover-runner.asm"
-
-.include "include/game.asm"
 .include "include/data.asm"
-.include "include/sprites.asm"
+
 
 *=$4000
-
+.include "include/game.asm"
+.include "include/sprites.asm"
 .include "include/attract.asm"
 .include "include/start-screen.asm"
 .include "include/end-level.asm"
