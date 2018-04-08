@@ -214,7 +214,7 @@ ghost_move_down_sub
         jmp ghost_move_end              ; jump to end of routine 
 
 ghost_move_end
-        cpx #2
+        cpx #3
         beq ghost_move_all_complete
         inx
         jmp mg1
@@ -250,7 +250,9 @@ ghost_exit
         lda ghost0_y_tile,x
         cmp #7
         bne gex1
-        inc ghost0_mode,x
+        lda #2
+        sta ghost0_mode,x
+        jmp ghost_move_up
 gex1    cpx #pinky                              ; pinky - only needs to move up
         bne gex2
         jmp ghost_move_up

@@ -359,12 +359,12 @@ level_init_sprites
         jsr set_ghost_sprite
         jsr update_ghost_sprite
 
-        ;ldx #3
-        ;ldy #down
-        ;sty ghost3_direction
+        ldx #3
+        ldy #down
+        sty ghost3_direction
 
-        ;jsr set_ghost_sprite
-        ;jsr update_ghost_sprite
+        jsr set_ghost_sprite
+        jsr update_ghost_sprite
 
         rts
 
@@ -534,7 +534,7 @@ lef_inky_exit
         rts
 lef_clyde_exit
         lda #exit
-        inc ghost3_mode
+        sta ghost3_mode
         rts
 
 
