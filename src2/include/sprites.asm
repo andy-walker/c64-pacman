@@ -471,5 +471,79 @@ sort7
         ;bcs sort8
         ;lda #8
         ;sta highest_sprite
-sort8        
+sort8
+
+        lda #5
+        sta sprite_list
+        lda sprite0_y
+        sta sprite1
+        lda sprite1_y
+        sta sprite2
+        lda sprite2_y
+        sta sprite3
+        lda sprite3_y
+        sta sprite4
+        lda sprite4_y
+        sta sprite5
+        
+
+
+exchange = num1
+
+sort_sprites
+        ldx #5                  ; the number of sprites
+        ldy #0                  ; turn exchange flag off
+        sty exchange
+        dex
+next_element
+        lda sprite1,y
+        iny
+        cmp sprite1,y           ; is it larger than the next element?
+        bcc chkend
+        beq chkend
+
+        ; it is! - swap the elements
+        sta tmp1
+        lda sprite1,y
+        sta sprite1-1,y
+        lda tmp1
+        sta sprite1,y
+
+        lda #$ff                ; turn on exchange flag
+        sta exchange
+
+chkend  dex
+        cpx #0
+        bne next_element
+        lda exchange
+        cmp #0
+        bne sort_sprites
+
+largest_y_gap = tmp5
+optimal_scanline = tmp6
+
+calculate_optimal_scanline
+        ldx #0
+        stx largest_y_gap
+cos_loop
+        lda sprite1,x
+        sta num1
+        inx
+        lda sprite1,x
+        sec
+        sbc num1
+        cmp largest_y_gap
+        bcc +
+        sta largest_y_gap
+        lda sprite1-1,x
+        sta optimal_scanline
+      + cpx #5
+        bne cos_loop
+        lda optimal_scanline
+        clc
+        adc #25
+        ;sta irq_scanline
         rts
+
+
+

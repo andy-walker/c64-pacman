@@ -263,6 +263,13 @@ game_sprites_enabled1 = $9f
 game_sprites_enabled2 = $a0
 life_sprites_enabled  = $a1
 
+sprite_list = $a2
+sprite1 = $a3
+sprite2 = $a4
+sprite3 = $a5
+sprite4 = $a6
+sprite5 = $a7 
+
 out_decimal   = $e0
 score_charmap = $e4
 
