@@ -537,12 +537,12 @@ cos_loop
         sta largest_y_gap
         lda sprite1-1,x
         sta optimal_scanline
-      + cpx #5
+      + cpx #4
         bne cos_loop
         lda optimal_scanline
         clc
         adc #25
-        ;sta irq_scanline
+        sta irq_scanline
         rts
 
 
