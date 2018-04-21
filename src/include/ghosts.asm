@@ -4,7 +4,13 @@
 
 move_ghosts
         ldx #0                          ; initialise offset register to 0
-mg1                                     ; begin looping over ghosts ..
+mg1                                     ; begin iterating over ghosts ..
+        lda ghost0_mode,x
+        cmp #idle
+        beq mg_idle
+        cmp #exit
+        beq mg_exit
+
         lda ghost0_direction,x          ; load ghost's current direction
         cmp #2                          ; if 2 or 3 (up / down)
         bcs mg1_ud                      ; branch to up / down handler                 
@@ -17,22 +23,31 @@ mg1_lr  ldy ghost0_x_sub,x
 mg1_ud  ldy ghost0_y_sub,x
         cpy #5
         bne ghost_move_ud
+        jmp mg1_cd
+
+mg_idle jmp ghost_idle
+mg_exit jmp ghost_exit
 
 ; Choose a direction to move in
 
 mg1_cd  jsr get_available_directions
-
+        ;jsr get_available_directions2
+        ;jsr choose_random_direction
+        ;jmp mg1_tmp2
         ; choose direction based on mode
-        cpx #0
-        bne mg1_tmp
-        jsr filter_directions
+        ; cpx #0
+        ; bne mg1_tmp
+        ;jsr filter_directions
 mg1_tmp
         lda dir5
         sec
         sbc #1
+        
         jsr choose_random
+
         tay
         lda dir1,y
+mg1_tmp2
         jmp ghost_change_direction
 
 ghost_move_lr
@@ -67,8 +82,8 @@ ghost_move_left
 
         lda ghost0_x_sub,x              ; load ghost x sub position
         cmp #0                          ; if greater than zero ..        
-        bne ghost_move_left_sub         ; move left by sub position, otherwise (if zero) ..
-
+        bne ghost_move_left_sub         ; move left by sub position
+                                        ; otherwise (if zero) ..
         ; tunnel wrap-around
 
         lda ghost0_x_tile,x
@@ -79,7 +94,10 @@ ghost_move_left
         bne gml1
         lda #26                         ; set x tile to 26 (will decrement in next step)
         sta ghost0_x_tile,x
-        jsr ghost_flip_carry_bits       ; also flip sprites' carry bits
+        
+        lda #1                          ; set sprite carry
+        sta sprite1_carry,x
+        sta sprite5_carry,x
 
 gml1
         dec ghost0_x_tile,x             ; decrement x tile position
@@ -118,7 +136,10 @@ ghost_move_right
         bne gmr1
         lda #0                          ; set x tile to zero (will increment to 1 in next step)
         sta ghost0_x_tile,x
-        jsr ghost_flip_carry_bits       ; also flip sprites' carry bits
+        
+        lda #0                          ; unset sprite carry
+        sta sprite1_carry,x
+        sta sprite5_carry,x
 
 gmr1    
         inc ghost0_x_tile,x             ; increment x tile position
@@ -192,9 +213,8 @@ ghost_move_down_sub
         jsr update_ghost_sprite         ; update the sprite on screen
         jmp ghost_move_end              ; jump to end of routine 
 
-
 ghost_move_end
-        cpx #1
+        cpx #3
         beq ghost_move_all_complete
         inx
         jmp mg1
@@ -202,6 +222,61 @@ ghost_move_end
 ghost_move_all_complete
         rts
 
+; ghost idle mode - move ghost up and down within the ghost house until 'exit' mode triggered
+
+ghost_idle
+        lda ghost0_direction,x
+        ldy ghost0_y_sub,x
+        cmp #down
+        beq gi_down
+gi_up   cpy #5
+        bne giu_mv
+        lda ghost0_y_tile,x
+        cmp #9
+        bne giu_mv
+        jmp gid_mv
+giu_mv  jmp ghost_move_up
+gi_down cpy #5
+        bne gid_mv
+        lda ghost0_y_tile,x
+        cmp #11
+        bne gid_mv
+        jmp giu_mv
+gid_mv  jmp ghost_move_down
+
+; ghost exit mode - move ghost left / right, then up and out of the ghost house
+
+ghost_exit
+        lda ghost0_y_tile,x
+        cmp #7
+        bne gex1
+        lda #2
+        sta ghost0_mode,x
+        jmp ghost_move_up
+gex1    cpx #pinky                              ; pinky - only needs to move up
+        bne gex2
+        jmp ghost_move_up
+gex2    cpx #inky                               ; inky - move right, then up
+        bne gex3
+        lda ghost0_x_tile,x
+        cmp #13
+        bcc gex_move_right
+        lda ghost0_x_sub,x
+        cmp #5
+        bcc gex_move_right
+        jmp ghost_move_up
+gex3    lda ghost0_x_tile,x                     ; clyde - move left, then up
+        cmp #14
+        bcs gex_move_left
+        lda ghost0_x_sub,x
+        cmp #6
+        bcs gex_move_left
+        jmp ghost_move_up
+
+gex_move_left
+        jmp ghost_move_left
+gex_move_right
+        jmp ghost_move_right
 
 ; ----------------------------------------
 ; Get directions in which ghost can move
@@ -233,8 +308,8 @@ get_available_directions
 
         lda ghost0_y_tile,x             ; load accumulator with ghost y tile position
         jsr ghost_get_tile_type
-        cmp #$00
-        beq gd1
+        cmp #$02
+        bcc gd1
         lda ghost0_direction,x          ; check current direction
         cmp #right                      ; if it's right, skip to next
         beq gd1                         ; (cannot reverse direction)
@@ -257,8 +332,8 @@ gd1     lda tmp2                        ; restore the original offset (where the
 
         jsr ghost_get_tile_type
         clc
-        cmp #$00
-        beq gd2
+        cmp #$02
+        bcc gd2
         lda ghost0_direction,x          ; check current direction
         cmp #left                       ; if it's left, skip to next
         beq gd2                         ; (cannot reverse direction)
@@ -281,8 +356,8 @@ gd2     lda tmp2                        ; restore the original offset (where the
         sbc #1
 
         jsr ghost_get_tile_type
-        cmp #$00
-        beq gd3
+        cmp #$02
+        bcc gd3
         lda ghost0_direction,x          ; check current direction
         cmp #down                       ; if it's down, skip to next
         beq gd3                         ; (cannot reverse direction)
@@ -305,8 +380,8 @@ gd3     lda tmp2                        ; restore the original offset (where the
         adc #1
 
         jsr ghost_get_tile_type
-        cmp #$00
-        beq gd4
+        cmp #$02
+        bcc gd4
         lda ghost0_direction,x          ; check current direction
         cmp #up                         ; if it's up, skip to end
         beq gd4                         ; (cannot reverse direction)
@@ -316,25 +391,6 @@ gd3     lda tmp2                        ; restore the original offset (where the
         sta dir1,y
         inc dir5
 gd4     rts
-
-
-; -------------------------------------------------
-; Routine to flip sprite carry bits
-; (possibly not worth the clock cycle penalty
-; of a jsr + rts just to do this, but for now ..)
-; .x should be preloaded with the ghost index (0-3)
-; -------------------------------------------------
-
-ghost_flip_carry_bits
-
-        lda $d010
-        cpx #0
-        bne ug3
-        eor #%00100010                  ; flip sprites' carry bits
-        jmp ug4
-ug3     eor #%01000100
-ug4     sta $d010
-        rts
 
 
 ; --------------------------------------------
@@ -365,15 +421,13 @@ ggtt3   lda tmp1                        ; restore y position to .a
         jmp ggtt_mid_section
 ggtt4   lda num1
         cmp #25
-        bcs ggtt_bottom_section
+        beq ggtt_bottom_section
         jmp ggtt_mid_section
 
 ggtt_top_section
-        lda #1
         lda level0,y                    ; load the tile type index, using x as an offset
         rts
 ggtt_mid_section
-        lda #2
         lda level0+256,y
         rts
 ggtt_bottom_section

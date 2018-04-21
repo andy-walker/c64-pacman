@@ -1,5 +1,5 @@
 pacman:
-	64tass game.asm -o ../pacman.prg
+	64tass main.asm -o ../pacman.prg
 	open ../pacman.prg
 
 clean:
