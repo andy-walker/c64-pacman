@@ -4,24 +4,19 @@ C64 Pacman
 What is this?
 -------------
 
-Pacman implemented in 6502 assembler for the Commodore 64.
+Pacman in 6502 assembler for the Commodore 64.
 
 But why?
 --------
 
-Well, let me tell you a story ...
+I was never that happy with any of the home Pacman ports of the 80s, and was also quite curious about how to write an arcade game in the machine code of the day, so set about attempting to create a home Pacman port as faithful to the original as possible.
 
-Long, long ago, there was a decade known as the 80s, and it was a sad, depressing time full of [big glasses](http://i.dailymail.co.uk/i/pix/2012/03/21/article-2118195-123D5C9F000005DC-239_310x517.jpg), [bad hair](http://i.dailymail.co.uk/i/pix/2012/03/21/article-2118195-123D5C9F000005DC-239_310x517.jpg) and [bad music](http://i.dailymail.co.uk/i/pix/2012/03/21/article-2118195-123D5C9F000005DC-239_310x517.jpg). And in the 80s, there lived a boy, who hated living in the 80s - and this boy was particularly worried he'd missed all the good music of the 60s and 70s - that was all over with now, and there would never be any good music ever again. And the little boy was sad about this.
 
-Anyway, due to being a slightly annoying boy who asked a lot of questions, he got sent off to a summer camp one year - and at the summer camp he was forced to go swimming, and play sport, and do all sorts of activities he didn't want to do ..
+What do I do with it?
+---------------------
 
-Also, at about the same time .. [BBC Computer Literacy in Schools]
+You'll need 64tass to compile the code, a Makefile is included in src directory which should work on Mac or Linux. For Windows, you'd probably need to convert this to an equivalent batch file.
 
-But .. [machine language - 80s - lack of information]
+This should produce a pacman.prg binary in the root of the repo, which you can run with your favourite emulator - I've been using the VICE emulator during development.
 
-[Schools put us off 'IT' at high school]
 
-Ok, ok - enough nostalgia already. Tell me about the code.
-----------------------------------------------------------
-
-TODO:
